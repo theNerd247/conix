@@ -28,7 +28,7 @@ Jingle | 555-231-7589
 
 ```nix
 let
-  pkgs = (import <nixpkgs>) { overlays = [ (import ./co.nix) ] };
+  pkgs = (import <nixpkgs>) { overlays = [ (import ./co.nix) ]; };
 in
   with pkgs.conix;
 
