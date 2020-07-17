@@ -32,7 +32,7 @@ let
 in
   with pkgs.conix;
 
-  builders.pdf.build (page "Volunteers" (pages -> [''
+  builders.pdf.build (page "Volunteers" (pages: [''
     # Volunteer Handbook
 
     ## Emergency Plan
@@ -76,3 +76,4 @@ Conix blends the convenience of a template language with the power of a
 functional programming language. This allows authors to have the same features
 as programmers with a frontend that is more convenient.
 
+# 
