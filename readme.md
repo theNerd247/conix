@@ -37,7 +37,7 @@ in
 
     ## Emergency Plan
 
-    Incase of an emergency please contact: ${pages.Volunteers.contacts.jingle.Name} at ${pages.Volunteers.contacts.jingle.Phone}
+    Incase of an emergency please contact: ${pages.Volunteers.contacts.Jingle.Name} at ${pages.Volunteers.contacts.Jingle.Phone}
 
     ## Volunteer Contacts 
 
