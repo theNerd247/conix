@@ -3,7 +3,11 @@ self: super:
 { conix = (super.conix or {}) //
   rec
   { newPage = contents: { inherit contents; };
-    page = path: text:
+    textPage_ = path: text:
       self.lib.attrsets.setAttrByPath path (newPage text);
+
+    textPage = path: text: _: { pages = textPage_ path text; res = text; };
+
+    buildPages = module: self.lib.fix (pgs: (module pgs).pages);
   };
 }
