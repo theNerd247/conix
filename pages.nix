@@ -24,5 +24,9 @@ self: super:
         { pages = self.lib.attrsets.recursiveUpdate pagesAndTextA.pages pagesAndTextB.pages;
           text = pagesAndTextA.text + pagesAndTextB.text;
         };
+
+    emptyPage = _: { pages = {}; text = ""; };
+
+    collectPages = builtins.foldl' mergePages emptyPage;
   };
 }
