@@ -2,7 +2,9 @@ self: super:
 
 { conix = (super.conix or {}) //
   rec
-  { newModule = text: { inherit text; };
+  { 
+    newModule = text: { inherit text; };
+
     textModule_ = path: text:
       self.lib.attrsets.setAttrByPath path (newModule text);
 
@@ -26,6 +28,12 @@ self: super:
         };
 
     emptyModule = _: { modules = {}; text = ""; };
+
+    pureModule = text: _: { modules = {}; inherit text; };
+
+    pageModule = modules: _: { inherit modules; text = ""; };
+
+    setAt = path: val: pageModule (self.lib.attrsets.setAttrByPath path val); 
 
     collectModules = builtins.foldl' mergeModules emptyModule;
 

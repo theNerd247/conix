@@ -11,12 +11,16 @@ let
     (pages: ''
       # Bar page
 
+      We have ${builtins.toString pages.baz.joe} baz joes;
+
       Foo content
 
       ${pages.foo.text} 
     '');
     
 
-  pages = pkgs.conix.buildPages [foo bar];
+  baz = pkgs.conix.setAt [ "baz" "joe" ] 3;
+
+  pages = pkgs.conix.buildPages [foo bar baz];
 in
   pkgs.conix.build.pdf "foob"  [ pages.bar ]
