@@ -4,7 +4,7 @@ self: super:
   { build = (super.conix.build or {}) //
     { pdf = name: pages:
         let
-          pagesContents = builtins.map (p: p.contents) pages;
+          pagesContents = builtins.map (p: p.text) pages;
           pandoc = self.pandoc;
           outFileName = "${name}.pdf";
         in

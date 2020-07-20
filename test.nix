@@ -7,6 +7,16 @@ let
       test text
     '';
 
-  pages = pkgs.conix.buildPages foo;
+  bar = pkgs.conix.textPageWith [ "bar" ] 
+    (pages: ''
+      # Bar page
+
+      Foo content
+
+      ${pages.foo.text} 
+    '');
+    
+
+  pages = pkgs.conix.buildPages (pkgs.conix.mergePages foo bar);
 in
-  pkgs.conix.build.pdf "foob"  [ pages.foo ]
+  pkgs.conix.build.pdf "foob"  [ pages.bar ]
