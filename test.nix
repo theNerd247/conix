@@ -17,6 +17,6 @@ let
     '');
     
 
-  pages = pkgs.conix.buildPages (pkgs.conix.mergePages foo bar);
+  pages = pkgs.conix.buildPages [foo bar];
 in
   pkgs.conix.build.pdf "foob"  [ pages.bar ]

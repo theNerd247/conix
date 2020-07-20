@@ -14,7 +14,7 @@ self: super:
 
     textPage = path: text: pages: textPageWith path (_: text) pages;
 
-    buildPages = module: self.lib.fix (pgs: (module pgs).pages);
+    buildPage = module: self.lib.fix (pgs: (module pgs).pages);
 
     mergePages = pagesA: pagesB: pages: 
       let
@@ -28,5 +28,7 @@ self: super:
     emptyPage = _: { pages = {}; text = ""; };
 
     collectPages = builtins.foldl' mergePages emptyPage;
+
+    buildPages = pages: buildPage (collectPages pages); 
   };
 }
