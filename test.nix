@@ -1,13 +1,10 @@
 let
   pkgs = import <nixpkgs> { overlays = (import ./conix.nix); };
-in
-  pkgs.conix.build.pdf "foo" 
-  [
-    { contents =
-      ''
-        # A test Page
+  pages = pkgs.conix.page [ "foo" ]
+    ''
+      # Test title
 
-        some test text
-      '';
-    }
-  ]
+      test text
+    '';
+in
+  pkgs.conix.build.pdf "foob"  [ pages.foo ]

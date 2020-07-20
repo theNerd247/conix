@@ -57,23 +57,34 @@ in
 
 <!-- TODO: is it best to have a list of reasons why markdown fails? -->
 
-The markdown content is much easier to read as plain text and is much shorter.
-However, markdown is a poor choice of language when authoring any content that
-is larger than the example provided above:
+Yup! You guessed it - the markdown syntax is simpler. And that's the problem.
+It's deceptively too simple. Here's a list of problems when dealing with
+traditional markdown-based content:
 
-  * Content often depends on the output format and markdown's syntax will never
-    cover all of the features of all the formats the can be produced.
-  * Content is often re-used (especially in reference material); markdown
-    provides no easy way to re-use content. 
-  * Content authored in markdown requires a hand-cranked build system (for
-    example using Pandoc and bash scripts).
-  * Markdown content that is intended to be published in multiple formats often
-    requires different syntax to be used for the same piece of content. For
-    example, internal links within a document might be formatted using markdown
-    links for html output but latex links for pdf output. 
+  * Markdown content often depends on the output format and markdown's
+    syntax will never cover all of the features of all the formats the can be
+    produced.
+  * Markdown content is often re-used (especially in reference material). Using
+    only markdown requires a lot of hand-copying which makes writing error
+    prone.
+  * Markdown content requires a hand-cranked build system. Users often scrape
+    together a bash script using various 3rd party programs like pandoc. This
+    does not scale well.
+  * Markdown content does not have an output-indpendent syntax for internal
+    references across multiple files.
+
+And that's only a few of them.
 
 Conix blends the convenience of a template language with the power of a
 functional programming language. This allows authors to have the same features
 as programmers with a frontend that is more convenient.
 
-# 
+[The Pollen programming language][1] addresses these problems as well. I adopt
+their philosophy when it comes to writing: authoring content is like
+programming.
+
+# Related Works
+
+* [Pollen][1] a turing complete typesetting language written in Racket.
+
+[1]: https://docs.racket-lang.org/pollen/
