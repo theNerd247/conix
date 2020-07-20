@@ -2,33 +2,33 @@ self: super:
 
 { conix = (super.conix or {}) //
   rec
-  { newPage = text: { inherit text; };
-    textPage_ = path: text:
-      self.lib.attrsets.setAttrByPath path (newPage text);
+  { newModule = text: { inherit text; };
+    textModule_ = path: text:
+      self.lib.attrsets.setAttrByPath path (newModule text);
 
-    textPageWith = path: f: pages: 
+    textWith = path: f: modules: 
       let 
-        text = f pages;
+        text = f modules;
       in
-        { pages = textPage_ path text; inherit text; };
+        { modules = textModule_ path text; inherit text; };
 
-    textPage = path: text: pages: textPageWith path (_: text) pages;
+    text = path: text: modules: textWith path (_: text) modules;
 
-    buildPage = module: self.lib.fix (pgs: (module pgs).pages);
+    buildPageSet = module: self.lib.fix (pgs: (module pgs).modules);
 
-    mergePages = pagesA: pagesB: pages: 
+    mergeModules = modulesA: modulesB: modules: 
       let
-        pagesAndTextA = pagesA pages;
-        pagesAndTextB = pagesB pages;
+        modulesAndTextA = modulesA modules;
+        modulesAndTextB = modulesB modules;
       in
-        { pages = self.lib.attrsets.recursiveUpdate pagesAndTextA.pages pagesAndTextB.pages;
-          text = pagesAndTextA.text + pagesAndTextB.text;
+        { modules = self.lib.attrsets.recursiveUpdate modulesAndTextA.modules modulesAndTextB.modules;
+          text = modulesAndTextA.text + modulesAndTextB.text;
         };
 
-    emptyPage = _: { pages = {}; text = ""; };
+    emptyModule = _: { modules = {}; text = ""; };
 
-    collectPages = builtins.foldl' mergePages emptyPage;
+    collectModules = builtins.foldl' mergeModules emptyModule;
 
-    buildPages = pages: buildPage (collectPages pages); 
+    buildPages = modules: buildPageSet (collectModules modules); 
   };
 }

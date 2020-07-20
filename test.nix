@@ -1,13 +1,13 @@
 let
   pkgs = import <nixpkgs> { overlays = (import ./conix.nix); };
-  foo = pkgs.conix.textPage [ "foo" ]
+  foo = pkgs.conix.text [ "foo" ]
     ''
       # Test title
 
       test text
     '';
 
-  bar = pkgs.conix.textPageWith [ "bar" ] 
+  bar = pkgs.conix.textWith [ "bar" ] 
     (pages: ''
       # Bar page
 
