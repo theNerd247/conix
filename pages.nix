@@ -41,32 +41,27 @@ self: super:
 
     buildPages = modules: buildPageSet (collectModules modules); 
 
-    setLinks = setIf 
-      (_: __: isPage) 
-      (_: p: x: 
-        { "${builtins.head p}" = x // 
-          { link = "/" + builtins.concatStringsSep "/" (self.lib.lists.reverseList p); 
-          };
-        }
-      );
-
-    setIf = pred: f:
-      recAttrFold
-      isPage
-      (s: p: x: 
-        let
-          n = builtins.head p;
-        in
-          if pred s p x 
-          then s // f s p x
-          else s // { "${n}" = x; }
-      ) {}; 
-
     # foldl for recursive attribute sets with paths being sent to a handler;
     # TODO: move this to a util file
     recAttrFold = pred: f: initB:
       let
-          # (AttrSet -> Bool) -> (b -> ReversedPath -> Either a b -> b) -> b -> AttrSet a -> b
+          # If true recAttrFold will NOT recurse into a nested attribute set.
+          # (AttrSet -> Bool)  
+          # Fold handler. 
+          #  * `b` is the current final value, `rev
+          #  * `ReversedPath` is the path from the top of the attribute set down to the value being evaluated in reverse order.
+          #    for example: when the y value is passed to the handler where ({ x = { y = 3; }; }) the path will be [ "y" "x" ].
+          #    this is so the handler can easily grab the "current" attribute name via builtins.head instead of a more
+          #    complex function to grab the last element in a list.
+          #  * `Either a b` is either a leaf value in the attribute set OR the
+          #    result after recursing into a nested attribute set (assuming the
+          #    predicate returns false)
+          # -> (b -> ReversedPath -> Either a b -> b) 
+          # The initial fold value
+          # -> b 
+          # The attribute set to fold over
+          # -> AttrSet a 
+          # -> b
           recAttrFold_ = init: attrSet:
             let
               recF = {b, path}: name: 
