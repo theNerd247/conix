@@ -31,9 +31,22 @@ let
     ...and after text
   ''];
 
-  pages = pkgs.conix.buildPages [foo bar baz bang];
+  blue = pkgs.conix.textsWith [ "blue" "bell" ] (pages: [''
+    # Blue Bell Title
 
-  pdf = pkgs.conix.build.pdf [ pages.foo pages.bar pages.baz.bang ];
+    Here's bar's text:
+
+    ${pages.bar.text} 
+
+    ''(pkgs.conix.text [ "data" ] "blue's data!" )''
+
+    And that's all folks!
+
+  '']);
+
+  pages = pkgs.conix.buildPages [foo bar baz bang blue];
+
+  pdf = pkgs.conix.build.pdf [ pages.foo pages.bar pages.baz.bang pages.blue.bell ];
 in
   { inherit pdf;
     inherit pages;
