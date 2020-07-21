@@ -8,7 +8,7 @@ self: super:
     isPage = x: x ? text;
 
     textModule_ = path: text:
-      self.lib.attrsets.setAttrByPath path (newModule text);
+      setPageAt path (newModule text);
 
     textWith = path: f: modules: 
       let 
@@ -16,26 +16,62 @@ self: super:
       in
         { modules = textModule_ path text; inherit text; };
 
-    text = path: text: modules: textWith path (_: text) modules;
+    text = path: text: textWith path (_: text);
+
+    textsWith = path: f: modules:
+      let
+        mergeTextOrModule = m: moduleOrText:
+          if builtins.isString moduleOrText 
+          then mergeModules m (pureModule moduleOrText)
+          else mergeModules m moduleOrText;
+      in
+        setPageFromModule path
+        ( nestModules path 
+          (builtins.foldl' mergeTextOrModule emptyModule (f modules))
+        ) modules;
+
+    texts = path: textsAndModules: textsWith path (_: textsAndModules);
 
     buildPageSet = module: self.lib.fix (pgs: (module pgs).modules);
+
+    # nests all of the pages for a module under the given path
+    nestModules = path: module: modules:
+      let
+        pagesAndText = module modules;
+      in
+        { modules = setPageAt path pagesAndText.modules; text = pagesAndText.text; };
+
+    # takes the text produced by a module and creates text page and
+    # merges it into the current pages. The text does not change.
+    setPageFromModule = path: module: bindModule module (text path);
 
     mergeModules = modulesA: modulesB: modules: 
       let
         modulesAndTextA = modulesA modules;
         modulesAndTextB = modulesB modules;
       in
-        { modules = self.lib.attrsets.recursiveUpdate modulesAndTextA.modules modulesAndTextB.modules;
+        { modules = mergePages modulesAndTextA.modules modulesAndTextB.modules;
           text = modulesAndTextA.text + modulesAndTextB.text;
         };
+
+    mergePages = self.lib.attrsets.recursiveUpdate;
+
+    setPageAt = self.lib.attrsets.setAttrByPath;
 
     emptyModule = _: { modules = {}; text = ""; };
 
     pureModule = text: _: { modules = {}; inherit text; };
 
-    pageModule = modules: _: { inherit modules; text = ""; };
+    pagesModule = modules: _: { inherit modules; text = ""; };
 
-    setAt = path: val: pageModule (self.lib.attrsets.setAttrByPath path val); 
+    bindModule = module: f: modules:
+      let
+        pagesAndText = module modules;
+        res = f pagesAndText.text modules;
+      in
+        { modules = mergePages pagesAndText.modules res.modules; text = res.text; };
+
+    setAt = path: val: pagesModule (setPageAt path val); 
 
     collectModules = builtins.foldl' mergeModules emptyModule;
 

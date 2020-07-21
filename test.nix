@@ -21,12 +21,21 @@ let
 
   baz = pkgs.conix.setAt [ "baz" "joe" ] 3;
 
-  pages = pkgs.conix.buildPages [foo bar baz];
+  bang = pkgs.conix.texts [ "baz" "bang" ] [''
+    # Bang Title! 
+
+    Here's some text....
+    ''
+    (pkgs.conix.text [ "gnab" ] "Gnab text!!")
+    ''
+    ...and after text
+  ''];
+
+  pages = pkgs.conix.buildPages [foo bar baz bang];
+
+  pdf = pkgs.conix.build.pdf [ pages.foo pages.bar pages.baz.bang ];
 in
+  { inherit pdf;
+    inherit pages;
+  }
 
-rec
-{ x = pkgs.conix.setLinks { bob = { content = "foo"; a = { content = "bar"; }; }; b = { content = "boob"; }; };  
-  a = { a = 1; b = { c = 2; d = 4; }; };
-  #pkgs.lib.attrsets.recursiveUpdate a
-
-}
