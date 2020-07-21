@@ -5,6 +5,8 @@ self: super:
   { 
     newModule = text: { inherit text; };
 
+    isPage = x: x ? text;
+
     textModule_ = path: text:
       self.lib.attrsets.setAttrByPath path (newModule text);
 
@@ -40,31 +42,38 @@ self: super:
     buildPages = modules: buildPageSet (collectModules modules); 
 
     setLinks = setIf 
-      (_: p: __: builtins.head p == "content") 
-      "link"
-      (_: p: __: "/" + builtins.concatStringsSep "/" (self.lib.lists.drop (builtins.length p - 1) p));
+      (_: __: isPage) 
+      (_: p: x: 
+        { "${builtins.head p}" = x // 
+          { link = "/" + builtins.concatStringsSep "/" (self.lib.lists.reverseList p); 
+          };
+        }
+      );
 
-    setIf = pred: name: f:
-      recAttrFold 
+    setIf = pred: f:
+      recAttrFold
+      isPage
       (s: p: x: 
         let
           n = builtins.head p;
         in
-          if ! (builtins.isAttrs x) && pred s p x then s // { "${n}" = x; "${name}" = f s p x; } else s // { "${n}" = x; }
+          if pred s p x 
+          then s // f s p x
+          else s // { "${n}" = x; }
       ) {}; 
 
     # foldl for recursive attribute sets with paths being sent to a handler;
     # TODO: move this to a util file
-    recAttrFold = f: initB:
+    recAttrFold = pred: f: initB:
       let
-          # (b -> ReversedPath -> Either a b -> b) -> b -> AttrSet a -> b
+          # (AttrSet -> Bool) -> (b -> ReversedPath -> Either a b -> b) -> b -> AttrSet a -> b
           recAttrFold_ = init: attrSet:
             let
               recF = {b, path}: name: 
                 let
                   p = [name] ++ path; 
                   v_ = attrSet."${name}";
-                  v = if builtins.isAttrs v_ then recAttrFold_ { b = init.b; path = p; } v_ else v_;
+                  v = if builtins.isAttrs v_ && ! pred v_ then recAttrFold_ { b = init.b; path = p; } v_ else v_;
                 in
                   { b = f b p v; inherit path; };
             in
