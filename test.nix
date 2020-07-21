@@ -2,7 +2,7 @@ let
   pkgs = import <nixpkgs> { overlays = (import ./conix.nix); };
   foo = pkgs.conix.text [ "foo" ]
     ''
-      # Test title
+      # Foo Title
 
       test text
     '';
@@ -25,9 +25,10 @@ let
     # Bang Title! 
 
     Here's some text....
-    ''
-    (pkgs.conix.text [ "gnab" ] "Gnab text!!")
-    ''
+
+    '' (pkgs.conix.text [ "gnab" ] "Gnab text!!") ''
+
+
     ...and after text
   ''];
 
@@ -40,13 +41,14 @@ let
 
     ''(pkgs.conix.text [ "data" ] "blue's data!" )''
 
+
     And that's all folks!
 
   '']);
 
   pages = pkgs.conix.buildPages [foo bar baz bang blue];
 
-  pdf = pkgs.conix.build.pdf [ pages.foo pages.bar pages.baz.bang pages.blue.bell ];
+  pdf = pkgs.conix.build.pdf "test-pdf" [ pages.foo pages.bar pages.baz.bang pages.blue.bell ];
 in
   { inherit pdf;
     inherit pages;

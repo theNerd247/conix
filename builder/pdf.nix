@@ -7,6 +7,8 @@ self: super:
           pagesContents = builtins.map (p: p.text) pages;
           pandoc = self.pandoc;
           outFileName = "${name}.pdf";
+
+          contents = self.writeText "${name}-content" (builtins.concatStringsSep "\n" pagesContents);
         in
           self.stdenv.mkDerivation
           { inherit name;
@@ -14,8 +16,7 @@ self: super:
             dontUnpack = true;
             buildPhase = 
               ''
-                echo -En '${builtins.concatStringsSep "\n" pagesContents}' \
-                  | ${pandoc}/bin/pandoc -s -o ${outFileName} -f markdown
+                ${pandoc}/bin/pandoc -s -o ${outFileName} -f markdown ${contents}
               '';
             installPhase = 
               ''
