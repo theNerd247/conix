@@ -23,4 +23,10 @@ let
 
   pages = pkgs.conix.buildPages [foo bar baz];
 in
-  pkgs.conix.build.pdf "foob"  [ pages.bar ]
+
+rec
+{ x = pkgs.conix.setLinks { bob = { content = "foo"; a = { content = "bar"; }; }; b = { content = "boob"; }; };  
+  a = { a = 1; b = { c = 2; d = 4; }; };
+  #pkgs.lib.attrsets.recursiveUpdate a
+
+}
