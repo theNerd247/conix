@@ -1,3 +1,7 @@
+# Module = ReaderT AttrSet (Writer AttrSet)
+# 
+# type Pages = AttrSet
+# BuildPageSet :: Module -> AttrSet 
 let
   pkgs = import <nixpkgs> { overlays = (import ./conix.nix); };
   foo = pkgs.conix.text [ "foo" ]
@@ -7,17 +11,15 @@ let
       test text
     '';
 
-  bar = pkgs.conix.textWith [ "bar" ] 
-    (pages: ''
-      # Bar page
+  bar = pkgs.conix.textWith [ "bar" ] (pages: ''
+    # Bar page
 
-      We have ${builtins.toString pages.baz.joe} baz joes;
+    We have ${builtins.toString pages.baz.joe} baz joes;
 
-      Foo content
+    Foo content
 
-      ${pages.foo.text} 
-    '');
-    
+    ${pages.foo.text} 
+  '');
 
   baz = pkgs.conix.setAt [ "baz" "joe" ] 3;
 
@@ -32,21 +34,15 @@ let
     ...and after text
   ''];
 
-  blue = pkgs.conix.textsWith [ "blue" "bell" ] (pages: [''
-    # Blue Bell Title
+  blue = with pkgs.conix; textsWith [ "a" ] (pages: [
+    (t '' # Blue Title '') 
 
-    Here's bar's text:
+    (pkgs.conix.text [ "b" ] "blue-data")
 
-    ${pages.bar.text} 
+    (t '' Some more text in blue: ${pages.a.b.text} '')
+  ]);
 
-    ''(pkgs.conix.text [ "data" ] "blue's data!" )''
-
-
-    And that's all folks!
-
-  '']);
-
-  pages = pkgs.conix.buildPages [foo bar baz bang blue];
+  pages = pkgs.conix.buildPages [ blue ];
 
   pdf = pkgs.conix.build.pdf "test-pdf" [ pages.foo pages.bar pages.baz.bang pages.blue.bell ];
 in

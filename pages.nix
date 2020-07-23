@@ -18,32 +18,29 @@ self: super:
 
     text = path: text: textWith path (_: text);
 
+    t = pureModule;
+
     textsWith = path: f: modules:
-      let
-        mergeTextOrModule = m: moduleOrText:
-          if builtins.isString moduleOrText 
-          then mergeModules m (pureModule moduleOrText)
-          else mergeModules m moduleOrText;
-      in
-        setPageFromModule path
-        ( nestModules path 
-          (builtins.foldl' mergeTextOrModule emptyModule (f modules))
-        ) modules;
+      setPageFromModule path 
+      ( mapModules (nestModules path)
+      ( foldModules (f modules)
+      )) modules;
 
     texts = path: textsAndModules: textsWith path (_: textsAndModules);
 
+    # { fst, snd}
+    # { modules; text }
     buildPageSet = module: self.lib.fix (pgs: (module pgs).modules);
 
     # nests all of the pages for a module under the given path
-    nestModules = path: module: modules:
-      let
-        pagesAndText = module modules;
-      in
-        { modules = setPageAt path pagesAndText.modules; text = pagesAndText.text; };
+    nestModules = path: modules: setPageAt path modules; 
 
     # takes the text produced by a module and creates text page and
     # merges it into the current pages. The text does not change.
-    setPageFromModule = path: module: bindModule module (text path);
+    #
+    # Path -> Module Text -> Module Text
+    # Text -> Module Text
+    setPageFromModule = path: m: bindModule m (text path); 
 
     mergeModules = modulesA: modulesB: modules: 
       let
@@ -64,6 +61,12 @@ self: super:
 
     pagesModule = modules: _: { inherit modules; text = ""; };
 
+    mapModules = f: module: modules:
+      let
+        pagesAndText = module modules;
+      in
+        { modules = f pagesAndText.modules; text = pagesAndText.text; };
+
     bindModule = module: f: modules:
       let
         pagesAndText = module modules;
@@ -73,9 +76,11 @@ self: super:
 
     setAt = path: val: pagesModule (setPageAt path val); 
 
-    collectModules = builtins.foldl' mergeModules emptyModule;
+    foldModules = builtins.foldl' mergeModules emptyModule;
 
-    buildPages = modules: buildPageSet (collectModules modules); 
+    foldMapModules = f: builtins.foldl' (m: x: mergeModules m (f x)) emptyModule;
+
+    buildPages = modules: buildPageSet (foldModules modules); 
 
     # foldl for recursive attribute sets with paths being sent to a handler;
     # TODO: move this to a util file
