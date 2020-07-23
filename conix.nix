@@ -1,4 +1,4 @@
-[ (import ./builder/markdown.nix)
+[ (import ./pages.nix)
+  (import ./builder/markdown.nix)
   (import ./builder/pdf.nix) 
-  (import ./pages.nix)
 ]

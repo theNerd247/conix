@@ -1,3 +1,6 @@
+with (import <nixpkgs> { overlays = import ./conix.nix; }).conix; 
+
+build.markdownFile "readme" (texts [ "readme" ] [ '' 
 # Conix
 
 Conix is a template language embedded in the nix programing language. It aims
@@ -32,18 +35,18 @@ let
 in
   with pkgs.conix;
 
-  builders.pdf.build (page "Volunteers" (pages: [(text ''
+  builders.pdf.build (page "Volunteers" (pages: [(text '''
     # Volunteer Handbook
 
     ## Emergency Plan
 
-    Incase of an emergency please contact: ${pages.Volunteers.contacts.Jingle.Name} at ${pages.Volunteers.contacts.Jingle.Phone}
+    Incase of an emergency please contact: ''${pages.Volunteers.contacts.Jingle.Name} at ''${pages.Volunteers.contacts.Jingle.Phone}
 
     ## Volunteer Contacts 
 
-    We still need ${8 - (builtins.length pages.Volunteers.contacts.rows)} volunteers. 
+    We still need ''${8 - (builtins.length pages.Volunteers.contacts.rows)} volunteers. 
 
-    '')
+    ''')
     (table "contacts" 
       { header = ["Name"   "Phone" ];
         rows  = [["John"   "555-123-4563"]
@@ -52,9 +55,9 @@ in
                 ];
       }
     )
-    (text ''
+    (text '''
 
-    '')
+    ''')
   ]))
 ```
 
@@ -91,3 +94,5 @@ programming.
 * [Pollen][1] a turing complete typesetting language written in Racket.
 
 [1]: https://docs.racket-lang.org/pollen/
+''
+])
