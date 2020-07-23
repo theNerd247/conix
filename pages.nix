@@ -26,7 +26,15 @@ self: super:
       ( foldModules (f modules)
       )) modules;
 
-    texts = path: textsAndModules: textsWith path (_: textsAndModules);
+    # NOTE: do not call this if the strings could contain interpolations
+    # containing references to the final page set. This will result in infinite
+    # recursion
+    textOrModuleToModule = tOrM: 
+      if builtins.isString tOrM
+      then pureModule tOrM 
+      else tOrM;
+
+    texts = path: textsAndModules: textsWith path (_: builtins.map textOrModuleToModule textsAndModules);
 
     # { fst, snd}
     # { modules; text }

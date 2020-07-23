@@ -42,11 +42,15 @@ let
     (t '' Some more text in blue: ${pages.a.b.text} '')
   ]);
 
-  pages = pkgs.conix.buildPages [ blue ];
+  pages = pkgs.conix.buildPages [ foo bar baz bang blue ];
 
-  pdf = pkgs.conix.build.pdf "test-pdf" [ pages.foo pages.bar pages.baz.bang pages.blue.bell ];
+  buildPages = [ pages.foo pages.bar pages.baz.bang pages.a ];
+
+  pdf = pkgs.conix.build.pdf "test-pdf" buildPages;
+
+  md = pkgs.conix.build.markdown "test-md" buildPages;
 in
-  { inherit pdf;
-    inherit pages;
+  { inherit pages;
+    testDocs = pkgs.symlinkJoin { name = "testDocs"; paths = [ pdf md ]; };
   }
 
