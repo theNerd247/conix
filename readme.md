@@ -8,59 +8,57 @@ really anything.
 
 Compare the following markdown content to the same document written in conix.
 
-```
+#### Markdown Sample
+```markdown
 # Volunteer Handbook
 
 ## Emergency Plan
 
-Incase of an emergency please contact: Jingle at 555-231-7589 
+Incase of an emergency please contact: 
+John at 555-123-4563
 
 ## Volunteer Contacts 
 
-We still need 4 volunteers. 
+We still need 5
+volunteers. 
 
-Name   | Phone
----    | ---
-John   | 555-123-4563
-Jacob  | 555-321-9872
+Name | Phone
+--- | ---
+Jacob | 555-321-9872
 Jingle | 555-231-7589
+John | 555-123-4563
 ```
 
+#### Conix Sample 
 ```nix
-let
-  pkgs = (import <nixpkgs>) { overlays = [ (import ./co.nix) ]; };
-in
-  with pkgs.conix;
+with (import <nixpkgs> { overlays = import ../conix.nix; }).conix; 
 
-  builders.pdf.build (page "Volunteers" (pages: [(text ''
-    # Volunteer Handbook
+build.pdfFile "Volunteers" textsWith (pages: [ (t 
+''# Volunteer Handbook
 
-    ## Emergency Plan
+## Emergency Plan
 
-    Incase of an emergency please contact: ${pages.Volunteers.contacts.Jingle.Name} at ${pages.Volunteers.contacts.Jingle.Phone}
+Incase of an emergency please contact: 
+${pages.contacts.row2.col0.text} at ${pages.contacts.row2.col1.text}
 
-    ## Volunteer Contacts 
+## Volunteer Contacts 
 
-    We still need ${8 - (builtins.length pages.Volunteers.contacts.rows)} volunteers. 
+We still need ${builtins.toString (8 - pages.contacts.rows.length)}
+volunteers. 
 
-    '')
-    (table "contacts" 
-      { header = ["Name"   "Phone" ];
-        rows  = [["John"   "555-123-4563"]
-                 ["Jacob"  "555-321-9872"]
-                 ["Jingle" "555-231-7589"]
-                ];
-      }
-    )
-    (text ''
+'')
+(table [ "contacts" ]
+    ["Name"   "Phone" ]
+   (sortRows [["John"   "555-123-4563"]
+    ["Jacob"  "555-321-9872"]
+    ["Jingle" "555-231-7589"]
+   ])
+)
+])
 
-    '')
-  ]))
 ```
 
-<!-- TODO: is it best to have a list of reasons why markdown fails? -->
-
-Yup! You guessed it - the markdown syntax is simpler. And that's the problem.
+Yup! You guessed it - the markdown syntax is simpler[^1]. And that's the problem.
 It's deceptively too simple. Here's a list of problems when dealing with
 traditional markdown-based content:
 
@@ -89,5 +87,9 @@ programming.
 # Related Works
 
 * [Pollen][1] a turing complete typesetting language written in Racket.
+
+[^1]: This readme file was generated using conix! And the sample source code
+  you see there can be found at `./readme/sample.nix` and the markdown above it
+  was produces by building the sample.nix file.
 
 [1]: https://docs.racket-lang.org/pollen/
