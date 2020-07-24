@@ -11,10 +11,12 @@ really anything.
 
 Compare the following markdown content to the same document written in conix.
 
+#### Markdown Sample
 ```markdown
 ${builtins.readFile "${import ./sample.nix}/Volunteers.md"}
 ```
 
+#### Conix Sample 
 ```nix
 ${builtins.readFile ./sample.nix}
 ```
@@ -48,8 +50,6 @@ programming.
 # Related Works
 
 * [Pollen][1] a turing complete typesetting language written in Racket.
-
----
 
 [^1]: This readme file was generated using conix! And the sample source code
   you see there can be found at `./readme/sample.nix` and the markdown above it
