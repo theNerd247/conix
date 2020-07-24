@@ -53,9 +53,15 @@ let
 
   pages = pkgs.conix.buildPages [ tbl ];
 
-  builtPages = [ tbl ];
+  xx = pkgs.conix.single pkgs.conix.textsWith (p: [
+    (pkgs.conix.t ''foo
+    '')
+    tbl
+  ]);
 
-  pdf = pkgs.conix.build.pdf "test-pdf" builtPages;
+  builtPages = [ xx ];
+
+  pdf = with pkgs.conix; build.pdfFile "test-pdf" textsWith (p: [ (t "asdf") ]);
 
   md = pkgs.conix.build.markdown "test-md" builtPages;
 in

@@ -47,9 +47,12 @@ self: super:
     # This is to make creating single page page sets a convenience and
     # should be used with functions that create a page nested under a
     # given path (like text, textWith, texts, or textsWith).
+    #
+    # NOTE: this assumes the function will produce a module where the pages 
+    # attribute set is a single page. 
     single 
       # (Path -> a -> Module a) -> a -> Page
-      = mkModule: a: (runModule (mkModule [ "x" ] a)).x;
+      = mkModule: a: runModule (mkModule [] a);
 
     runModule 
       # Module a -> Pages
@@ -95,7 +98,7 @@ self: super:
     # Set a pure value
     setValue 
       # Path -> a -> Module a
-      = path: val: _: newModuleResult (nest path val) val;
+      = path: val: _: newModuleResult (nest path val) (builtins.toString val);
 
     # Sets the text of a module the empty string
     hidden 

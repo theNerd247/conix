@@ -60,5 +60,9 @@ with super.conix;
         (t: if colIx == 0 then t else " | " + t)
         (text [ "col${builtins.toString colIx}" ] colText);
 
+    sortRows =  
+      builtins.sort (a: b: 
+        (builtins.elemAt a 0) < (builtins.elemAt b 0)
+      );
   };
 }
