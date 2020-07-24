@@ -42,10 +42,14 @@ let
     (t ''\n\nSome more text in blue: ${pages.a.b.text} '')
   ]);
 
-  tbl = pkgs.conix.table [ "t" ] [ "X" "Y" "Z = X+Y" ] 
+  trows = 
     [ [ 1 2 3 ]
       [ 4 5 9 ]
     ];
+
+  theaders = [ "X" "Y" "Z = X+Y" ];
+
+  tbl = pkgs.conix.table [ "t" ] theaders trows;
 
   pages = pkgs.conix.buildPages [ tbl ];
 
@@ -58,6 +62,6 @@ in
   { inherit pages;
     testDocs = pkgs.symlinkJoin { name = "testDocs"; paths = [ pdf md ]; };
     inherit (pkgs) conix;
-    c = (pkgs.conix.rowToModule 2 [ "asdf" "bqwe" ]) {};
+    c = tbl {};
   }
 

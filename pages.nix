@@ -8,8 +8,12 @@ self: super:
       = path: bindReader (text path);
 
     text 
-      # Path -> Text -> Module
-      = path: text: _: newModuleResult (nest path (newPage text)) text;
+      # (ToText a) => Path -> a -> Module
+      = path: text: _: 
+        let 
+          pg = newPage text; 
+        in
+          newModuleResult (nest path pg) pg.text;
 
     textsWith 
       # Path -> (Pages -> [ Either Text Module ]) -> Module
