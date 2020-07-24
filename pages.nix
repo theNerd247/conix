@@ -19,7 +19,7 @@ self: super:
       # Path -> [ Either Text (Module Text) ] -> Module Text
       = path: textOrModules: 
         createPageFromModule path 
-        (mapPages (nest path) 
+        (nestModule path
           (foldMapModules valOrModuleToModule textOrModules)
         ); 
 
@@ -98,6 +98,11 @@ self: super:
       # Module a -> Module Text
       = mapVal (_: "");
 
+    # Nest the pages under a path for a given module
+    nestModule
+      # Path -> Module a -> Module a
+      = path: mapPages (nest path);
+
     nest 
       # Path -> a -> Pages 
       = self.lib.attrsets.setAttrByPath;
@@ -138,5 +143,14 @@ self: super:
     foldMapModules 
       # (a -> Module Text) -> [ a ] -> Module Text
       = f: builtins.foldl' (m: x: mergeModules m (f x)) emptyModule;
+
+    foldMapModulesIx 
+      # (Natural -> a -> Module Text) -> [a] -> Module Text
+      = f: foldlIx (ix: m: x: mergeModules m (f ix x)) emptyModule;
+
+    foldlIx 
+      # (Natural -> b -> a -> b) -> b -> [a] -> b
+      = f: initB: as: 
+        (builtins.foldl' ({ix, b}: a: {ix = ix+1; b = f ix b a; }) {ix = 0; b = initB;} as).b;
   };
 }

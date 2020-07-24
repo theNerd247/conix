@@ -1,6 +1,6 @@
 with (import <nixpkgs> { overlays = import ./conix.nix; }).conix; 
 
-build.markdownFile "readme" (texts [ '' 
+build.markdownFile "readme" texts [ '' 
 # Conix
 
 Conix is a template language embedded in the nix programing language. It aims
@@ -11,54 +11,13 @@ really anything.
 
 Compare the following markdown content to the same document written in conix.
 
-```
-# Volunteer Handbook
-
-## Emergency Plan
-
-Incase of an emergency please contact: Jingle at 555-231-7589 
-
-## Volunteer Contacts 
-
-We still need 4 volunteers. 
-
-Name   | Phone
----    | ---
-John   | 555-123-4563
-Jacob  | 555-321-9872
-Jingle | 555-231-7589
+```markdown
+'')# TODO: replace with the result of building the markdown of the sample
+(t ''
 ```
 
 ```nix
-let
-  pkgs = (import <nixpkgs>) { overlays = [ (import ./co.nix) ]; };
-in
-  with pkgs.conix;
-
-  builders.pdf.build (page "Volunteers" (pages: [(text '''
-    # Volunteer Handbook
-
-    ## Emergency Plan
-
-    Incase of an emergency please contact: ''${pages.Volunteers.contacts.Jingle.Name} at ''${pages.Volunteers.contacts.Jingle.Phone}
-
-    ## Volunteer Contacts 
-
-    We still need ''${8 - (builtins.length pages.Volunteers.contacts.rows)} volunteers. 
-
-    ''')
-    (table "contacts" 
-      { header = ["Name"   "Phone" ];
-        rows  = [["John"   "555-123-4563"]
-                 ["Jacob"  "555-321-9872"]
-                 ["Jingle" "555-231-7589"]
-                ];
-      }
-    )
-    (text '''
-
-    ''')
-  ]))
+${readFile "./sample.nix}
 ```
 
 <!-- TODO: is it best to have a list of reasons why markdown fails? -->
@@ -95,4 +54,4 @@ programming.
 
 [1]: https://docs.racket-lang.org/pollen/
 ''
-])
+]

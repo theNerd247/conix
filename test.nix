@@ -42,9 +42,14 @@ let
     (t ''\n\nSome more text in blue: ${pages.a.b.text} '')
   ]);
 
-  pages = pkgs.conix.buildPages [ foo bar baz bang blue ];
+  tbl = pkgs.conix.table [ "t" ] [ "X" "Y" "Z = X+Y" ] 
+    [ [ 1 2 3 ]
+      [ 4 5 9 ]
+    ];
 
-  builtPages = [ pages.foo pages.bar pages.baz.bang pages.a ];
+  pages = pkgs.conix.buildPages [ tbl ];
+
+  builtPages = [ tbl ];
 
   pdf = pkgs.conix.build.pdf "test-pdf" builtPages;
 
@@ -53,5 +58,6 @@ in
   { inherit pages;
     testDocs = pkgs.symlinkJoin { name = "testDocs"; paths = [ pdf md ]; };
     inherit (pkgs) conix;
+    c = (pkgs.conix.rowToModule 2 [ "asdf" "bqwe" ]) {};
   }
 

@@ -1,3 +1,3 @@
 [ (import ./pages.nix)
-  (import ./builder)
-]
+  (import ./table.nix)
+] ++ (import ./builder)

@@ -23,6 +23,8 @@ self: super:
                 cp ${outFileName} $out/${outFileName}
               '';
           };
+
+      pdfFile = name: mkModule: a: pdf name [(super.conix.single mkModule a)];
     };
   };
 }
