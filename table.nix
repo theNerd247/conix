@@ -9,12 +9,12 @@ with super.conix;
       # Path -> [ Text ] -> [[Text]] -> Module Text
       = path: headers: rows: 
       let
-        tablePages =
-          let
-            headers = mkHeaders headers;
-            rows = foldMapModulesIx rowToModule rows;
-          in
-            createPageFromModule path (mergeModules headers rows);
+        hdrs = mkHeaders headers;
+
+        tblContents = foldMapModulesIx rowToModule rows;
+
+        tbl =
+          createPageFromModule [] (mergeModules hdrs tblContents);
 
         rowsLength = 
           hidden (setValue [ "rows" "length" ] (builtins.length rows));
@@ -22,14 +22,14 @@ with super.conix;
         colsLength =
           hidden (setValue [ "cols" "length" ] (builtins.length headers));
       in
-        foldModules [ tablePages rowsLength colsLength ];
+        nestModule path (foldModules [ tbl rowsLength colsLength ]);
 
     mkHeaders = headers:
       let
         headerSep = builtins.concatStringsSep " | " (builtins.map (x: "---") headers); 
       in
         (nestModule [ "headers"  ] 
-          (mapVal (t: t + headerSep) (foldMapModulesIx cellToModule headers))
+          (mapVal (t: t + "\n" + headerSep) (foldMapModulesIx cellToModule headers))
         );
 
     #TODO: add generating modules where the page keys are
