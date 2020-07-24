@@ -3,126 +3,132 @@ self: super:
 { conix = (super.conix or {}) //
   rec
   { 
-    newModule = text: { inherit text; };
+    textWith 
+      # Path -> (Pages -> Text) -> Module
+      = path: bindReader (text path);
 
-    isPage = x: x ? text;
+    text 
+      # Path -> Text -> Module
+      = path: text: _: newModuleResult (nest path (newPage text)) text;
 
-    textModule_ = path: text:
-      setPageAt path (newModule text);
+    textsWith 
+      # Path -> (Pages -> [ Either Text Module ]) -> Module
+      = path: bindReader (texts path);
 
-    textWith = path: f: modules: 
-      let 
-        text = f modules;
-      in
-        { modules = textModule_ path text; inherit text; };
+    texts 
+      # Path -> [ Either Text (Module Text) ] -> Module Text
+      = path: textOrModules: 
+        createPageFromModule path 
+        (mapPages (nest path) 
+          (foldMapModules valOrModuleToModule textOrModules)
+        ); 
 
-    text = path: text: textWith path (_: text);
+    # NOTE: do not call this if the strings could contain interpolations that
+    # contain references to the final page set. This will result in infinite
+    # recursion
+    valOrModuleToModule 
+      # Either a (Module a) -> Module a
+      = tOrM: if builtins.isFunction tOrM then tOrM else pureModule tOrM;
 
+    # This is re-exported to make the UI easier for users who use textsWith
+    # Hopefully I can find a better fix for the string builtins.isString
+    # problem (see github issue #2).
     t = pureModule;
 
-    textsWith = path: f: modules:
-      setPageFromModule path 
-      ( mapModules (nestModules path)
-      ( foldModules (f modules)
-      )) modules;
+    buildPages 
+      # [ Module a ] -> Pages
+      = modules: runModule (foldModules modules); 
 
-    # NOTE: do not call this if the strings could contain interpolations
-    # containing references to the final page set. This will result in infinite
-    # recursion
-    textOrModuleToModule = tOrM: 
-      if builtins.isString tOrM
-      then pureModule tOrM 
-      else tOrM;
+    runModule 
+      # Module a -> Pages
+      = module: self.lib.fix (pgs: (module pgs).pages);
 
-    texts = path: textsAndModules: textsWith path (_: builtins.map textOrModuleToModule textsAndModules);
+    createPageFromModule 
+      # Path -> Module Text -> Module Text
+      = path: bindModule (text path); 
 
-    # { fst, snd}
-    # { modules; text }
-    buildPageSet = module: self.lib.fix (pgs: (module pgs).modules);
-
-    # nests all of the pages for a module under the given path
-    nestModules = path: modules: setPageAt path modules; 
-
-    # takes the text produced by a module and creates text page and
-    # merges it into the current pages. The text does not change.
-    #
-    # Path -> Module Text -> Module Text
-    # Text -> Module Text
-    setPageFromModule = path: m: bindModule m (text path); 
-
-    mergeModules = modulesA: modulesB: modules: 
+    mergeModules 
+      # Module Text -> Module Text -> Module Text
+      = moduleA: moduleB: pages: 
       let
-        modulesAndTextA = modulesA modules;
-        modulesAndTextB = modulesB modules;
+        rA = moduleA pages;
+        rB = moduleB pages;
       in
-        { modules = mergePages modulesAndTextA.modules modulesAndTextB.modules;
-          text = modulesAndTextA.text + modulesAndTextB.text;
-        };
+        newModuleResult (mergePages rA.pages rB.pages) (rA.val + rB.val);
 
-    mergePages = self.lib.attrsets.recursiveUpdate;
+    newPage 
+      # (ToString a) => a -> Page
+      = x: { text = builtins.toString x; };
 
-    setPageAt = self.lib.attrsets.setAttrByPath;
+    mergePages 
+      # Pages -> Pages -> Pages
+      = self.lib.attrsets.recursiveUpdate;
 
-    emptyModule = _: { modules = {}; text = ""; };
+    emptyModule 
+      # Module Text
+      = _: { pages = {}; val = ""; };
 
-    pureModule = text: _: { modules = {}; inherit text; };
+    pureModule 
+      # a -> Module a
+      = val: _: { pages = {}; inherit val; };
 
-    pagesModule = modules: _: { inherit modules; text = ""; };
+    pagesModule 
+      # Pages -> Module Text
+      = pages: _: { inherit pages; val = ""; };
 
-    mapModules = f: module: modules:
+    newModuleResult 
+      # Pages -> a -> Module a
+      = pages: val: { inherit pages; inherit val; };
+
+    # Set a pure value
+    setValue 
+      # Path -> a -> Module a
+      = path: val: _: newModuleResult (nest path val) val;
+
+    # Sets the text of a module the empty string
+    hidden 
+      # Module a -> Module Text
+      = mapVal (_: "");
+
+    nest 
+      # Path -> a -> Pages 
+      = self.lib.attrsets.setAttrByPath;
+
+    mapVal 
+      # (a -> b) -> Module a -> Module b
+      = f: module: pages:
       let
-        pagesAndText = module modules;
+        pagesAndText = module pages; 
       in
-        { modules = f pagesAndText.modules; text = pagesAndText.text; };
+        newModuleResult pagesAndText.pages (f pagesAndText.val);
 
-    bindModule = module: f: modules:
+    mapPages 
+      # (Pages -> Pages) -> Module a -> Module a
+      = f: module: pages:
+        let
+          pagesAndText = module pages;
+        in
+          newModuleResult (f pagesAndText.pages) (pagesAndText.val);
+
+    bindReader 
+      # (a -> Pages -> b) -> (Pages -> a) -> Pages -> b
+      = g: f: pages: g (f pages) pages;
+
+    bindModule 
+      # (a -> Module b) -> Module a -> Module b
+      = f: module: pages:
       let
-        pagesAndText = module modules;
-        res = f pagesAndText.text modules;
+        pagesAndText = module pages;
+        res = f pagesAndText.val pages;
       in
-        { modules = mergePages pagesAndText.modules res.modules; text = res.text; };
+        newModuleResult (mergePages pagesAndText.pages res.pages) (res.val);
 
-    setAt = path: val: pagesModule (setPageAt path val); 
+    foldModules 
+      # [ Module Text ] -> Module Text
+      = foldMapModules (x: x);
 
-    foldModules = builtins.foldl' mergeModules emptyModule;
-
-    foldMapModules = f: builtins.foldl' (m: x: mergeModules m (f x)) emptyModule;
-
-    buildPages = modules: buildPageSet (foldModules modules); 
-
-    # foldl for recursive attribute sets with paths being sent to a handler;
-    # TODO: move this to a util file
-    recAttrFold = pred: f: initB:
-      let
-          # If true recAttrFold will NOT recurse into a nested attribute set.
-          # (AttrSet -> Bool)  
-          # Fold handler. 
-          #  * `b` is the current final value, `rev
-          #  * `ReversedPath` is the path from the top of the attribute set down to the value being evaluated in reverse order.
-          #    for example: when the y value is passed to the handler where ({ x = { y = 3; }; }) the path will be [ "y" "x" ].
-          #    this is so the handler can easily grab the "current" attribute name via builtins.head instead of a more
-          #    complex function to grab the last element in a list.
-          #  * `Either a b` is either a leaf value in the attribute set OR the
-          #    result after recursing into a nested attribute set (assuming the
-          #    predicate returns false)
-          # -> (b -> ReversedPath -> Either a b -> b) 
-          # The initial fold value
-          # -> b 
-          # The attribute set to fold over
-          # -> AttrSet a 
-          # -> b
-          recAttrFold_ = init: attrSet:
-            let
-              recF = {b, path}: name: 
-                let
-                  p = [name] ++ path; 
-                  v_ = attrSet."${name}";
-                  v = if builtins.isAttrs v_ && ! pred v_ then recAttrFold_ { b = init.b; path = p; } v_ else v_;
-                in
-                  { b = f b p v; inherit path; };
-            in
-              (builtins.foldl' recF init (builtins.attrNames attrSet)).b;
-      in
-        recAttrFold_ { b = initB; path = []; };
+    foldMapModules 
+      # (a -> Module Text) -> [ a ] -> Module Text
+      = f: builtins.foldl' (m: x: mergeModules m (f x)) emptyModule;
   };
 }

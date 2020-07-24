@@ -21,7 +21,7 @@ let
     ${pages.foo.text} 
   '');
 
-  baz = pkgs.conix.setAt [ "baz" "joe" ] 3;
+  baz = pkgs.conix.setValue [ "baz" "joe" ] 3;
 
   bang = pkgs.conix.texts [ "baz" "bang" ] [''
     # Bang Title! 
@@ -37,12 +37,12 @@ let
   blue = with pkgs.conix; textsWith [ "a" ] (pages: [
     (t '' # Blue Title '') 
 
-    (pkgs.conix.text [ "b" ] "blue-data")
+    (pkgs.conix.hidden (pkgs.conix.text [ "b" ] "blue-data"))
 
-    (t '' Some more text in blue: ${pages.a.b.text} '')
+    (t ''\n\nSome more text in blue: ${pages.a.b.text} '')
   ]);
 
-  pages = pkgs.conix.builtPages [ foo bar baz bang blue ];
+  pages = pkgs.conix.buildPages [ foo bar baz bang blue ];
 
   builtPages = [ pages.foo pages.bar pages.baz.bang pages.a ];
 
@@ -52,5 +52,6 @@ let
 in
   { inherit pages;
     testDocs = pkgs.symlinkJoin { name = "testDocs"; paths = [ pdf md ]; };
+    inherit (pkgs) conix;
   }
 
