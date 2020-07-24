@@ -1,4 +1,4 @@
 [ 
   (import ./markdown.nix)
-  (import ./pdf.nix) 
+  (import ./pandoc.nix) 
 ] 

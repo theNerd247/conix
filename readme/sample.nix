@@ -1,8 +1,7 @@
 with (import <nixpkgs> { overlays = import ../conix.nix; }).conix; 
 
-build.pdfFile "Volunteers" textsWith (pages: [ (t '' 
-
-# Volunteer Handbook
+build.pdfFile "Volunteers" textsWith (pages: [ (t 
+''# Volunteer Handbook
 
 ## Emergency Plan
 

@@ -1,6 +1,6 @@
-with (import <nixpkgs> { overlays = import ./conix.nix; }).conix; 
+with (import <nixpkgs> { overlays = import ../conix.nix; }).conix; 
 
-build.markdownFile "readme" texts [ '' 
+build.htmlFile "readme" text '' 
 # Conix
 
 Conix is a template language embedded in the nix programing language. It aims
@@ -12,17 +12,14 @@ really anything.
 Compare the following markdown content to the same document written in conix.
 
 ```markdown
-'')# TODO: replace with the result of building the markdown of the sample
-(t ''
+${builtins.readFile "${import ./sample.nix}/Volunteers.md"}
 ```
 
 ```nix
-${readFile "./sample.nix}
+${builtins.readFile ./sample.nix}
 ```
 
-<!-- TODO: is it best to have a list of reasons why markdown fails? -->
-
-Yup! You guessed it - the markdown syntax is simpler. And that's the problem.
+Yup! You guessed it - the markdown syntax is simpler[^1]. And that's the problem.
 It's deceptively too simple. Here's a list of problems when dealing with
 traditional markdown-based content:
 
@@ -52,6 +49,11 @@ programming.
 
 * [Pollen][1] a turing complete typesetting language written in Racket.
 
+---
+
+[^1]: This readme file was generated using conix! And the sample source code
+  you see there can be found at `./readme/sample.nix` and the markdown above it
+  was produces by building the sample.nix file.
+
 [1]: https://docs.racket-lang.org/pollen/
 ''
-]

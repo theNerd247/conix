@@ -3,10 +3,10 @@ self: super:
 { conix = (super.conix or {}) // 
   { build = (super.conix.build or {}) //
     rec
-    { pdf = name: pages:
+    { pandoc = outType: name: pages:
         let
           pandoc = self.pandoc;
-          outFileName = "${name}.pdf";
+          outFileName = "${name}.${outType}";
           contents = super.conix.build.markdown name pages;
         in
           self.stdenv.mkDerivation
@@ -21,10 +21,13 @@ self: super:
               ''
                 mkdir -p $out
                 cp ${outFileName} $out/${outFileName}
+                cp ${contents}/${name}.md $out/${name}.md
               '';
           };
 
-      pdfFile = name: mkModule: a: pdf name [(super.conix.single mkModule a)];
+      pandocFile = outType: name: mkModule: a: pandoc outType name [(super.conix.single mkModule a)];
+      pdfFile = pandocFile "pdf";
+      htmlFile = pandocFile "html";
     };
   };
 }
