@@ -6,8 +6,8 @@ self: super:
     { markdown = name: pages:
         self.writeTextDir "${name}.md" (builtins.concatStringsSep "\n" (builtins.map (p: p.text) pages));
 
-      markdownFile = name: module:
-        markdown name (builtins.attrValues (super.conix.buildPageSet module));
+      makdownFile = name: mkModule:
+        markdown name [ (super.conix.single mkModule) ];
     };
   };
 }

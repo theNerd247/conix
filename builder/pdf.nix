@@ -2,6 +2,7 @@ self: super:
 
 { conix = (super.conix or {}) // 
   { build = (super.conix.build or {}) //
+    rec
     { pdf = name: pages:
         let
           pandoc = self.pandoc;

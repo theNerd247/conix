@@ -1,6 +1,6 @@
 with (import <nixpkgs> { overlays = import ./conix.nix; }).conix; 
 
-build.markdownFile "readme" (texts [ "readme" ] [ '' 
+build.markdownFile "readme" (texts [ '' 
 # Conix
 
 Conix is a template language embedded in the nix programing language. It aims

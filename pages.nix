@@ -39,6 +39,14 @@ self: super:
       # [ Module a ] -> Pages
       = modules: runModule (foldModules modules); 
 
+    # Run a single module and extract the resulting page.
+    # This is to make creating single page page sets a convenience and
+    # should be used with functions that create a page nested under a
+    # given path (like text, textWith, texts, or textsWith).
+    single 
+      # (Path -> a -> Module a) -> a -> Page
+      = mkModule: a: (runModule (mkModule [ "x" ] a)).x;
+
     runModule 
       # Module a -> Pages
       = module: self.lib.fix (pgs: (module pgs).pages);
