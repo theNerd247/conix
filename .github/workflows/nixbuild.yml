@@ -28,9 +28,9 @@ jobs:
     # Runs a set of commands using the runners shell
     - name: Rebuild readme.md
       run: |
-        ./scripts/mkReadme.sh \
-        git config user.name github-actions \
-        git config user.email github-actions@github.com \
-        git add ./readme.md \
-        git commit -m "updates readme.md" \
+        ./scripts/mkReadme.sh
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add ./readme.md
+        git commit -m "updates readme.md"
         git push
