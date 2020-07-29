@@ -1,16 +1,16 @@
 with (import <nixpkgs> { overlays = import ../conix.nix; }).conix; 
 
-build.pdfFile "Volunteers" (pages: texts [] [
+build.pdfFile "Volunteers" (conix: texts [] [
 ''# Volunteer Handbook
 
 ## Emergency Plan
 
 Incase of an emergency please contact: 
-''(pages.textOf [ "contacts" "row2" "col0" ]) ''
+''(conix.textOf [ "contacts" "row2" "col0" ]) ''
 
 ## Volunteer Contacts 
 
-We still need''(pureModule (builtins.toString (8 - pages.contacts.rows.length)))''
+We still need''(conix.pureModule (builtins.toString (8 - conix.pages.contacts.rows.length)))''
 volunteers. 
 
 ''
