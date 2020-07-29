@@ -37,12 +37,20 @@ self: super:
 
     runModule 
       # (Pages -> Module a) -> Pages
-      = f: self.lib.fix (pgs: (mergeModules (textOf pgs) (f pgs)).pages);
+      = f:
+        let
+          toplevel = pgs: (addons pgs) // (f pgs);
+        in
+          self.lib.fix toplevel;
 
-    textOf
-    = pages: setValue ["textOf"] 
-      (path: pureModule (super.lib.attrsets.getAttrFromPath (path ++ [ "text" ]) pages)
-      );
+    # these are conix library functions that depend on the toplevel pages
+    addons
+    = pages:
+      rec
+      { 
+        textOf = path: at (path ++ [ "text" ]);
+        at = path: pureModule (super.lib.attrsets.getAttrFromPath (["pages"] ++ path) pages);
+      };
 
     createPageFromModule 
       # Path -> Module Text -> Module Text

@@ -34,25 +34,31 @@ let
     ...and after text
   ''];
 
-  blue = pages: with pkgs.conix; texts [ "a" ] [
+  blue = conix: with pkgs.conix; texts [ "a" ] [
     '' # Blue Title 
 
     ''(hidden (text [ "b" ] "blue-data"))''
 
       
-    Some more text in blue: ''(pages.textOf ["a" "b"])
+    Some more text in blue: ''(conix.textOf [ "a" "b"])''
+
+    and a table!: 
+
+    ''(table ["s"] ["x"] [["y"]])''
+
+    The end: ''(conix.textOf [ "a" "s" "row0" "col0"])
   ];
 
   trows = 
-    [ [ 1 2 3 ]
+    [ [ 40 2 42 ]
       [ 4 5 9 ]
     ];
 
   theaders = [ "X" "Y" "Z = X+Y" ];
 
-  tbl = pkgs.conix.table [ "t" ] theaders trows;
+  tbl =  pkgs.conix.table [ "t" ] theaders trows;
 
-  pages = pkgs.conix.runModule blue;
+  pages = pkgs.conix.buildPages [ blue (p: tbl) ];
 
   xx = (pkgs.conix.single pkgs.conix.texts) [
     "foo"
