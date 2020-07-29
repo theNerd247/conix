@@ -26,7 +26,7 @@ self: super:
           };
 
       pandocFile = outType: name: mkModule:
-        with super.conix; pandoc outType name [ (runModule mkModule).pages ];
+        with super.conix; pandoc outType name [ (runModule mkModule) ];
       pdfFile = pandocFile "pdf";
       htmlFile = pandocFile "html";
     };

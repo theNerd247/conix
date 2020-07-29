@@ -7,7 +7,34 @@ let
   # this is the toplevel agreggation of the modules in question
   pkgs = import <nixpkgs> { overlays = (import ./conix.nix); };
 
-  pages = (pkgs.conix.buildPages [ toplevel foo bar baz bang blue tbl ]).pages;
+  pages = pkgs.conix.buildPages [ toplevel foo bar baz bang blue tbl ];
+
+  pdf = pkgs.conix.build.pdfFile "foo" (conix: conix.text [] "asdf");
+
+  toplevel = conix: conix.texts [] [
+    ''
+      # Document Header
+
+      ## Foo
+
+      ''(conix.textOf ["foo"])''
+
+      ## Bar
+
+      ''(conix.textOf ["bar"])''
+
+      ## Bang
+
+      ''(conix.textOf ["baz" "bang"])''
+
+      ## Blue
+
+      ''(conix.textOf ["blue"])''
+
+      ## Table
+
+      ''(conix.textOf ["t"])''
+    ''];
 
   #everything below this could be placed in its own file
   foo = conix: conix.text [ "foo" ]
@@ -64,33 +91,9 @@ let
 
   tbl = conix: conix.table [ "t" ] theaders trows;
 
-  toplevel = conix: conix.text []
-    ''
-      # Document Header
-
-      ## Foo
-
-      ${conix.pages.foo.text}
-
-      ## Bar
-
-      ${conix.pages.bar.text}
-
-      ## Bang
-
-      ${conix.pages.baz.bang.text}
-
-      ## Blue
-
-      ${conix.pages.blue.text}
-
-      ## Table
-
-      ${conix.pages.t.text}
-    '';
-
 
 in
   { inherit pages;
     inherit (pkgs) conix;
+    inherit pdf;
   }

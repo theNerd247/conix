@@ -1,6 +1,6 @@
-with (import <nixpkgs> { overlays = import ../conix.nix; }).conix; 
+(import <nixpkgs> { overlays = import ../conix.nix; }).conix.build.pdfFile "Volunteers" 
 
-build.pdfFile "Volunteers" (conix: texts [] [
+(conix: conix.texts [] [
 ''# Volunteer Handbook
 
 ## Emergency Plan
@@ -14,9 +14,9 @@ We still need''(conix.pureModule (builtins.toString (8 - conix.pages.contacts.ro
 volunteers. 
 
 ''
-(table [ "contacts" ]
+(conix.table [ "contacts" ]
     ["Name"   "Phone" ]
-   (sortRows [["John"   "555-123-4563"]
+   (conix.sortRows [["John"   "555-123-4563"]
     ["Jacob"  "555-321-9872"]
     ["Jingle" "555-231-7589"]
    ])
