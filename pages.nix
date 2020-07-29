@@ -3,21 +3,13 @@ self: super:
 { conix = (super.conix or {}) //
   rec
   { 
-    textWith 
-      # Path -> (Pages -> Text) -> Module
-      = path: bindReader (text path);
-
     text 
       # (ToText a) => Path -> a -> Module
-      = path: text: _: 
+      = path: text:
         let 
           pg = newPage text; 
         in
           newModuleResult (nest path pg) pg.text;
-
-    textsWith 
-      # Path -> (Pages -> [ Either Text Module ]) -> Module
-      = path: bindReader (texts path);
 
     texts 
       # Path -> [ Either Text (Module Text) ] -> Module Text
@@ -32,7 +24,7 @@ self: super:
     # recursion
     valOrModuleToModule 
       # Either a (Module a) -> Module a
-      = tOrM: if builtins.isFunction tOrM then tOrM else pureModule tOrM;
+      = tOrM: if builtins.isAttrs tOrM then tOrM else pureModule tOrM;
 
     # This is re-exported to make the UI easier for users who use textsWith
     # Hopefully I can find a better fix for the string builtins.isString
@@ -40,8 +32,8 @@ self: super:
     t = pureModule;
 
     buildPages 
-      # [ Module a ] -> Pages
-      = modules: runModule (foldModules modules); 
+      # [ (Pages -> Module a) ] -> Pages
+      = fs: runModule (pages: foldMapModules (f: f pages) fs); 
 
     # Run a single module and extract the resulting page.
     # This is to make creating single page page sets a convenience and
@@ -51,12 +43,15 @@ self: super:
     # NOTE: this assumes the function will produce a module where the pages 
     # attribute set is a single page. 
     single 
-      # (Path -> a -> Module a) -> a -> Page
-      = mkModule: a: runModule (mkModule [] a);
+      # (Path -> a) -> a
+      = mkModule: mkModule [];
 
     runModule 
-      # Module a -> Pages
-      = module: self.lib.fix (pgs: (module pgs).pages);
+      # (Pages -> Module a) -> Pages
+      = f: self.lib.fix (pgs: (mergeModules (textOf pgs) (f pgs)).pages);
+
+    textOf
+      = pages: setValue ["textOf"] (path: pureModule (super.lib.attrsets.getAttrFromPath (path ++ [ "text" ]) pages));
 
     createPageFromModule 
       # Path -> Module Text -> Module Text
@@ -64,12 +59,8 @@ self: super:
 
     mergeModules 
       # Module Text -> Module Text -> Module Text
-      = moduleA: moduleB: pages: 
-      let
-        rA = moduleA pages;
-        rB = moduleB pages;
-      in
-        newModuleResult (mergePages rA.pages rB.pages) (rA.val + rB.val);
+      = moduleA: moduleB:
+        newModuleResult (mergePages moduleA.pages moduleB.pages) (moduleA.val + moduleB.val);
 
     newPage 
       # (ToString a) => a -> Page
@@ -81,15 +72,15 @@ self: super:
 
     emptyModule 
       # Module Text
-      = _: { pages = {}; val = ""; };
+      = { pages = {}; val = ""; };
 
     pureModule 
       # a -> Module a
-      = val: _: { pages = {}; inherit val; };
+      = val: { pages = {}; inherit val; };
 
     pagesModule 
       # Pages -> Module Text
-      = pages: _: { inherit pages; val = ""; };
+      = pages: { inherit pages; val = ""; };
 
     newModuleResult 
       # Pages -> a -> Module a
@@ -98,7 +89,7 @@ self: super:
     # Set a pure value
     setValue 
       # Path -> a -> Module a
-      = path: val: _: newModuleResult (nest path val) (builtins.toString val);
+      = path: val: newModuleResult (nest path val) (builtins.toString val);
 
     # Sets the text of a module the empty string
     hidden 
@@ -116,19 +107,13 @@ self: super:
 
     mapVal 
       # (a -> b) -> Module a -> Module b
-      = f: module: pages:
-      let
-        pagesAndText = module pages; 
-      in
-        newModuleResult pagesAndText.pages (f pagesAndText.val);
+      = f: module:
+        newModuleResult module.pages (f module.val);
 
     mapPages 
       # (Pages -> Pages) -> Module a -> Module a
-      = f: module: pages:
-        let
-          pagesAndText = module pages;
-        in
-          newModuleResult (f pagesAndText.pages) (pagesAndText.val);
+      = f: module:
+          newModuleResult (f module.pages) (module.val);
 
     bindReader 
       # (a -> Pages -> b) -> (Pages -> a) -> Pages -> b
@@ -136,12 +121,8 @@ self: super:
 
     bindModule 
       # (a -> Module b) -> Module a -> Module b
-      = f: module: pages:
-      let
-        pagesAndText = module pages;
-        res = f pagesAndText.val pages;
-      in
-        newModuleResult (mergePages pagesAndText.pages res.pages) (res.val);
+      = f: module:
+        mapPages (mergePages module.pages) (f module.val);
 
     foldModules 
       # [ Module Text ] -> Module Text

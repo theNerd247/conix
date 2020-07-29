@@ -4,14 +4,14 @@
 # BuildPageSet :: Module -> AttrSet 
 let
   pkgs = import <nixpkgs> { overlays = (import ./conix.nix); };
-  foo = pkgs.conix.text [ "foo" ]
+  foo = pages: pkgs.conix.text [ "foo" ]
     ''
       # Foo Title
 
       test text
     '';
 
-  bar = pkgs.conix.textWith [ "bar" ] (pages: ''
+  bar = pages: pkgs.conix.text [ "bar" ]  ''
     # Bar page
 
     We have ${builtins.toString pages.baz.joe} baz joes;
@@ -19,11 +19,11 @@ let
     Foo content
 
     ${pages.foo.text} 
-  '');
+  '';
 
   baz = pkgs.conix.setValue [ "baz" "joe" ] 3;
 
-  bang = pkgs.conix.texts [ "baz" "bang" ] [''
+  bang = pages: pkgs.conix.texts [ "baz" "bang" ] [''
     # Bang Title! 
 
     Here's some text....
@@ -34,13 +34,14 @@ let
     ...and after text
   ''];
 
-  blue = with pkgs.conix; textsWith [ "a" ] (pages: [
-    (t '' # Blue Title '') 
+  blue = pages: with pkgs.conix; texts [ "a" ] [
+    '' # Blue Title 
 
-    (pkgs.conix.hidden (pkgs.conix.text [ "b" ] "blue-data"))
+    ''(hidden (text [ "b" ] "blue-data"))''
 
-    (t ''\n\nSome more text in blue: ${pages.a.b.text} '')
-  ]);
+      
+    Some more text in blue: ''(pages.textOf ["a" "b"])
+  ];
 
   trows = 
     [ [ 1 2 3 ]
@@ -51,23 +52,16 @@ let
 
   tbl = pkgs.conix.table [ "t" ] theaders trows;
 
-  pages = pkgs.conix.buildPages [ tbl ];
+  pages = pkgs.conix.runModule blue;
 
-  xx = pkgs.conix.single pkgs.conix.textsWith (p: [
-    (pkgs.conix.t ''foo
-    '')
+  xx = (pkgs.conix.single pkgs.conix.texts) [
+    "foo"
     tbl
-  ]);
+  ];
 
-  builtPages = [ xx ];
-
-  pdf = with pkgs.conix; build.pdfFile "test-pdf" textsWith (p: [ (t "asdf") ]);
-
-  md = pkgs.conix.build.markdown "test-md" builtPages;
+  builtPages = [ pages.a ];
 in
   { inherit pages;
-    testDocs = pkgs.symlinkJoin { name = "testDocs"; paths = [ pdf md ]; };
     inherit (pkgs) conix;
-    c = tbl {};
   }
 
