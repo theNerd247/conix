@@ -31,27 +31,6 @@ self: super:
     # problem (see github issue #2).
     t = pureModule;
 
-    buildPages 
-      # [ (Pages -> Module a) ] -> Pages
-      = fs: runModule (pages: foldMapModules (f: f pages) fs); 
-
-    runModule 
-      # (Pages -> Module a) -> Pages
-      = f:
-        let
-          toplevel = pgs: (addons pgs) // (f pgs);
-        in
-          self.lib.fix toplevel;
-
-    # these are conix library functions that depend on the toplevel pages
-    addons
-    = pages:
-      rec
-      { 
-        textOf = path: at (path ++ [ "text" ]);
-        at = path: pureModule (super.lib.attrsets.getAttrFromPath (["pages"] ++ path) pages);
-      };
-
     createPageFromModule 
       # Path -> Module Text -> Module Text
       = path: bindModule (text path); 

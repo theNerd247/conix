@@ -4,14 +4,14 @@
 # BuildPageSet :: Module -> AttrSet 
 let
   pkgs = import <nixpkgs> { overlays = (import ./conix.nix); };
-  foo = pages: pkgs.conix.text [ "foo" ]
+  foo = conix: pkgs.conix.text [ "foo" ]
     ''
       # Foo Title
 
       test text
     '';
 
-  bar = pages: pkgs.conix.text [ "bar" ]  ''
+  bar = conix: pkgs.conix.text [ "bar" ]  ''
     # Bar page
 
     We have ${builtins.toString pages.baz.joe} baz joes;
@@ -23,7 +23,7 @@ let
 
   baz = pkgs.conix.setValue [ "baz" "joe" ] 3;
 
-  bang = pages: pkgs.conix.texts [ "baz" "bang" ] [''
+  bang = conix: pkgs.conix.texts [ "baz" "bang" ] [''
     # Bang Title! 
 
     Here's some text....
@@ -34,19 +34,19 @@ let
     ...and after text
   ''];
 
-  blue = conix: with pkgs.conix; texts [ "a" ] [
+  blue = conix: with pkgs.conix; texts [ ] [
     '' # Blue Title 
 
     ''(hidden (text [ "b" ] "blue-data"))''
 
       
-    Some more text in blue: ''(conix.textOf [ "a" "b"])''
+    Some more text in blue: ''(conix.textOf [ "b" ])''
 
     and a table!: 
 
     ''(table ["s"] ["x"] [["y"]])''
 
-    The end: ''(conix.textOf [ "a" "s" "row0" "col0"])
+    The end: ''(conix.textOf [ "s" "row0" "col0"])
   ];
 
   trows = 
