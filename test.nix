@@ -3,8 +3,13 @@
 # type Pages = AttrSet
 # BuildPageSet :: Module -> AttrSet 
 let
+
+  # this is the toplevel agreggation of the modules in question
   pkgs = import <nixpkgs> { overlays = (import ./conix.nix); };
 
+  pages = (pkgs.conix.buildPages [ toplevel foo bar baz bang blue tbl ]).pages;
+
+  #everything below this could be placed in its own file
   foo = conix: conix.text [ "foo" ]
     ''
       # Foo Title
@@ -84,7 +89,7 @@ let
       ${conix.pages.t.text}
     '';
 
-  pages = (pkgs.conix.buildPages [ toplevel foo bar baz bang blue tbl ]).pages;
+
 in
   { inherit pages;
     inherit (pkgs) conix;
