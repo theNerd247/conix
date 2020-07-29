@@ -1,22 +1,23 @@
-with (import <nixpkgs> { overlays = import ../conix.nix; }).conix; 
+(import <nixpkgs> { overlays = import ../conix.nix; }).conix.build.pdfFile "Volunteers" 
 
-build.pdfFile "Volunteers" textsWith (pages: [ (t 
+(conix: conix.texts [] [
 ''# Volunteer Handbook
 
 ## Emergency Plan
 
-Incase of an emergency please contact: 
-${pages.contacts.row2.col0.text} at ${pages.contacts.row2.col1.text}
+Incase of an emergency please contact: '' (conix.textOf [ "contacts" "row2" "col0" ])" at "
+(conix.textOf ["contacts" "row2" "col1"]) ''
+
 
 ## Volunteer Contacts 
 
-We still need ${builtins.toString (8 - pages.contacts.rows.length)}
+We still need''(conix.pureModule (builtins.toString (8 - conix.pages.contacts.rows.length)))''
 volunteers. 
 
-'')
-(table [ "contacts" ]
+''
+(conix.table [ "contacts" ]
     ["Name"   "Phone" ]
-   (sortRows [["John"   "555-123-4563"]
+   (conix.sortRows [["John"   "555-123-4563"]
     ["Jacob"  "555-321-9872"]
     ["Jingle" "555-231-7589"]
    ])

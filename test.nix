@@ -3,15 +3,48 @@
 # type Pages = AttrSet
 # BuildPageSet :: Module -> AttrSet 
 let
+
+  # this is the toplevel agreggation of the modules in question
   pkgs = import <nixpkgs> { overlays = (import ./conix.nix); };
-  foo = pkgs.conix.text [ "foo" ]
+
+  pages = pkgs.conix.buildPages [ toplevel foo bar baz bang blue tbl ];
+
+  pdf = pkgs.conix.build.pdfFile "foo" (conix: conix.text [] "asdf");
+
+  toplevel = conix: conix.texts [] [
+    ''
+      # Document Header
+
+      ## Foo
+
+      ''(conix.textOf ["foo"])''
+
+      ## Bar
+
+      ''(conix.textOf ["bar"])''
+
+      ## Bang
+
+      ''(conix.textOf ["baz" "bang"])''
+
+      ## Blue
+
+      ''(conix.textOf ["blue"])''
+
+      ## Table
+
+      ''(conix.textOf ["t"])''
+    ''];
+
+  #everything below this could be placed in its own file
+  foo = conix: conix.text [ "foo" ]
     ''
       # Foo Title
 
       test text
     '';
 
-  bar = pkgs.conix.textWith [ "bar" ] (pages: ''
+  bar = conix: conix.text [ "bar" ]  ''
     # Bar page
 
     We have ${builtins.toString pages.baz.joe} baz joes;
@@ -19,55 +52,48 @@ let
     Foo content
 
     ${pages.foo.text} 
-  '');
+  '';
 
-  baz = pkgs.conix.setValue [ "baz" "joe" ] 3;
+  baz = conix: conix.setValue [ "baz" "joe" ] 3;
 
-  bang = pkgs.conix.texts [ "baz" "bang" ] [''
+  bang = conix: conix.texts [ "baz" "bang" ] [''
     # Bang Title! 
 
     Here's some text....
 
-    '' (pkgs.conix.text [ "gnab" ] "Gnab text!!") ''
+    '' (conix.text [ "gnab" ] "Gnab text!!") ''
 
 
     ...and after text
   ''];
 
-  blue = with pkgs.conix; textsWith [ "a" ] (pages: [
-    (t '' # Blue Title '') 
+  blue = conix: conix.texts [ "blue" ] [
+    '' # Blue Title 
 
-    (pkgs.conix.hidden (pkgs.conix.text [ "b" ] "blue-data"))
+    ''(conix.hidden (conix.text [ "b" ] "blue-data"))''
 
-    (t ''\n\nSome more text in blue: ${pages.a.b.text} '')
-  ]);
+      
+    Some more text in blue: ''(conix.textOf [ "blue" "b" ])''
+
+    and a table!: 
+
+    ''(conix.table ["s"] ["x"] [["y"]])''
+
+    The end: ''(conix.textOf [ "blue" "s" "row0" "col0"])
+  ];
 
   trows = 
-    [ [ 1 2 3 ]
+    [ [ 40 2 42 ]
       [ 4 5 9 ]
     ];
 
   theaders = [ "X" "Y" "Z = X+Y" ];
 
-  tbl = pkgs.conix.table [ "t" ] theaders trows;
+  tbl = conix: conix.table [ "t" ] theaders trows;
 
-  pages = pkgs.conix.buildPages [ tbl ];
 
-  xx = pkgs.conix.single pkgs.conix.textsWith (p: [
-    (pkgs.conix.t ''foo
-    '')
-    tbl
-  ]);
-
-  builtPages = [ xx ];
-
-  pdf = with pkgs.conix; build.pdfFile "test-pdf" textsWith (p: [ (t "asdf") ]);
-
-  md = pkgs.conix.build.markdown "test-md" builtPages;
 in
   { inherit pages;
-    testDocs = pkgs.symlinkJoin { name = "testDocs"; paths = [ pdf md ]; };
     inherit (pkgs) conix;
-    c = tbl {};
+    inherit pdf;
   }
-
