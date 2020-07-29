@@ -21,8 +21,14 @@ with super.conix;
 
         colsLength =
           hidden (setValue [ "cols" "length" ] (builtins.length headers));
+
+        rowsData =
+          hidden (setValue [ "rows" "data" ] rows);
+
+        headersData =
+          hidden (setValue [ "headers" "data"] headers);
       in
-        nestModule path (foldModules [ tbl rowsLength colsLength ]);
+        nestModule path (foldModules [ tbl rowsLength colsLength rowsData headersData ]);
 
     mkHeaders = headers:
       let

@@ -21,13 +21,16 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-
-    # Runs a single command using the runners shell
-    - name: Run a one-line script
-      run: echo Hello, world!
+    - uses: cachix/install-nix-action@v10
+      with:
+        nix_path: nixpkgs=channel:nixos-20.03
 
     # Runs a set of commands using the runners shell
-    - name: Run a multi-line script
+    - name: Rebuild readme.md
       run: |
-        echo Add other actions to build,
-        echo test, and deploy your project.
+        ./scripts/mkReadme.sh \
+        git config user.name github-actions \
+        git config user.email github-actions@github.com \
+        git add ./readme.md \
+        git commit -m "updates readme.md" \
+        git push

@@ -1,6 +1,6 @@
 with (import <nixpkgs> { overlays = import ../conix.nix; }).conix; 
 
-build.htmlFile "readme" texts ['' 
+build.htmlFile "readme" (conix: text [] ''
 # Conix
 
 '' 
@@ -66,4 +66,4 @@ And that's only a few of them.
   was produces by building the sample.nix file.
 
 [1]: https://docs.racket-lang.org/pollen/
-'']
+'')
