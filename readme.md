@@ -14,8 +14,8 @@ Compare the following markdown content to the same document written in conix.
 
 ## Emergency Plan
 
-Incase of an emergency please contact: 
-John
+Incase of an emergency please contact: John at 555-123-4563
+
 ## Volunteer Contacts 
 
 We still need5volunteers. 
@@ -29,15 +29,16 @@ John | 555-123-4563
 
 #### Conix Sample 
 ```nix
-with (import <nixpkgs> { overlays = import ../conix.nix; }).conix; 
+(import <nixpkgs> { overlays = import ../conix.nix; }).conix.build.pdfFile "Volunteers" 
 
-build.pdfFile "Volunteers" (conix: texts [] [
+(conix: conix.texts [] [
 ''# Volunteer Handbook
 
 ## Emergency Plan
 
-Incase of an emergency please contact: 
-''(conix.textOf [ "contacts" "row2" "col0" ]) ''
+Incase of an emergency please contact: '' (conix.textOf [ "contacts" "row2" "col0" ])" at "
+(conix.textOf ["contacts" "row2" "col1"]) ''
+
 
 ## Volunteer Contacts 
 
@@ -45,9 +46,9 @@ We still need''(conix.pureModule (builtins.toString (8 - conix.pages.contacts.ro
 volunteers. 
 
 ''
-(table [ "contacts" ]
+(conix.table [ "contacts" ]
     ["Name"   "Phone" ]
-   (sortRows [["John"   "555-123-4563"]
+   (conix.sortRows [["John"   "555-123-4563"]
     ["Jacob"  "555-321-9872"]
     ["Jingle" "555-231-7589"]
    ])

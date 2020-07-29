@@ -5,8 +5,9 @@
 
 ## Emergency Plan
 
-Incase of an emergency please contact: 
-''(conix.textOf [ "contacts" "row2" "col0" ]) ''
+Incase of an emergency please contact: '' (conix.textOf [ "contacts" "row2" "col0" ])" at "
+(conix.textOf ["contacts" "row2" "col1"]) ''
+
 
 ## Volunteer Contacts 
 
