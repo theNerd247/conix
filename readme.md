@@ -29,7 +29,11 @@ John | 555-123-4563
 
 #### Conix Sample 
 ```nix
-(import <nixpkgs> { overlays = import ../conix.nix; }).conix.build.pdfFile "Volunteers" 
+(import <nixpkgs> { 
+  overlays = import (builtins.fetchGit
+    { url = "https://github.com/theNerd247/conix.git";
+    });
+}).conix.build.pdfFile "Volunteers" 
 
 (conix: conix.texts [] [
 ''# Volunteer Handbook

@@ -1,6 +1,6 @@
-with (import <nixpkgs> { overlays = import ../conix.nix; }).conix; 
+(import <nixpkgs> { overlays = import ../default.nix; }).conix.build.htmlFile "readme" 
 
-build.htmlFile "readme" (conix: text [] ''
+(conix: conix.text [] ''
 # Conix
 
 '' 
