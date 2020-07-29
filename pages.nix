@@ -35,23 +35,14 @@ self: super:
       # [ (Pages -> Module a) ] -> Pages
       = fs: runModule (pages: foldMapModules (f: f pages) fs); 
 
-    # Run a single module and extract the resulting page.
-    # This is to make creating single page page sets a convenience and
-    # should be used with functions that create a page nested under a
-    # given path (like text, textWith, texts, or textsWith).
-    #
-    # NOTE: this assumes the function will produce a module where the pages 
-    # attribute set is a single page. 
-    single 
-      # (Path -> a) -> a
-      = mkModule: mkModule [];
-
     runModule 
       # (Pages -> Module a) -> Pages
       = f: self.lib.fix (pgs: (mergeModules (textOf pgs) (f pgs)).pages);
 
     textOf
-      = pages: setValue ["textOf"] (path: pureModule (super.lib.attrsets.getAttrFromPath (path ++ [ "text" ]) pages));
+    = pages: setValue ["textOf"] 
+      (path: pureModule (super.lib.attrsets.getAttrFromPath (path ++ [ "text" ]) pages)
+      );
 
     createPageFromModule 
       # Path -> Module Text -> Module Text
