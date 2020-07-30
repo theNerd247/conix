@@ -1,7 +1,7 @@
 (import <nixpkgs> { overlays = import ../default.nix; }).conix.build.htmlFile "readme" 
 
 (conix: conix.texts [] [
-''# Conix - ''(conix.version.text)''
+''# ''(conix.homePageLink)" - "(conix.version.text)''
 
 ''(conix.buildStatusBadgeMd)''
 
