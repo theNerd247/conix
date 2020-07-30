@@ -1,5 +1,4 @@
-# Conix
-
+# Conix - 0.0.2
 Conix is a template language embedded in the nix programing language. It aims
 to make it easy to re-use content while authoring documents, static websites;
 really anything.
@@ -18,7 +17,7 @@ Incase of an emergency please contact: John at 555-123-4563
 
 ## Volunteer Contacts 
 
-We still need5volunteers. 
+_Volunteers still needed!: 5_
 
 Name | Phone
 --- | ---
@@ -30,10 +29,11 @@ John | 555-123-4563
 #### Conix Sample 
 ```nix
 (import <nixpkgs> { 
-  overlays = import (builtins.fetchGit
-    { url = "https://github.com/theNerd247/conix.git";
-    });
-}).conix.build.pdfFile "Volunteers" 
+    overlays = import ../.;
+  #overlays = import (builtins.fetchGit
+  #  { url = "https://github.com/theNerd247/conix.git";
+  #  });
+}).conix.build.markdownFile "Volunteers" 
 
 (conix: conix.texts [] [
 ''# Volunteer Handbook
@@ -46,16 +46,17 @@ Incase of an emergency please contact: '' (conix.textOf [ "contacts" "row2" "col
 
 ## Volunteer Contacts 
 
-We still need''(conix.pureModule (builtins.toString (8 - conix.pages.contacts.rows.length)))''
-volunteers. 
+_Volunteers still needed!: ''(conix.pureModule (builtins.toString (8 - conix.pages.contacts.rows.length)))''_
 
-''
+'' 
 (conix.table [ "contacts" ]
-    ["Name"   "Phone" ]
-   (conix.sortRows [["John"   "555-123-4563"]
-    ["Jacob"  "555-321-9872"]
-    ["Jingle" "555-231-7589"]
-   ])
+  ["Name" "Phone" ]
+  (conix.sortRows 
+    [ ["John"   "555-123-4563"]
+      ["Jacob"  "555-321-9872"]
+      ["Jingle" "555-231-7589"]
+    ]
+  )
 )
 ])
 
