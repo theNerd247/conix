@@ -1,5 +1,6 @@
 [ (import ./pages.nix)
   (import ./table.nix)
   (import ./meta.nix)
+  (import ./html.nix)
   (import ./run.nix)
 ] ++ (import ./builder)
