@@ -1,4 +1,4 @@
-# Conix - 0.0.3
+# <a href="https://github.com/theNerd247/conix.git">conix</a> - 0.0.3
 ![CI](https://github.com/theNerd247/conix/workflows/CI/badge.svg?branch=master)
 
 Conix is a template language embedded in the nix programing language. It aims
