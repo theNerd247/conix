@@ -1,4 +1,6 @@
-# Conix - 0.0.2
+# Conix - 0.0.3
+![CI](https://github.com/theNerd247/conix/workflows/CI/badge.svg?branch=master)
+
 Conix is a template language embedded in the nix programing language. It aims
 to make it easy to re-use content while authoring documents, static websites;
 really anything.
