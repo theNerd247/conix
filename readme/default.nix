@@ -1,7 +1,7 @@
 (import <nixpkgs> { overlays = import ../default.nix; }).conix.build.htmlFile "readme" 
 
-(conix: conix.text [] ''
-# Conix
+(conix: conix.texts [] [
+''# Conix - ''(conix.version.text)''
 
 Conix is a template language embedded in the nix programing language. It aims
 to make it easy to re-use content while authoring documents, static websites;
@@ -56,4 +56,4 @@ programming.
   was produces by building the sample.nix file.
 
 [1]: https://docs.racket-lang.org/pollen/
-'')
+''])
