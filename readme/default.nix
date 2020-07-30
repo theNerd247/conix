@@ -3,6 +3,9 @@
 (conix: conix.texts [] [
 ''# Conix - ''(conix.version.text)''
 
+''(conix.buildStatusBadgeMd)''
+
+
 Conix is a template language embedded in the nix programing language. It aims
 to make it easy to re-use content while authoring documents, static websites;
 really anything.
