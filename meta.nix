@@ -12,7 +12,7 @@ with super.conix;
       { text = pureModule "${builtins.toString major}.${builtins.toString minor}.${builtins.toString patch}";
         major = 0; 
         minor = 0; 
-        patch = 2; 
+        patch = 3; 
       };
   };
 }
