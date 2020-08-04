@@ -31,6 +31,6 @@ jobs:
         ./scripts/mkReadme.sh
         git config user.name github-actions
         git config user.email github-actions@github.com
-        git add ./readme.md
+        git add --force ./readme.md
         git commit -m "updates readme.md"
         git push
