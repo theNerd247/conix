@@ -16,6 +16,7 @@ To try out conix:
 1. Copy the conix sample into `conix-sample.nix` file.
 1. `nix-build ./conix-sample.nix`
 1. Open the `result/Volunteers.md` file. 
+
 __Markdown Sample__
 ```markdown
 # Volunteer Handbook
