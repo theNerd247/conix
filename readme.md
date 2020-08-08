@@ -1,21 +1,28 @@
-# <a href="https://github.com/theNerd247/conix.git">conix</a> - 0.0.3
-![CI](https://github.com/theNerd247/conix/workflows/CI/badge.svg?branch=master)
+# <a href="https://github.com/theNerd247/conix.git">conix</a> - 0.0.3 - ![CI](https://github.com/theNerd247/conix/workflows/CI/badge.svg?branch=master)
+**Notice: This project is a work in progress and the API will have major
+updates pushed to the master branch until the first major release.**
 
-Conix is a template language embedded in the nix programing language. It aims
-to make it easy to re-use content while authoring documents, static websites;
-really anything.
+Conix is a nix library for writing documents. It's primary goal is to make it
+easy to re-use pieces your content without needing to write content.
+Eventually I'd like to use it to replace markdown and _maybe_ make it user
+friendly enough to replace word processors (for small things).
 
-# A taste of Conix
+As an example this readme file was written using conix.
 
-Compare the following markdown content to the same document written in conix.
+# A Taste of Conix
 
-#### Markdown Sample
+To try out conix:
+
+1. Copy the conix sample into `conix-sample.nix` file.
+1. `nix-build ./conix-sample.nix`
+1. Open the `result/Volunteers.md` file. 
+__Markdown Sample__
 ```markdown
 # Volunteer Handbook
 
 ## Emergency Plan
 
-Incase of an emergency please contact: John at 555-123-4563
+Incase of an emergency please contact: Jingle at 555-231-7589
 
 ## Volunteer Contacts 
 
@@ -23,12 +30,12 @@ _Volunteers still needed!: 5_
 
 Name | Phone
 --- | ---
+John | 555-123-4563
 Jacob | 555-321-9872
 Jingle | 555-231-7589
-John | 555-123-4563
 ```
 
-#### Conix Sample 
+__Conix Sample__
 ```nix
 (import <nixpkgs> { 
   overlays = import (builtins.fetchGit
@@ -47,54 +54,41 @@ Incase of an emergency please contact: '' (conix.textOf [ "contacts" "row2" "col
 
 ## Volunteer Contacts 
 
-_Volunteers still needed!: ''(conix.pureModule (builtins.toString (8 - conix.pages.contacts.rows.length)))''_
+_Volunteers still needed!: ''
+(conix.mapVal (l: builtins.toString (8 - l)) (conix.at [ "contacts" "rows" "length"]))
+''_
 
 '' 
 (conix.table [ "contacts" ]
   ["Name" "Phone" ]
-  (conix.sortRows 
-    [ ["John"   "555-123-4563"]
-      ["Jacob"  "555-321-9872"]
-      ["Jingle" "555-231-7589"]
-    ]
-  )
+  [ ["John"   "555-123-4563"]
+    ["Jacob"  "555-321-9872"]
+    ["Jingle" "555-231-7589"]
+  ]
 )
 ])
 
 ```
 
-Yup! You guessed it - the markdown syntax is simpler[^1]. And that's the problem.
-It's deceptively too simple. Here's a list of problems when dealing with
-traditional markdown-based content:
+## Benefits of markdown sample.
 
-  * Markdown content often depends on the output format and markdown's
-    syntax will never cover all of the features of all the formats the can be
-    produced.
-  * Markdown content is often re-used (especially in reference material). Using
-    only markdown requires a lot of hand-copying which makes writing error
-    prone.
-  * Markdown content requires a hand-cranked build system. Users often scrape
-    together a bash script using various 3rd party programs like pandoc. This
-    does not scale well.
-  * Markdown content does not have an output-indpendent syntax for internal
-    references across multiple files.
+* The markdown sample was not hand written; the conix sample generated it.
+* The table in the markdown sample has some of its contents duplicated across
+the document. The conix sample simplifies this process.
+* The number of volunteers is a computed value based on the number of rows in 
+  the table:
+* Conix provides an out-of-the-box build system for markdown (using
+[Pandoc](https://pandoc.org)).
 
-And that's only a few of them.
+# Contributing
 
-Conix blends the convenience of a template language with the power of a
-functional programming language. This allows authors to have the same features
-as programmers with a frontend that is more convenient.
-
-[The Pollen programming language][1] addresses these problems as well. I adopt
-their philosophy when it comes to writing: authoring content is like
-programming.
+Any ideas or help are welcome! Please submit a PR or open an issue as you see
+fit. I like to use the project board to organize my thoughts and jot down
+notes on features I'd like to add. So check there as well. Please read the 
+`./design/toplevel.md` document for the design of conix. 
 
 # Related Works
 
-* [Pollen][1] a turing complete typesetting language written in Racket.
+* [Pollen](https://docs.racket-lang.org/pollen/) - _"Pollen is a publishing
+system that helps authors make functional and beautiful digital books."_
 
-[^1]: This readme file was generated using conix! And the sample source code
-  you see there can be found at `./readme/sample.nix` and the markdown above it
-  was produces by building the sample.nix file.
-
-[1]: https://docs.racket-lang.org/pollen/
