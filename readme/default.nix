@@ -43,16 +43,19 @@ the document. The conix sample simplifies this process.
 * Conix provides an out-of-the-box build system for markdown (using
 ''(conix.text ["pandocLink"] "[Pandoc](https://pandoc.org)")'').
 
+# Goals
+
+''(conix.hidden ((import ../design/goals.nix) conix))
+(conix.textOf ["goals" "list"])
+''
+
+
 # Contributing
 
 Any ideas or help are welcome! Please submit a PR or open an issue as you see
 fit. I like to use the project board to organize my thoughts; check the todo
 column for tasks to work on. I will try and convert these to issues when I can.
-Please read the `./design/toplevel.md` document for the design of conix.
-''#TODO: write this document 
-
-''
-
+Please read the `./design.md` document for the design of conix.
 
 # Related Works
 
