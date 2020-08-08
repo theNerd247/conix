@@ -30,6 +30,7 @@ with super.conix;
         { 
           textOf = path: at (path ++ [ "text" ]);
           at = path: pureModule (super.lib.attrsets.getAttrFromPath (["pages"] ++ path) pages);
+          moduleUsing = path: lookupPath: f: bindModule (x: nestModule path (f x)) (at lookupPath);
         };
   };
 }

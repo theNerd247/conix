@@ -1,7 +1,10 @@
 (import <nixpkgs> { overlays = import ../default.nix; }).conix.build.htmlFile "readme" 
 
-(conix: conix.text [] ''
-# Conix
+(conix: conix.texts [] [
+''# ''(conix.homePageLink)" - "(conix.version.text)''
+
+''(conix.buildStatusBadgeMd)''
+
 
 '' 
 # Conix is a nix library for writing and building documents while making it
@@ -66,4 +69,4 @@ And that's only a few of them.
   was produces by building the sample.nix file.
 
 [1]: https://docs.racket-lang.org/pollen/
-'')
+''])

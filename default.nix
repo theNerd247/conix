@@ -1,4 +1,5 @@
 [ (import ./pages.nix)
   (import ./table.nix)
+  (import ./meta.nix)
   (import ./run.nix)
 ] ++ (import ./builder)

@@ -7,9 +7,14 @@ let
   # this is the toplevel agreggation of the modules in question
   pkgs = import <nixpkgs> { overlays = (import ./default.nix); };
 
-  pages = pkgs.conix.buildPages [ toplevel foo bar baz bang blue tbl ];
+  pages = pkgs.conix.buildPages [ folded baz ];
 
   pdf = pkgs.conix.build.pdfFile "foo" (conix: conix.text [] "asdf");
+
+  folded = conix: 
+    (conix.moduleUsing ["boo"] ["baz" "joe"] 
+      (conix.foldMapModules (conix.text []))
+    );
 
   toplevel = conix: conix.texts [] [
     ''
@@ -47,14 +52,12 @@ let
   bar = conix: conix.text [ "bar" ]  ''
     # Bar page
 
-    We have ${builtins.toString pages.baz.joe} baz joes;
-
     Foo content
 
     ${pages.foo.text} 
   '';
 
-  baz = conix: conix.setValue [ "baz" "joe" ] 3;
+  baz = conix: conix.setValue [ "baz" "joe" ] [3 2 1];
 
   bang = conix: conix.texts [ "baz" "bang" ] [''
     # Bang Title! 

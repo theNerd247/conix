@@ -20,7 +20,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2.3.1
     - uses: cachix/install-nix-action@v10
       with:
         nix_path: nixpkgs=channel:nixos-20.03
@@ -31,6 +31,6 @@ jobs:
         ./scripts/mkReadme.sh
         git config user.name github-actions
         git config user.email github-actions@github.com
-        git add ./readme.md
-        git commit -m "updates readme.md"
+        git add --force ./readme.md
+        git commit -m "updates readme.md" || true
         git push
