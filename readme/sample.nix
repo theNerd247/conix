@@ -15,16 +15,16 @@ Incase of an emergency please contact: '' (conix.textOf [ "contacts" "row2" "col
 
 ## Volunteer Contacts 
 
-_Volunteers still needed!: ''(conix.pureModule (builtins.toString (8 - conix.pages.contacts.rows.length)))''_
+_Volunteers still needed!: ''
+(conix.mapVal (l: builtins.toString (8 - l)) (conix.at [ "contacts" "rows" "length"]))
+''_
 
 '' 
 (conix.table [ "contacts" ]
   ["Name" "Phone" ]
-  (conix.sortRows 
-    [ ["John"   "555-123-4563"]
-      ["Jacob"  "555-321-9872"]
-      ["Jingle" "555-231-7589"]
-    ]
-  )
+  [ ["John"   "555-123-4563"]
+    ["Jacob"  "555-321-9872"]
+    ["Jingle" "555-231-7589"]
+  ]
 )
 ])
