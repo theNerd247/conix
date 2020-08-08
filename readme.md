@@ -79,13 +79,18 @@ the document. The conix sample simplifies this process.
 * Conix provides an out-of-the-box build system for markdown (using
 [Pandoc](https://pandoc.org)).
 
+# Goals
+
+1. Allow users to describe relationships between different pieces of their
+   content. 
+1. Provide intuitive build support for various output formats.
+
 # Contributing
 
 Any ideas or help are welcome! Please submit a PR or open an issue as you see
 fit. I like to use the project board to organize my thoughts; check the todo
 column for tasks to work on. I will try and convert these to issues when I can.
-Please read the `./design/toplevel.md` document for the design of conix.
-
+Please read the `./design.md` document for the design of conix.
 
 # Related Works
 
