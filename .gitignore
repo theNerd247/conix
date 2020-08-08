@@ -51,6 +51,3 @@ tags
 # End of https://www.toptal.com/developers/gitignore/api/vim,haskell
 #
 result
-
-# This will be built as part of the repo
-readme.md
