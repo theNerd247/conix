@@ -15,8 +15,12 @@ As an example this readme file was written using conix.
 
 # A Taste of Conix
 
-Compare the following markdown content to the same document written using
-conix:
+To try out conix:
+
+1. Copy the conix sample into `conix-sample.nix` file.
+1. `nix-build ./conix-sample.nix`
+1. Open the `result/Volunteers.md` file. ''#TODO: replace with generated html file.
+  ''
 
 __Markdown Sample__
 ```markdown
@@ -28,7 +32,7 @@ __Conix Sample__
 ${builtins.readFile ./sample.nix}
 ```
 
-A few points:
+## Benefits of markdown sample.
 
 ''#TODO: add the code samples corresponding to each item.
 ''
@@ -39,6 +43,15 @@ the document. The conix sample simplifies this process.
   the table:
 * Conix provides an out-of-the-box build system for markdown (using
 ''(conix.text ["pandocLink"] "[Pandoc](https://pandoc.org)")'').
+
+# Contributing
+
+Any ideas or help are welcome! Please submit a PR or open an issue as you see
+fit. I like to use the project board to organize my thoughts and jot down
+notes on features I'd like to add. So check there as well. Please read the 
+`./design/toplevel.md` document for the design of conix. ''#TODO: write this document
+''
+
 
 # Related Works
 
