@@ -38,31 +38,7 @@ the document. The conix sample simplifies this process.
 * The number of volunteers is a computed value based on the number of rows in 
   the table:
 * Conix provides an out-of-the-box build system for markdown (using
-''(conix.text ["pandocLink"] "[Pandoc](https://pandoc.org)")'')
-* 
-
-''
-# Yup! You guessed it - the markdown syntax is simpler[^1]. And that's the
-# problem.  It's deceptively too simple. Here's a list of problems when dealing
-# with traditional markdown-based content:
-# 
-#   * Markdown content often depends on the output format and markdown's
-#     syntax will never cover all of the features of all the formats the can be
-#     produced.
-
-#   * Markdown content is often re-used (especially in reference material). Using
-#     only markdown requires a lot of hand-copying which makes writing error
-#     prone.
-
-#   * Markdown content requires a hand-cranked build system. Users often scrape
-#     together a bash script using various 3rd party programs like Pandoc. This
-#     does not scale well.
-
-#   * Markdown content does not have an output-independent syntax for internal
-#     references across multiple files.
-''
-
-And that's only a few of them.
+''(conix.text ["pandocLink"] "[Pandoc](https://pandoc.org)")'').
 
 # Related Works
 
@@ -70,9 +46,4 @@ And that's only a few of them.
 "[Pollen](https://docs.racket-lang.org/pollen/)")'' - _"Pollen is a publishing
 system that helps authors make functional and beautiful digital books."_
 
-[^1]: This readme file was generated using conix! And the sample source code
-  you see there can be found at `./readme/sample.nix` and the markdown above it
-  was produces by building the sample.nix file.
-
-[1]: 
 ''])
