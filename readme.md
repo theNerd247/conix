@@ -90,7 +90,7 @@ the document. The conix sample simplifies this process.
 Any ideas or help are welcome! Please submit a PR or open an issue as you see
 fit. I like to use the project board to organize my thoughts; check the todo
 column for tasks to work on. I will try and convert these to issues when I can.
-Please read the `./design.md` document for the design of conix.
+Please read the [./design.md](./design.md) document for the design of conix.
 
 # Related Works
 
