@@ -11,7 +11,7 @@ conix: conix.texts [ "goals" ] [
 "1. "
  (conix.text [ "goal1"] 
    ''Allow users to describe relationships between different pieces of their
-   content.''
+   content without breaking the natural flow of content.''
  )''
  
 1. ''
