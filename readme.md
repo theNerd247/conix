@@ -82,7 +82,7 @@ the document. The conix sample simplifies this process.
 # Goals
 
 1. Allow users to describe relationships between different pieces of their
-   content. 
+   content without breaking the natural flow of content. 
 1. Provide intuitive build support for various output formats.
 
 # Contributing
