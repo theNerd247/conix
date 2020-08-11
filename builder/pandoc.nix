@@ -3,7 +3,7 @@ self: super:
 { conix = (super.conix or {}) // 
   { build = (super.conix.build or {}) //
     rec
-    { pandoc = outType: name: pages:
+    { pandoc = outType: options: name: pages:
         let
           pandoc = self.pandoc;
           outFileName = "${name}.${outType}";
@@ -15,7 +15,7 @@ self: super:
             dontUnpack = true;
             buildPhase = 
               ''
-                ${pandoc}/bin/pandoc -s -o ${outFileName} -f markdown ${contents}/${name}.md
+                ${pandoc}/bin/pandoc -s -o ${outFileName} -f markdown ${contents}/${name}.md ${options}
               '';
             installPhase = 
               ''
@@ -25,8 +25,11 @@ self: super:
               '';
           };
 
-      pandocFile = outType: name: mkModule:
-        with super.conix; pandoc outType name [ (runModule mkModule) ];
+      pandocFileOpts = outType: options: name: mkModule:
+        with super.conix; pandoc options "" name [ (runModule mkModule) ];
+
+      pandocFile = type: pandocFileOpts type "";
+
       pdfFile = pandocFile "pdf";
       htmlFile = pandocFile "html";
     };
