@@ -1,4 +1,4 @@
-# <a href="https://github.com/theNerd247/conix.git">conix</a> - 0.0.3 - ![CI](https://github.com/theNerd247/conix/workflows/CI/badge.svg?branch=master)
+# <a href="https://github.com/theNerd247/conix.git">conix</a> - 0.0.4 - ![CI](https://github.com/theNerd247/conix/workflows/CI/badge.svg?branch=master)
 **Notice: This project is a work in progress and the API will have major
 updates pushed to the master branch until the first major release.**
 
