@@ -12,16 +12,14 @@ self: super:
     = mkModuleA: mkModuleB: x: 
     mergeModules (mkModuleA x) (mkModuleB x);
 
-  # FoldMap for module functions 
-  foldMap 
+  foldMapPages 
     # (a -> AttrSet -> AttrSet) -> [a] -> AttrSet -> AttrSet
     = f: 
       builtins.foldl' (m: x: mergePages m (f x)) (x: {});
 
-  # Fold for module functions
-  fold
+  foldPages
     # [ (AttrSet -> AttrSet) ] -> AttrSet -> AttrSet
-    = foldMap (x: x);
+    = foldMapPages (x: x);
 
   # This is a convenience function so users don't clutter up their content
   # with long bits of code for small things.
@@ -101,6 +99,7 @@ self: super:
     # forall r. [  String | { text : String | r } ] -> AttrSet
     = builtins.foldl' mergeTexts {};
 
+  # TODO: dead code
   foldTextsIx 
     # (forall r. Natural -> a -> { text : String | r } | String) -> [a] -> AttrSet
     = f: foldlIx (ix: m: x: mergeTexts m (f ix x)) {};
@@ -124,7 +123,7 @@ self: super:
   # (Remember: conix.fold [ ... ] : AttrSet -> AttrSet)
   merge
     # [ (AttrSet -> AttrSet) ] -> AttrSet
-    = x: fs: fold fs x;
+    = x: fs: foldPages fs x;
 
   extendLib = mkLib: f:
     mergePages mkLib f;
@@ -136,7 +135,7 @@ self: super:
       t
       texts_
       fold
-      foldMap
+      foldMapPages
       foldTextsIx
       foldlIx
       emptyModule
