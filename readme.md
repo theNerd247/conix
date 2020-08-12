@@ -101,6 +101,6 @@ system that helps authors make functional and beautiful digital books."_
 
 Many thanks to:
 
-  * [Gabriel Gonzalez]() for his mentorship and guidance. 
-  * [Evan Relf]() for his insightful feedback.
+  * [Gabriel Gonzalez](https://github.com/Gabriel439) for his mentorship and guidance. 
+  * [Evan Relf](https://github.com/evanrelf) for his insightful feedback.
 
