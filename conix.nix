@@ -3,20 +3,20 @@ self: super:
 {
   emptyModule = {};
 
-  mergeModule = 
+  mergeModules = 
     # AttrSet -> AttrSet -> AttrSet
     self.lib.attrsets.recursiveUpdate;
 
-  mergeModuleFunc 
+  mergePages 
     # (AttrSet -> AttrSet) -> (AttrSet -> AttrSet) -> AttrSet -> AttrSet
     = mkModuleA: mkModuleB: x: 
-    mergeModule (mkModuleA x) (mkModuleB x);
+    mergeModules (mkModuleA x) (mkModuleB x);
 
   # FoldMap for module functions 
   foldMap 
     # (a -> AttrSet -> AttrSet) -> [a] -> AttrSet -> AttrSet
     = f: 
-      builtins.foldl' (m: x: mergeModuleFunc m (f x)) (x: {});
+      builtins.foldl' (m: x: mergePages m (f x)) (x: {});
 
   # Fold for module functions
   fold
@@ -90,7 +90,7 @@ self: super:
     = a: b:
       if builtins.isString b 
       then a // (text_ ((a.text or "") + b))
-      else (mergeModule a b) // (text_ ((a.text or "") + b.text)); 
+      else (mergeModules a b) // (text_ ((a.text or "") + b.text)); 
 
   # The toplevel user API function for creating text blocks that have labelled
   # values inter-mixed. This allows users to content that can be referenced
@@ -127,7 +127,7 @@ self: super:
     = x: fs: fold fs x;
 
   extendLib = mkLib: f:
-    mergeModuleFunc mkLib f;
+    mergePages mkLib f;
 
   lib = x: 
     { inherit 
@@ -140,8 +140,8 @@ self: super:
       foldTextsIx
       foldlIx
       emptyModule
-      mergeModule
-      mergeModuleFunc;
+      mergeModules
+      mergePages;
 
       merge = merge x;
 
