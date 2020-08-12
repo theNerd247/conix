@@ -32,6 +32,10 @@ self: super:
     # (IsString t) => t -> { text : String }
     = text: { text = str text; };
 
+  modifyText
+    # IsString a => forall r. (Text -> a) -> { text : String | r } -> { text : String | r }
+    = f: t: t // (text_ (f t.text));
+
   # A convenience function for creating 
   # TODO: it might be a better user experience to rename this to `txt` instead.
   t = text_;
@@ -115,14 +119,16 @@ self: super:
     # [ (AttrSet -> AttrSet) ] -> AttrSet
     = x: fs: fold fs x;
 
-  mkLib = x: { lib =
+  extendLib = mkLib: f:
+    mergeModuleFunc mkLib f;
+
+  lib = x: 
     { inherit 
       str
       t
       texts_
       fold
       foldMap
-      foldMapModuleIx
       foldTextsIx
       foldlIx
       emptyModule
@@ -133,15 +139,4 @@ self: super:
 
       pkgs = self;
     };
-  };
-
-  # This is the evaluator for the module functions. It's return value is the
-  # toplevel attribute set that contains all of the user's content.
-  eval 
-    # (AttrSet -> AttrSet) -> AttrSet
-    = mkModule: 
-      let
-        toplevel = mergeModuleFunc mkModule mkLib;
-      in
-        self.lib.fix toplevel;
-}; }
+};}

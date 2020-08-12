@@ -6,69 +6,33 @@ with super.conix;
   rec
   { 
     table
-      # Path -> [ Text ] -> [[Text]] -> Module Text
-      = path: headers: rows: 
-      let
-        hdrs = mkHeaders headers;
+      # [ Text ] -> [[Text]] -> Module
+      = headers: rowsOfColumns: 
+        { text = lines
+            [ (rowText headers)
+              (rowText (builtins.map (_: "---") headers))
+              (lines (builtins.map rowText rowsOfColumns))
+            ];
+          data = rowsOfColumns;
+        };
 
-        tblContents = foldMapModulesIx rowToModule rows;
+    at 
+      # Natural -> [a] -> a
+      = row: col: xss: 
+        builtins.elemAt 
+          (builtins.elemAt xss row)
+          col;
 
-        tbl =
-          createPageFromModule [] (mergeModules hdrs tblContents);
+    rowText = xs:
+      builtins.concatStringsSep " | " (builtins.map builtins.toString xs);
 
-        rowsLength = 
-          hidden (setValue [ "rows" "length" ] (builtins.length rows));
+    lines = builtins.concatStringsSep "\n";
 
-        colsLength =
-          hidden (setValue [ "cols" "length" ] (builtins.length headers));
-
-        rowsData =
-          hidden (setValue [ "rows" "data" ] rows);
-
-        headersData =
-          hidden (setValue [ "headers" "data"] headers);
-      in
-        nestModule path (foldModules [ tbl rowsLength colsLength rowsData headersData ]);
-
-    mkHeaders = headers:
-      let
-        headerSep = builtins.concatStringsSep " | " (builtins.map (x: "---") headers); 
-      in
-        (nestModule [ "headers"  ] 
-          (mapVal (t: t + "\n" + headerSep) (foldMapModulesIx cellToModule headers))
-        );
-
-    #TODO: add generating modules where the page keys are
-    # the values of the first column and the subkeys are
-    # the values of 2nd+ header values and the text values
-    # are the corresponding column value for that row. 
-    #
-    # Here's what's going on here:
-    # 1. fold over list of text; creating a module for each cell that returns: 
-    #   { pages = { "0" = cell0; }; val = " | " + cell0 }
-    #  Note: the folding takes care of concatenating the cell strings together
-    # 2. Create a page for the resulting row text:
-    #   { pages = { text = "cell0 | cell1 | ..."; "0" = ...; "1" = ...; }; text = "cell0 | cell1 | ... ";}
-    # 3. map over the row text and prepend a newline character
-    # 4. nest the resulting pages under the row index:
-    #   { pages = { "0" = { text = "cell0 | cell1 | ..."; "0" = ...; "1" = ...; } }; text = "\ncell0 | cell1 | ... ";}
-    rowToModule = rowIx: columns:
-      nestModule [ "row${builtins.toString rowIx}" ]
-      ( createPageFromModule [] 
-        (mapVal 
-          (t: "\n" + t)
-          (foldMapModulesIx cellToModule columns)
-        )
-      );
-
-    cellToModule = colIx: colText:
-      mapVal 
-        (t: if colIx == 0 then t else " | " + t)
-        (text [ "col${builtins.toString colIx}" ] colText);
-
-    sortRows =  
-      builtins.sort (a: b: 
-        (builtins.elemAt a 0) < (builtins.elemAt b 0)
-      );
+    lib = super.conix.extendLib super.conix.lib (x:
+      { inherit 
+        table
+        at;
+      }
+    );
   };
 }
