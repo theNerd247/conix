@@ -7,96 +7,21 @@ let
   # this is the toplevel agreggation of the modules in question
   pkgs = import <nixpkgs> { overlays = (import ./default.nix); };
 
-  pages = pkgs.conix.buildPages [ folded baz ];
+  html = pkgs.conix.build.pandoc.htmlFile "test" "" [ pages.h ];
 
-  pdf = pkgs.conix.build.pdfFile "foo" (conix: conix.text [] "asdf");
+  pages = pkgs.conix.eval test;
 
-  folded = conix: 
-    (conix.moduleUsing ["boo"] ["baz" "joe"] 
-      (conix.foldMapModules (conix.text []))
-    );
-
-  toplevel = conix: conix.texts [] [
-    ''
-      # Document Header
-
-      ## Foo
-
-      ''(conix.textOf ["foo"])''
-
-      ## Bar
-
-      ''(conix.textOf ["bar"])''
-
-      ## Bang
-
-      ''(conix.textOf ["baz" "bang"])''
-
-      ## Blue
-
-      ''(conix.textOf ["blue"])''
-
-      ## Table
-
-      ''(conix.textOf ["t"])''
-    ''];
-
-  #everything below this could be placed in its own file
-  foo = conix: conix.text [ "foo" ]
-    ''
-      # Foo Title
-
-      test text
-    '';
-
-  bar = conix: conix.text [ "bar" ]  ''
-    # Bar page
-
-    Foo content
-
-    ${pages.foo.text} 
-  '';
-
-  baz = conix: conix.setValue [ "baz" "joe" ] [3 2 1];
-
-  bang = conix: conix.texts [ "baz" "bang" ] [''
-    # Bang Title! 
-
-    Here's some text....
-
-    '' (conix.text [ "gnab" ] "Gnab text!!") ''
-
-
-    ...and after text
-  ''];
-
-  blue = conix: conix.texts [ "blue" ] [
-    '' # Blue Title 
-
-    ''(conix.hidden (conix.text [ "b" ] "blue-data"))''
-
-      
-    Some more text in blue: ''(conix.textOf [ "blue" "b" ])''
-
-    and a table!: 
-
-    ''(conix.table ["s"] ["x"] [["y"]])''
-
-    The end: ''(conix.textOf [ "blue" "s" "row0" "col0"])
-  ];
-
-  trows = 
-    [ [ 40 2 42 ]
-      [ 4 5 9 ]
+  test = pkgs.conix.fold
+    [ 
+      (x: { c = 8; })
+      (x: { d = x.c + 2; })
+      (x: { e = x.lib.texts_ [ "foo" "bar" ]; })
+      (x: { f = with x.lib; texts_ [ "${str x.c} - as text" ]; })
+      (x: { g = with x.lib; texts_ [ (t "${str x.g.h} - as text") { h = 7; text = " and 7"; } ]; })
+      (x: with x.lib; { h = texts_ [ (t "${str x.h.i} - as text") { i = 7 + x.g.h; text = " and ${str x.h.i}"; } ]; })
     ];
-
-  theaders = [ "X" "Y" "Z = X+Y" ];
-
-  tbl = conix: conix.table [ "t" ] theaders trows;
-
 
 in
   { inherit pages;
     inherit (pkgs) conix;
-    inherit pdf;
   }

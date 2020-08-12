@@ -1,5 +1,6 @@
-[ (import ./pages.nix)
-  (import ./table.nix)
+[ 
+  (import ./conix.nix)
   (import ./meta.nix)
-  (import ./run.nix)
-] ++ (import ./builder)
+] 
+++ 
+(import ./builder)
