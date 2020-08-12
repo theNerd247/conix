@@ -3,7 +3,7 @@
 updates pushed to the master branch until the first major release.**
 
 Conix is a nix library for writing documents. It's primary goal is to make it
-easy to re-use pieces of your content without needing to write content.
+easy to re-use pieces your content without needing to write content.
 Eventually I'd like to use it to replace markdown and _maybe_ make it user
 friendly enough to replace word processors (for small things).
 
