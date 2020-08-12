@@ -116,15 +116,6 @@ self: super:
     = path: x: 
       (self.lib.attrsets.setAttrByPath path x) // (text_ x);
 
-  # This is a convenience function so users don't have to write:
-  #  
-  #  conix: conix.fold [...] conix;
-  #
-  # (Remember: conix.fold [ ... ] : AttrSet -> AttrSet)
-  merge
-    # [ (AttrSet -> AttrSet) ] -> AttrSet
-    = x: fs: foldPages fs x;
-
   extendLib = mkLib: f:
     mergePages mkLib f;
 
@@ -142,7 +133,14 @@ self: super:
       mergeModules
       mergePages;
 
-      merge = merge x;
+      # This is a convenience function so users don't have to write:
+      #  
+      #  conix: conix.fold [...] conix;
+      #
+      # (Remember: conix.fold [ ... ] : AttrSet -> AttrSet)
+      merge
+        # [ (AttrSet -> AttrSet) ] -> AttrSet
+        = x: fs: foldPages fs x;
 
       pkgs = self;
     };
