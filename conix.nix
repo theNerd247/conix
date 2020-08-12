@@ -1,6 +1,8 @@
 self: super:
 { conix = (super.conix or {}) // rec
 {
+  emptyModule = {};
+
   mergeModule = 
     # AttrSet -> AttrSet -> AttrSet
     self.lib.attrsets.recursiveUpdate;
@@ -95,6 +97,15 @@ self: super:
     # forall r. [  String | { text : String | r } ] -> AttrSet
     = builtins.foldl' mergeTexts {};
 
+  foldTextsIx 
+    # (forall r. Natural -> a -> { text : String | r } | String) -> [a] -> AttrSet
+    = f: foldlIx (ix: m: x: mergeTexts m (f ix x)) {};
+
+  foldlIx 
+    # (Natural -> b -> a -> b) -> b -> [a] -> b
+    = f: initB: as: 
+        (builtins.foldl' ({ix, b}: a: {ix = ix+1; b = f ix b a; }) {ix = 0; b = initB;} as).b;
+
   # This is a convenience function so users don't have to write:
   #  
   #  conix: conix.fold [...] conix;
@@ -109,8 +120,12 @@ self: super:
       str
       t
       texts_
-      foldMap
       fold
+      foldMap
+      foldMapModuleIx
+      foldTextsIx
+      foldlIx
+      emptyModule
       mergeModule
       mergeModuleFunc;
 
