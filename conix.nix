@@ -110,6 +110,13 @@ self: super:
     = f: initB: as: 
         (builtins.foldl' ({ix, b}: a: {ix = ix+1; b = f ix b a; }) {ix = 0; b = initB;} as).b;
 
+  # This is a convenience function for users to create new modules within texts
+  # without needing to manually create the attribute set with the `text` attribute
+  # inside of it.
+  label 
+    = path: x: 
+      (self.lib.attrsets.setAttrByPath path x) // (text_ x);
+
   # This is a convenience function so users don't have to write:
   #  
   #  conix: conix.fold [...] conix;
@@ -124,6 +131,7 @@ self: super:
 
   lib = x: 
     { inherit 
+      label
       str
       t
       texts_
