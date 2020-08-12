@@ -11,8 +11,8 @@ with super.conix;
     version = rec  
       { text = pureModule "${builtins.toString major}.${builtins.toString minor}.${builtins.toString patch}";
         major = 0; 
-        minor = 0; 
-        patch = 4; 
+        minor = 1; 
+        patch = 0; 
       };
   };
 }
