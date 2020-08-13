@@ -3,32 +3,36 @@ self: super:
 { conix = (super.conix or {}) // 
   { build = (super.conix.build or {}) //
     rec
-    { pandoc = outType: name: pages:
+    { pandoc = args@{buildInputs ? [], name, type, ...}:
         let
-          pandoc = self.pandoc;
-          outFileName = "${name}.${outType}";
-          contents = super.conix.build.markdown name pages;
+          contents = super.conix.build.markdown args;
+          fileName = "${name}.${type}";
         in
           self.stdenv.mkDerivation
           { inherit name;
-            buildInputs = [ pandoc self.texlive.combined.scheme-small ];
+            buildInputs = [ self.pandoc ] ++ buildInputs;
             dontUnpack = true;
             buildPhase = 
               ''
-                ${pandoc}/bin/pandoc -s -o ${outFileName} -f markdown ${contents}/${name}.md
+                ${self.pandoc}/bin/pandoc -s -o ${fileName} -f markdown ${contents}/${name}.md
               '';
             installPhase = 
               ''
                 mkdir -p $out
-                cp ${outFileName} $out/${outFileName}
+                cp ${fileName} $out/${fileName}
                 cp ${contents}/${name}.md $out/${name}.md
               '';
           };
 
-      pandocFile = outType: name: mkModule:
-        with super.conix; pandoc outType name [ (runModule mkModule) ];
-      pdfFile = pandocFile "pdf";
-      htmlFile = pandocFile "html";
+      htmlFile = args: pandoc
+        (args // { type = "html"; });
+
+      pdfFile = args: pandoc 
+        ( args // 
+          { type = "pdf"; 
+            buildInputs = [ self.texlive.combined.scheme-small ]; 
+          }
+        );
     };
   };
 }

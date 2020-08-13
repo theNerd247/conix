@@ -2,12 +2,14 @@ conix: with conix.lib; { design.goals = texts_ [
 # TODO: maybe shorten these goals down so they're title worthy?
 ''# Goals
 
+
 ''(md.list "list" [
     ''Allow users to describe relationships between different pieces of their
          content without breaking the natural flow of content.''
  
    "Provide intuitive build support for various output formats."
 ])''
+
 
 ## Goal 1
 
@@ -19,8 +21,8 @@ relationships between content.
 
 For example: 
 
-> there are ''(label ["ngoals"] (builtins.length conix.design.goals.list))'' 
-goals stated at the top of this document.
+> there are ''(label ["ngoals"] (builtins.length conix.design.goals.list))'' goals 
+stated at the top of this document.
 
 The number stated above is computed by counting the number of elements in the
 list above. This is a relationship between that statement and the list of

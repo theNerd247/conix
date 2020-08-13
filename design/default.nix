@@ -2,9 +2,10 @@ self: super:
 
 { conix = (super.conix or {}) //
   rec
-  { docs.design = 
+  { docs = (super.conix.docs or []) ++
       [ (import ./goals.nix)
         (import ./core.nix)
+        (import ./main.nix)
       ];
   };
 }
