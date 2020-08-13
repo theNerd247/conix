@@ -9,6 +9,8 @@ let
 
   html = pkgs.conix.build.pandoc.htmlFile "test" "" [ pages.h ];
 
+  design = pkgs.conix.eval (pkgs.conix.foldPages pkgs.conix.docs.design);
+
   pages = pkgs.conix.eval test;
 
   test = pkgs.conix.foldPages
@@ -36,5 +38,6 @@ in
   { inherit pages;
     inherit (pkgs) conix;
     inherit html;
+    inherit design;
     n = pkgs.writeText "foo.md" pages.design.core.text;
   }

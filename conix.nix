@@ -119,17 +119,7 @@ self: super:
       foldPages
       foldMapPages
       emptyModule
-      mergeModules
-      mergePages;
-
-      # This is a convenience function so users don't have to write:
-      #  
-      #  conix: conix.fold [...] conix;
-      #
-      # (Remember: conix.fold [ ... ] : AttrSet -> AttrSet)
-      merge
-        # [ (AttrSet -> AttrSet) ] -> AttrSet
-        = x: fs: foldPages fs x;
+      mergeModules;
 
       pkgs = self;
     };

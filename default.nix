@@ -4,6 +4,7 @@
   (import ./table.nix)
   (import ./markdown.nix)
   (import ./codeSnippets.nix)
+  (import ./design)
 ] 
 ++ 
 (import ./builder)
