@@ -52,6 +52,7 @@ self: super:
       if builtins.isAttrs e then printAttrs e
       else if builtins.isList e then printList e
       else if builtins.isNull e then "null"
+      else if builtins.isFunction e then "<lambda>"
       else builtins.toString e;
 
     printAttrs = e:

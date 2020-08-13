@@ -23,20 +23,20 @@ output module is some portion of that final module.
 
 For example:
 ''(conix.lib.nixSnippet "pagesSnippet" ''
-  with (import <nixpkgs> { 
-    overlays = import (builtins.fetchGit
-      { url = "https://github.com/theNerd247/conix.git";
-        rev = "4433a9d688d2be3d9dc6c4f6463398f1d731af58";
-        ref = "v0.1.0-api";
-      });
-  }).conix;
-
   let
-    page1 = (x: { page1 = { text = "My first page"; }; });
-    page2 = (x: { page2 = { text = "My second page is before $${x.page1.text}"; }; });
-    allPages = mergePages page1 page2;
+    conix = (import <nixpkgs> { 
+      overlays = import (builtins.fetchGit
+        { url = "https://github.com/theNerd247/conix.git";
+          rev = "c8f40f52b7b174bb965ca155fc3b48625c0db4de";
+          ref = "v0.1.0-api";
+        });
+    }).conix;
+
+    page1 = x: { page1 = { text = "My first page"; }; };
+    page2 = x: { page2 = { text = "My second page is before $${x.page1.text}"; }; };
+    allPages = conix.mergePages page1 page2;
   in
-    eval allPages
+    conix.eval allPages
 '')''
 
 `page1` and `page2` are pages that return a single module each. The `x` is
