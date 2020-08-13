@@ -3,16 +3,15 @@ let
     with builtins; 
       toString (length (filter (n: match "goal." n != null) (attrNames gs)));
 in
-conix: conix.texts [ "goals" ] [
+conix: { design.goals = conix.texts_ [
 # TODO: maybe shorten these goals down so they're title worthy?
 ''# Goals
 
-''(conix.texts [ "list" ] [
-"1. "
- (conix.text [ "goal1"] 
-   ''Allow users to describe relationships between different pieces of their
-   content without breaking the natural flow of content.''
- )''
+''({ list = [
+  { goal1 =
+     ''Allow users to describe relationships between different pieces of their
+       content without breaking the natural flow of content.'';
+  }
  
 1. ''
  (conix.text [ "goal2" ] 

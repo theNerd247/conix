@@ -87,11 +87,25 @@ self: super:
     nixSnippet = name: code: 
       nixSnippetWith name code evalPureNixExpr;
 
+    evalGitCmd
+      = name: fp:
+        let 
+          r = super.runCommandLocal name { buildInputs = [ super.git ]; } ''
+           ${builtins.readFile fp} | tee $out
+          '';
+        in
+          "${builtins.readFile r}";
+
+    gitCmd 
+      = name: code:
+        { ${name} = { text = cacheAndEvalNix name evalGitCmd code; }; }; 
+
     lib = super.conix.extendLib super.conix.lib (x: 
       { inherit
         snippet
         nixSnippet
-        nixSnippetWith;
+        nixSnippetWith
+        gitCmd;
       }
     );
   };
