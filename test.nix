@@ -11,7 +11,7 @@ let
 
   pages = pkgs.conix.eval test;
 
-  test = pkgs.conix.fold
+  test = pkgs.conix.foldPages
     [ 
       (x: { c = 8; })
       (x: { d = x.c + 2; })
@@ -25,16 +25,16 @@ let
           [ (x.i.at 0 0) (x.i.at 0 1)  ((x.i.at 1 0) + (x.i.at 1 1))]
         ];
       })
+      (import ./design/core.nix)
     ];
 
     n = pkgs.conix.nixSnippetWith 
         "textNix" 
         (builtins.readFile ./readme/sample.nix) 
         (fp: builtins.readFile "${import fp}/Volunteers.md");
-
 in
   { inherit pages;
     inherit (pkgs) conix;
     inherit html;
-    n = pkgs.writeText "foo.md" n.text;
+    n = pkgs.writeText "foo.md" pages.design.core.text;
   }

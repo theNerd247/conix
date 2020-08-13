@@ -1,4 +1,4 @@
-conix: { design.core = conix.texts [
+conix: { design.core = conix.lib.texts_ [
 ''# Core
 
 Conix's design is similar to the nixos module system. Below
@@ -22,12 +22,21 @@ as output. The input ALWAYS refers to the final module to be produced. The
 output module is some portion of that final module. 
 
 For example:
+''(conix.lib.nixSnippet "pagesSnippet" ''
+  with (import <nixpkgs> { 
+    overlays = import (builtins.fetchGit
+      { url = "https://github.com/theNerd247/conix.git";
+        ref = "v0.1.0-api";
+      });
+  }).conix;
 
-  ```nix
-  page1 = (x: { page1 = { text = "My first page"; }; })
-  page2 = (x: { page2 = { text = "My second page is before $${x.page1.text}"; }; })
-  allPages = mergePages page1 page2
-  ```
+  let
+    page1 = (x: { page1 = { text = "My first page"; }; });
+    page2 = (x: { page2 = { text = "My second page is before $${x.page1.text}"; }; });
+    allPages = mergePages page1 page2;
+  in
+    eval allPages
+'')''
 
 `page1` and `page2` are pages that return a single module each. The `x` is
 the input to for a page and refers to the final module that is created when
@@ -73,7 +82,9 @@ Text attributes in nested attribute sets _are not_ propagated up the tree. So
 
 Modules can be hand written by the user. However, recall one of the goals:
 
-> ''(conix.textOf [ "goals" "list" "goal1" ])''
+> '' #(conix.textOf [ "goals" "list" "goal1" ])''
+''
+
 Long story short a good portion of conix is simply providing functions to make
 this construction easier. This includes giving users access to the final 
 content tree. This is done by having the user construct functions of this type:
@@ -125,4 +136,4 @@ Below are some of the main files for this project:
   : conix a module that contains the project's meta data.
 
 
-'']
+'']; }

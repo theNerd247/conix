@@ -1,7 +1,5 @@
 self: super:
 
-with super.conix;
-
 { conix = (super.conix or {}) //
   rec
   { 
@@ -12,7 +10,7 @@ with super.conix;
       = mkModule: 
         let
           mkLib = x: { lib = super.conix.lib x; };
-          toplevel = mergeModuleFunc mkModule mkLib;
+          toplevel = super.conix.mergePages mkModule mkLib;
         in
           self.lib.fix toplevel;
   };

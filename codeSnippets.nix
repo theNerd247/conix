@@ -48,15 +48,19 @@ self: super:
       # FilePath -> String
       = fp: "${builtins.toString (import fp)}";
 
-    # Create a module using the given nix snippet code and the evaluated
-    # result.
+    # Create a module using the given nix snippet code and
+    # the evaluated result.
     #
     # The text is markdown (see snippet for the template)
-    nixSnippet = name: code: 
-      snippet "nix" code (cacheAndEvalNix name evalPureNixExpr code);
-
     nixSnippetWith = name: code: evalNixFilePath:
-      snippet "nix" code (cacheAndEvalNix name evalNixFilePath code);
+      let
+        module = snippet "nix" code 
+          (cacheAndEvalNix name evalNixFilePath code); 
+      in
+        { ${name} = module; } // (super.conix.text_ module.text);
+
+    nixSnippet = name: code: 
+      nixSnippetWith name code evalPureNixExpr;
 
     lib = super.conix.extendLib super.conix.lib (x: 
       { inherit
