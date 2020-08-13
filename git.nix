@@ -1,7 +1,3 @@
-#!/usr/bin/env nix-shell 
-#! nix-shell -p git -i bash
-
-cat > git.nix <<HERE
 self: super:
 
 with super.conix;
@@ -11,12 +7,12 @@ with super.conix;
   { git =
     rec
     { url = "https://github.com/theNerd247/conix.git"; 
-      rev = "$(git rev-parse HEAD)"
-      rev = "$(git branch --show-current)"
+      rev = "be7c436367eb7ed36b306aa3ba983cb73e8e7dba"
+      rev = "v0.1.0-api"
       text = ''
-        { url = \${url};
-          rev = \${rev};
-          ref = \${ref};
+        { url = ${url};
+          rev = ${rev};
+          ref = ${ref};
         }
       '';
     };
@@ -26,4 +22,3 @@ with super.conix;
     );
   };
 }
-HERE
