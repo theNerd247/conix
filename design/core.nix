@@ -26,7 +26,7 @@ For example:
   with (import <nixpkgs> { 
     overlays = import (builtins.fetchGit
       { url = "https://github.com/theNerd247/conix.git";
-        rev = "94a21030965aaf179b976eab33e86bebec8574b7";
+        rev = "4433a9d688d2be3d9dc6c4f6463398f1d731af58";
         ref = "v0.1.0-api";
       });
   }).conix;

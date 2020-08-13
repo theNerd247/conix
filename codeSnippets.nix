@@ -46,7 +46,31 @@ self: super:
     #'';
     evalPureNixExpr 
       # FilePath -> String
-      = fp: "${builtins.toString (import fp)}";
+      = fp: "${printNixVal (import fp)}";
+
+    printNixVal = e:
+      if builtins.isAttrs e then printAttrs e
+      else if builtins.isList e then printList e
+      else if builtins.isNull e then "null"
+      else builtins.toString e;
+
+    printAttrs = e:
+      let
+        printElem = name: value:
+          "${name} = ${ printNixVal value };";
+
+        printElems = 
+          builtins.concatStringsSep " "
+            (super.lib.attrsets.mapAttrsToList printElem e);
+      in
+        "{ ${printElems} }";
+
+    printList = e:
+      let
+        printElems = builtins.concatStringsSep " "
+          (builtins.map printNixVal e);
+      in
+        "[ ${printElems} ]";
 
     # Create a module using the given nix snippet code and
     # the evaluated result.
