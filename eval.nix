@@ -11,7 +11,8 @@ self: super:
         let
           mkLib = x: { lib = super.conix.lib x; };
           toplevel = super.conix.mergePages mkModule mkLib;
+          finalModule = self.lib.fix toplevel;
         in
-          self.lib.fix toplevel;
+          builtins.removeAttrs finalModule ["lib"];
   };
 }
