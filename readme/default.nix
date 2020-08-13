@@ -23,21 +23,29 @@ To try out conix:
 ''(conix.lib.nixSnippet "volunteersSnippet" ''
   with (import <nixpkgs> { 
     overlays = import (builtins.fetchGit
-      { url = "${conix.lib.gitHttpUrl}";
-        rev = "${conix.lib.gitHeadHash}";
-        ref = "v0.1.0-api";
-      });
-  }).conix;
+      ${conix.lib.indent 4 conix.lib.git.text}
+    );
+  }).conix.build.markdown { name = "Volunteers"; text = conix: with conix.lib; texts_ [
 
-  let 
-    page1 = x: { page1 = { text = "My first page"; }; };
-    page2 = x: { page2 = { text = "My second page is before $${x.page1.text}"; }; };
-    allPages = mergePages page1 page2;
-  in
-    eval allPages
-'')''
+'''# Volunteer Handbook
 
-``
+## Emergency Plan
+
+Incase of an emergency please contact: '''
+(t (conix.contacts.at 2 0))" at "(t (conix.contacts.at 2 1))'''.
+
+## Volunteer Contacts 
+
+_Volunteers still needed!: '''(t (builtins.length conix.contacts.data))'''_
+
+( label "contacts" (table
+    ["Name" "Phone" ]
+  [ ["John"   "555-123-4563"]
+    ["Jacob"  "555-321-9872"]
+    ["Jingle" "555-231-7589"]
+  ];
+))
+]}
 
 ''#TODO: add the code samples corresponding to each item.
 ''

@@ -31,7 +31,7 @@ For example:
 
   let 
     page1 = x: { page1 = { text = "My first page"; }; };
-    page2 = x: { page2 = { text = "My second page is before $${x.page1.text}"; }; };
+    page2 = x: { page2 = { text = "My second page is before ''${x.page1.text}"; }; };
     allPages = mergePages page1 page2;
   in
     eval allPages
