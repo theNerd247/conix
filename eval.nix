@@ -14,5 +14,9 @@ self: super:
           finalModule = self.lib.fix toplevel;
         in
           builtins.removeAttrs finalModule ["lib"];
+
+    evalPages
+      # [ (AttrSet -> AttrSet) ] -> AttrSet
+      = pages: eval (super.conix.foldPages pages);
   };
 }

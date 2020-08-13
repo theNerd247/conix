@@ -9,7 +9,7 @@ let
 
   html = pkgs.conix.build.pandoc.htmlFile "test" "" [ pages.h ];
 
-  design = pkgs.conix.eval (pkgs.conix.foldPages pkgs.conix.docs.design);
+  design = pkgs.conix.evalPages pkgs.conix.docs.design;
 
   pages = pkgs.conix.eval test;
 
