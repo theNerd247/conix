@@ -25,7 +25,7 @@ let
           [ (x.i.at 0 0) (x.i.at 0 1)  ((x.i.at 1 0) + (x.i.at 1 1))]
         ];
       })
-      (import ./design/core.nix)
+      (import ./design/goals.nix)
     ];
 
     n = pkgs.conix.nixSnippetWith 
