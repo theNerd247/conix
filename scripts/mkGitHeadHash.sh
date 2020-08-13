@@ -11,12 +11,12 @@ with super.conix;
   { git =
     rec
     { url = "https://github.com/theNerd247/conix.git"; 
-      rev = "$(git rev-parse HEAD)"
-      rev = "$(git branch --show-current)"
+      rev = "$(git rev-parse HEAD)";
+      ref = "$(git branch --show-current)";
       text = ''
-        { url = \${url};
-          rev = \${rev};
-          ref = \${ref};
+        { url = "\${url}";
+          rev = "\${rev}";
+          ref = "\${ref}";
         }
       '';
     };

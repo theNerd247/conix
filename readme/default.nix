@@ -1,7 +1,5 @@
-(import <nixpkgs> { overlays = import ../default.nix; }).conix.build.htmlFile "readme" 
-
-(conix: conix.texts [] [
-''# ''(conix.homePageLink)" - "(conix.version.text)" - "(conix.buildStatusBadgeMd)''
+conix: with conix.lib; { readme = texts_ [
+''# ${homePageLink} - ${version.text} - ${buildStatusBadgeMd}
 
 **Notice: This project is a work in progress and the API will have major
 updates pushed to the master branch until the first major release.**
@@ -22,16 +20,24 @@ To try out conix:
 1. Open the `result/Volunteers.md` file. ''#TODO: replace with generated html file.
 ''
 
+''(conix.lib.nixSnippet "volunteersSnippet" ''
+  with (import <nixpkgs> { 
+    overlays = import (builtins.fetchGit
+      { url = "${conix.lib.gitHttpUrl}";
+        rev = "${conix.lib.gitHeadHash}";
+        ref = "v0.1.0-api";
+      });
+  }).conix;
 
-__Markdown Sample__
-```markdown
-${builtins.readFile "${import ./sample.nix}/Volunteers.md"}
-```
+  let 
+    page1 = x: { page1 = { text = "My first page"; }; };
+    page2 = x: { page2 = { text = "My second page is before $${x.page1.text}"; }; };
+    allPages = mergePages page1 page2;
+  in
+    eval allPages
+'')''
 
-__Conix Sample__
-```nix
-${builtins.readFile ./sample.nix}
-```
+``
 
 ''#TODO: add the code samples corresponding to each item.
 ''
@@ -70,4 +76,4 @@ Many thanks to:
   * [Gabriel Gonzalez]() for his mentorship and guidance. 
   * [Evan Relf]() for his insightful feedback.
 
-''])
+'']; }

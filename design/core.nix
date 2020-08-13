@@ -24,11 +24,9 @@ output module is some portion of that final module.
 For example:
 ''(conix.lib.nixSnippet "pagesSnippet" ''
   with (import <nixpkgs> { 
-    overlays = import (builtins.fetchGit
-      { url = "${conix.lib.gitHttpUrl}";
-        rev = "${conix.lib.gitHeadHash}";
-        ref = "v0.1.0-api";
-      });
+    overlays = import (builtins.fetchGit 
+      ${conix.lib.git.text}
+    );
   }).conix;
 
   let 

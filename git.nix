@@ -7,12 +7,12 @@ with super.conix;
   { git =
     rec
     { url = "https://github.com/theNerd247/conix.git"; 
-      rev = "be7c436367eb7ed36b306aa3ba983cb73e8e7dba"
-      rev = "v0.1.0-api"
+      rev = "1294759777c4bd9b3e237e446480b67effb9282a";
+      ref = "v0.1.0-api";
       text = ''
-        { url = ${url};
-          rev = ${rev};
-          ref = ${ref};
+        { url = "${url}";
+          rev = "${rev}";
+          ref = "${ref}";
         }
       '';
     };
