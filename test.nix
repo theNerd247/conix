@@ -27,8 +27,14 @@ let
       })
     ];
 
+    n = pkgs.conix.nixSnippetWith 
+        "textNix" 
+        (builtins.readFile ./readme/sample.nix) 
+        (fp: builtins.readFile "${import fp}/Volunteers.md");
+
 in
   { inherit pages;
     inherit (pkgs) conix;
     inherit html;
+    n = pkgs.writeText "foo.md" n.text;
   }

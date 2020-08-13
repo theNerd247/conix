@@ -1,7 +1,8 @@
 self: super:
 { conix = (super.conix or {}) // rec
 {
-  emptyModule = {};
+  emptyModule 
+    = {};
 
   mergeModules = 
     # AttrSet -> AttrSet -> AttrSet
@@ -115,10 +116,8 @@ self: super:
       str
       t
       texts_
-      fold
+      foldPages
       foldMapPages
-      foldTextsIx
-      foldlIx
       emptyModule
       mergeModules
       mergePages;
