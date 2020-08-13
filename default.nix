@@ -5,6 +5,7 @@
   (import ./table.nix)
   (import ./markdown.nix)
   (import ./codeSnippets.nix)
+  (import ./textBlock.nix)
   (import ./design)
 ] 
 ++ 

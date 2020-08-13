@@ -25,7 +25,7 @@ For example:
 ''(conix.lib.nixSnippet "pagesSnippet" ''
   with (import <nixpkgs> { 
     overlays = import (builtins.fetchGit 
-      ${conix.lib.git.text}
+      ${conix.lib.indent 4 conix.lib.git.text}
     );
   }).conix;
 

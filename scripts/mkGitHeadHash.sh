@@ -18,7 +18,7 @@ with super.conix;
           rev = "\${rev}";
           ref = "\${ref}";
         }
-      '';
+        '';
     };
 
     lib = super.conix.extendLib super.conix.lib (x:
