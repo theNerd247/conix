@@ -1,6 +1,38 @@
 self: super:
 { conix = (super.conix or {}) // rec
 {
+  # AST 
+  #  -> Text     ---> concatenated / manipulated as we go up the tree
+  #  => Drv      ---> copy joined/manipulated as we go up the tree
+  #  -> UserData ---> nested / merged as we go up the tree
+  # 
+  # data ContentF a 
+  # -- Merges evaluated set `a`s together. `drv` is copyJoined and `text` is concatenated.
+  #  = Merge [a]
+  # -- Merges evaluated set `a` with the stored set
+  #  | Data AttrSet a
+  # -- Nests evaluated set `a` inside of stored path (`text` and `drv` are copied to toplevel)
+  #  | Label Path a
+  # -- Does nothing; passes set `a` along
+  #  | Markdown (MarkdownF a)
+  # -- Adds copy of files to `drv` in set `a`
+  #  | Include FilePath a
+  #
+  # data FileStructureF a
+  # -- Copy join `drv`s and nest them under stored directory name
+  #  | Dir Name [a]
+  # -- Take the `text` in set `a` and write it to a file at Name. Resulting `drv` is
+  # copyJoined with `drv` in set `a`.
+  #  | File Name a
+  #
+  # -- These are shorthands for larger expressions that could be formed by
+  # ContentF along with their respective formattings.
+  # data MarkdownF a
+  #  = Table [a] [[a]]
+  #  | List [a]
+  #  | CodeBlock (Maybe Language) a
+  #  TODO: include all of markdown syntax here?
+
   emptyModule 
     = {};
 

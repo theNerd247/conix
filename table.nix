@@ -5,6 +5,7 @@ with super.conix;
 { conix = (super.conix or {}) //
   rec
   { 
+
     table
       # [ Text ] -> [[Text]] -> Module
       = headers: rowsOfColumns: rec
