@@ -10,6 +10,11 @@ rec
     inherit contentsList; 
   };
 
+  _modifyText = modifyText: contents:
+  { _type = "modifyText";
+    inherit contents;
+  };
+
   _data = data: contents: {
     _type = "data";
     inherit contents;
@@ -33,27 +38,15 @@ rec
     inherit contentsList;
   };
 
-  _codeblock = language: contents: {
-    _type = "codeblock";
-    inherit language;
-    inherit contents;
-  };
-
-  _include = filePath: contents: {
+  _include = drv: contents: {
     _type = "include";
-    inherit filePath;
+    inherit drv;
     inherit contents;
   };
 
   _dir = path: contents: {
     _type = "dir";
     inherit path;
-    inherit contents;
-  };
-
-  _file = name: contents: {
-    _type = "file";
-    inherit name;
     inherit contents;
   };
 
@@ -69,14 +62,13 @@ rec
   # TODO: verify this implementation does create infinite recursions.
   fmap = f: matchOn { 
     pure = x: x;
-    codeblock = x: x // { contents = f x.contents; };
     data = x: x // { contents = f x.contents; };
     dir = x: x // { contents = f x.contents; };
-    file = x: x // { contents = f x.contents; };
     include = x: x // { contents = f x.contents; };
     label = x: x // { contents = f x.contents; };
     list = x: x // { contentsList = builtins.map f x.contentsList; };
     merge = x: x // { contentsList = builtins.map f x.contentsList; };
+    modifyText = x: x // { contents = f x.contents; };
     table = x: x // { headers = builtins.map f x.headers; rows = builtins.map (builtins.map f) x.rows; };
   };
 
