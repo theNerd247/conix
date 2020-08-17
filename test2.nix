@@ -24,14 +24,20 @@ let
   nest = pkgs.lib.attrsets.setAttrByPath;
   splitString = pkgs.lib.strings.splitString;
 
-  finalDrv = pkgs.copyJoin;
+  finalDrv = name: res: pkgs.copyJoin name res.drv;
 
   # Module -> AST?
 in
 rec { 
   inherit M finalDrv;
 
-  n = finalDrv "foos" (M.cata eval (M._file "foo" (M._include ./builder (M._pure 3)))).drv;
+  n = finalDrv "foos" 
+  (M.cata eval 
+    (M._dir "bar"
+      (M._file "foo" 
+        (M._include ./builder 
+          (M._pure 3)
+  ))));
 
   eval = M.matchOn
     { pure = x: { text = builtins.toString x.data; drv = emptyDrv; };
@@ -40,7 +46,11 @@ rec {
 
       data = x: mergeAttrSets (builtins.removeAttrs x.data ["text" "drv"]) x.contents;
 
-      dir = x: throw "Evaluator for 'dir' not implemented!";
+      dir = x: 
+        let
+          drv = pkgs.copyJoin x.path x.contents.drv;
+        in
+          x.contents // { drv = [ drv ]; };
 
       file = x: 
         let

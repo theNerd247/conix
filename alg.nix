@@ -45,10 +45,10 @@ rec
     inherit contents;
   };
 
-  _dir = name: contentsList: {
+  _dir = path: contents: {
     _type = "dir";
-    inherit name;
-    inherit contentsList;
+    inherit path;
+    inherit contents;
   };
 
   _file = name: contents: {
@@ -71,7 +71,7 @@ rec
     pure = x: x;
     codeblock = x: x // { contents = f x.contents; };
     data = x: x // { contents = f x.contents; };
-    dir = x: x // { contentsList = builtins.map f x.contentsList; };
+    dir = x: x // { contents = f x.contents; };
     file = x: x // { contents = f x.contents; };
     include = x: x // { contents = f x.contents; };
     label = x: x // { contents = f x.contents; };
