@@ -19,7 +19,7 @@ let
 
   mergeDrvs = a: b: a ++ b;
   emptyDrv = [];
-  foldDrvs = builtins.foldl' mergeDrvs emptyDrv;
+  foldDrvs = builtins.foldl' (a: b: mergeDrvs a b.drv) emptyDrv;
   mergeAttrSets = pkgs.lib.attrsets.recursiveUpdate;
   nest = pkgs.lib.attrsets.setAttrByPath;
   splitString = pkgs.lib.strings.splitString;
@@ -36,8 +36,12 @@ rec {
     (M._dir "bar"
       (M._file "foo" 
         (M._include ./builder 
-          (M._pure 3)
+          (texts ["foo bar: " (M._label "baz" (M._pure 3)) ])
   ))));
+
+  toAST = x: if (x._type or null) != null then x else M._pure x;
+
+  texts = xs: M._merge (builtins.map toAST xs);
 
   eval = M.matchOn
     { pure = x: { text = builtins.toString x.data; drv = emptyDrv; };
@@ -73,7 +77,7 @@ rec {
 
       merge = x: 
         let
-          text = builtins.concatStringsSep "" x.contentsList; 
+          text = builtins.concatStringsSep "" (builtins.map (r: r.text) x.contentsList); 
           drv = foldDrvs x.contentsList;
           xs = builtins.foldl' mergeAttrSets {} x.contentsList;
         in
