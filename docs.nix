@@ -4,7 +4,10 @@ conix: { lib = rec
       if func ? docstr then ''
 
       ${func.docstr or ""}
-      ${name} : `${func.type or (throw "${name} missing docs.${name}.type assignment")}`
+
+      ```haskell
+      ${name} :: ${func.type or (throw "${name} missing docs.${name}.type assignment")}
+      ```
 
       ''
       else ""
@@ -12,12 +15,26 @@ conix: { lib = rec
 
   refDocs = 
     let 
-      docsText = 
-        conix.lib.texts (
+      docsText = conix.lib.texts (
+        [ ''
+          # Conix Documentation
+
+          ## Reference
+          ''
+        ] ++
+        (
           conix.pkgs.lib.attrsets.mapAttrsToList
           mkDocLine
           (builtins.removeAttrs conix.lib.docs ["text" "drv"])
-        );
+        ) ++
+        [ ''
+          ## Discussion
+
+          ### Modules
+          ''
+          conix.lib.docs.modules.discussion
+        ]
+      );
 
       drv = conix.lib.htmlFile "conixDocs" docsText;
     in

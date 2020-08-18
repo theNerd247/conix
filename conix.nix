@@ -3,7 +3,9 @@ pkgs: { lib = rec {
   docs.modules.discussion = ''
     Modules are the core of conix. Their type is defined as:
    
-     Module = { text : String; ... }
+    ```haskell
+    Module = { text : String; ... }
+    ```
    
     The rest of the attribute set defines the structure of the user's
     content (including the derivations containing the rendered output).
@@ -11,10 +13,13 @@ pkgs: { lib = rec {
     For example the final module describing a single markdown file might
     look like:
    
-     { drv = <derivation>; 
-       text = "Call me at: 555-123-456"; 
-       phone = "555-123-456"; 
-     }
+    ```nix
+    { drv = <derivation>; 
+      text = "Call me at: 555-123-456"; 
+      phone = "555-123-456"; 
+    }
+    ```
+
     Here the user has the text for the markdown file; the derivation of the
     built markdown file and some extra data containing the phone number.
    
