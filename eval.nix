@@ -36,6 +36,7 @@ in
               (import ./docs.nix)
               (import ./readme/default.nix)
               (import ./design/goals.nix)
+              (import ./copyJoin.nix)
               (x: core)
               # This is the docs attribute set defined in this file
               (x: { lib.docs = docs; }) 
