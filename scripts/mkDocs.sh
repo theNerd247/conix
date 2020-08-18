@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-readme=$(nix-build ./readme --show-trace)
-cp $readme/readme.md ./.
+docs=$(nix-build ./documentation.nix --show-trace)
+cp $docs/*.md ./.

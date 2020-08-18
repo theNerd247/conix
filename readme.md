@@ -1,4 +1,5 @@
-# <a href="https://github.com/theNerd247/conix.git">conix</a> - 0.0.4 - ![CI](https://github.com/theNerd247/conix/workflows/CI/badge.svg?branch=master)
+# <a href="https://github.com/theNerd247/conix.git">conix</a> - 0.1.0 - ![CI](https://github.com/theNerd247/conix/workflows/CI/badge.svg?branch=master)
+
 **Notice: This project is a work in progress and the API will have major
 updates pushed to the master branch until the first major release.**
 
@@ -16,74 +17,57 @@ To try out conix:
 1. Copy the conix sample into `conix-sample.nix` file.
 1. `nix-build ./conix-sample.nix`
 1. Open the `result/Volunteers.md` file. 
-
-__Markdown Sample__
-```markdown
-# Volunteer Handbook
-
-## Emergency Plan
-
-Incase of an emergency please contact: Jingle at 555-231-7589
-
-## Volunteer Contacts 
-
-_Volunteers still needed!: 5_
-
-Name | Phone
---- | ---
-John | 555-123-4563
-Jacob | 555-321-9872
-Jingle | 555-231-7589
-```
-
-__Conix Sample__
-```nix
-(import <nixpkgs> { 
-  overlays = import (builtins.fetchGit
-    { url = "https://github.com/theNerd247/conix.git";
-    });
-}).conix.build.markdownFile "Volunteers" 
-
-(conix: conix.texts [] [
-''# Volunteer Handbook
-
-## Emergency Plan
-
-Incase of an emergency please contact: '' (conix.textOf [ "contacts" "row2" "col0" ])" at "
-(conix.textOf ["contacts" "row2" "col1"]) ''
-
-
-## Volunteer Contacts 
-
-_Volunteers still needed!: ''
-(conix.mapVal (l: builtins.toString (8 - l)) (conix.at [ "contacts" "rows" "length"]))
-''_
-
-'' 
-(conix.table [ "contacts" ]
-  ["Name" "Phone" ]
-  [ ["John"   "555-123-4563"]
-    ["Jacob"  "555-321-9872"]
-    ["Jingle" "555-231-7589"]
-  ]
-)
-])
-
-```
-
 * The markdown sample was not hand written; the conix sample generated it.
 * The table in the markdown sample has some of its contents duplicated across
 the document. The conix sample simplifies this process.
 * The number of volunteers is a computed value based on the number of rows in 
   the table:
-* Conix provides an out-of-the-box build system for markdown (using
-[Pandoc](https://pandoc.org)).
+* Conix provides an out-of-the-box build system for markdown (using [Pandoc](https://pandoc.org)").
 
 # Goals
 
-1. Allow users to describe relationships between different pieces of their
-   content without breaking the natural flow of content. 
+# Goals
+
+
+1. Allow users to describe relationships between different pieces of their         content without breaking the natural flow of content.
 1. Provide intuitive build support for various output formats.
+
+## Goal 1
+
+> Allow users to describe relationships between different pieces of their         content without breaking the natural flow of content.
+
+Writing prose - especially technical documents - creates lot of implicit
+relationships between content.
+
+For example: 
+
+> there are 2 goals 
+stated at the top of this document.
+
+The number stated above is computed by counting the number of elements in the
+list above. This is a relationship between that statement and the list of
+goals. 
+
+Most of the time these relationships are very easy to determine in our heads
+and just write them down - I mean, how hard is it to count to 2. However, problems arise when the relationship
+changes or the content itself changes.
+
+For example, if I were to add another goal to the above list then chances are I
+would forget to go back and update the number in the above statement and some
+reader would tell me of the typo. I would be embarrassed to have overlooked
+such a small detail and yet easy number to come up with.
+
+## Goal 2
+
+> Provide intuitive build support for various output formats.
+Markdown is amazing. And for small standalone documents - like readme files -
+running a single command to build a file is easy. Heck, even hosted files on
+GitHub automatically render as markdown. However, many documents are not simple
+markdown files and often require messy build scripts.
+
+Conix aspires to hide as much of the build process for documents as possible.
+
+
 
 # Contributing
 
