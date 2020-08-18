@@ -13,7 +13,7 @@ in
     docs.build.type 
       = "Page -> Derivation";
     build
-      = page: (eval page).drv;
+      = page: (builtins.head (builtins.attrValues (eval page))).drv;
 
     docs.eval.docstr 
       = "This is the evaluator for a page and returns the final module.";
@@ -24,6 +24,7 @@ in
         let
           toplevel = core.lib.foldPages
             [ 
+              (x: { pkgs = self; })
               (import ./meta.nix)
               (import ./git.nix)
               (import ./table.nix)
@@ -31,6 +32,7 @@ in
               (import ./codeSnippets.nix)
               (import ./textBlock.nix)
               (import ./builder/markdown.nix)
+              (import ./docs.nix)
               (x: core)
               # This is the docs attribute set defined in this file
               (x: { lib.docs = docs; }) 
@@ -39,7 +41,7 @@ in
 
           finalModule = self.lib.fix toplevel;
         in
-          builtins.removeAttrs finalModule ["lib"];
+          builtins.removeAttrs finalModule ["lib" "pkgs" "text"];
 
     docs.evalPages.docstr = ''
       Convenience functions for collecting multiple pages and evaluating

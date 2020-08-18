@@ -62,9 +62,11 @@ pkgs: { lib = rec {
     = foldMapPages (x: x);
 
   docs.str.docstr = ''
+    An alias for `builtins.toString`
     This is a convenience function so users don't clutter up their content
     with long bits of code for small things.
   '';
+  docs.str.type = "(IsString t) => String";
   str = builtins.toString;
 
   docs.text.docstr = ''
@@ -75,9 +77,11 @@ pkgs: { lib = rec {
     = txt: { text = str txt; };
 
   docs.t.docstr = ''
+    This is an alias for `text`.
     A convenience function for creating 
     TODO: it might be a better user experience to rename this to `txt` instead.
   '';
+  docs.t.type = docs.text.type;
   t = text;
 
   docs.toTextModule.docstr = ''

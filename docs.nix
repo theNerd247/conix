@@ -1,20 +1,26 @@
-let 
-  conix = (import <nixpkgs> { 
-    overlays = import ./default.nix; 
-  }).conix;
+conix: { lib = rec
+{
+  mkDocLine = name: func: conix.lib.text (
+      if func ? docstr then ''
 
-  docs = conix.evalPages conix.docs;
+      ${func.docstr or ""}
+      ${name} : `${func.type or (throw "${name} missing docs.${name}.type assignment")}`
 
-  design = conix.build.htmlFile
-    { name = "design";
-      inherit (docs.design) text;
-    };
+      ''
+      else ""
+    );
 
-  readme = conix.build.htmlFile
-    { name = "readme";
-      inherit (docs.readme) text;
-    };
-in
-  { inherit design;
-    inherit readme;
-  }
+  refDocs = 
+    let 
+      docsText = 
+        conix.lib.texts (
+          conix.pkgs.lib.attrsets.mapAttrsToList
+          mkDocLine
+          (builtins.removeAttrs conix.lib.docs ["text" "drv"])
+        );
+
+      drv = conix.lib.markdownFile "conixDocs" docsText;
+    in
+      conix.lib.mergeModules docsText drv;
+
+};}
