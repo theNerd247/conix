@@ -1,49 +1,46 @@
 self: super:
 { conix = (super.conix or {}) // rec
 {
-  # AST 
-  #  -> Text     ---> concatenated / manipulated as we go up the tree
-  #  => Drv      ---> copy joined/manipulated as we go up the tree
-  #  -> UserData ---> nested / merged as we go up the tree
-  # 
-  # data ContentF a 
-  # -- Merges evaluated set `a`s together. `drv` is copyJoined and `text` is concatenated.
-  #  = Merge [a]
-  # -- Merges evaluated set `a` with the stored set
-  #  | Data AttrSet a
-  # -- Nests evaluated set `a` inside of stored path (`text` and `drv` are copied to toplevel)
-  #  | Label Path a
-  # -- Does nothing; passes set `a` along
-  #  | Markdown (MarkdownF a)
-  # -- Adds copy of files to `drv` in set `a`
-  #  | Include FilePath a
+  # Modules are the core of conix. Their type is defined as:
   #
-  # data FileStructureF a
-  # -- Copy join `drv`s and nest them under stored directory name
-  #  | Dir Name [a]
-  # -- Take the `text` in set `a` and write it to a file at Name. Resulting `drv` is
-  # copyJoined with `drv` in set `a`.
-  #  | File Name a
+  #  Module = { text : String; ... }
   #
-  # -- These are shorthands for larger expressions that could be formed by
-  # ContentF along with their respective formattings.
-  # data MarkdownF a
-  #  = Table [a] [[a]]
-  #  | List [a]
-  #  | CodeBlock (Maybe Language) a
-  #  TODO: include all of markdown syntax here?
+  # The rest of the attribute set defines the structure of the user's
+  # content (including the derivations containing the rendered output).
+  #
+  # For example the final module describing a single markdown file might
+  # look like:
+  #
+  #  { drv = <derivation>; 
+  #    text = "Call me at: 555-123-456"; 
+  #    phone = "555-123-456"; 
+  #  }
+  # Here the user has the text for the markdown file; the derivation of the
+  # built markdown file and some extra data containing the phone number.
+  #
+  # Modules are meant to allow the user to describe the textual structure of
+  # their content and the structure of the rendered in the same data structure.
 
+  # The empty module contains nothing. The core functions defined in this file
+  # treat the missing text value as an empty string to save memory.
   emptyModule 
     = {};
 
-  mergeModules = 
+  # Modules merge by recursiveUpdate but the toplevel text fields
+  # are concatenated.
+  mergeModules = a: b:
     # AttrSet -> AttrSet -> AttrSet
-    self.lib.attrsets.recursiveUpdate;
+    (self.lib.attrsets.recursiveUpdate a b) 
+    // { text = (a.text or "") + (b.text or ""); };
 
+  # A Page is the toplevel type used throughout conix. 
   mergePages 
     # (AttrSet -> AttrSet) -> (AttrSet -> AttrSet) -> AttrSet -> AttrSet
     = mkModuleA: mkModuleB: x: 
     mergeModules (mkModuleA x) (mkModuleB x);
+
+  foldMapModules
+    = f: builtins.foldl' (m: x: mergeModules m (f x)) emptyModule;
 
   foldMapPages 
     # (a -> AttrSet -> AttrSet) -> [a] -> AttrSet -> AttrSet
@@ -59,17 +56,13 @@ self: super:
   str = builtins.toString;
 
   # Constructor for creating storing text content.
-  text_ 
+  text
     # (IsString t) => t -> { text : String }
-    = text: { text = str text; };
-
-  modifyText
-    # IsString a => forall r. (Text -> a) -> { text : String | r } -> { text : String | r }
-    = f: t: t // (text_ (f t.text));
+    = txt: { text = str txt; };
 
   # A convenience function for creating 
   # TODO: it might be a better user experience to rename this to `txt` instead.
-  t = text_;
+  t = text;
 
   # This is the core function that makes conix work.  It merges the current
   # attribute set and preserves the concatenates the toplevel text values. If
@@ -116,42 +109,41 @@ self: super:
   # Will work.
   # 
   # 
-  mergeTexts 
-    # forall r. { text : String | r } -> String | { text : String | r }  -> { text : String | r }
-    = a: b:
-      if builtins.isString b 
-      then a // (text_ ((a.text or "") + b))
-      else (mergeModules a b) // (text_ ((a.text or "") + b.text)); 
+  toTextModule 
+    # forall r. (String | Module)  -> Module
+    = x: if builtins.isString x then text x else x;
 
   # The toplevel user API function for creating text blocks that have labelled
   # values inter-mixed. This allows users to content that can be referenced
   # within other parts of their document.
   # 
   # See the documentation for mergeTexts.
-  texts_ 
-    # forall r. [  String | { text : String | r } ] -> AttrSet
-    = builtins.foldl' mergeTexts {};
+  texts 
+    # forall r. [  String | Module ] -> AttrSet
+    = foldMapModules toTextModule;
 
   # This is a convenience function for users to create new modules within texts
-  # without needing to manually create the attribute set with the `text` attribute
-  # inside of it.
+  # without needing to manually create modules
   label 
+    # Path -> Module -> Module
     = path: x: 
-      (self.lib.attrsets.setAttrByPath path x) // (text_ x);
+      (self.lib.attrsets.setAttrByPath path x) // (text x);
 
   extendLib = mkLib: f:
     mergePages mkLib f;
 
   lib = x: 
     { inherit 
-      label
-      str
-      t
-      texts_
-      foldPages
-      foldMapPages
-      emptyModule
-      mergeModules;
+        emptyModule
+        foldMapModules
+        foldMapPages
+        foldPages
+        label
+        mergeModules
+        str
+        t
+        texts
+      ;
 
       pkgs = self;
     };
