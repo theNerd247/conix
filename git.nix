@@ -2,7 +2,7 @@ conix: { lib = rec
   { git =
     rec
     { url = "https://github.com/theNerd247/conix.git"; 
-      rev = "10ddc35ad608ed67983a4713a845b785a143c3f1";
+      rev = "6f028fdcce550db7550c8f70ded1edd604841f85";
       ref = "v0.1.0-api";
       text = ''
         { url = "${url}";
