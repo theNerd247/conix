@@ -21,7 +21,7 @@ relationships between content.
 
 For example: 
 
-> there are ''(label ["ngoals"] (builtins.length conix.lib.docs.goals.list))'' goals 
+> there are ''(label "ngoals" (builtins.length conix.lib.docs.goals.list))'' goals 
 stated at the top of this document.
 
 The number stated above is computed by counting the number of elements in the
