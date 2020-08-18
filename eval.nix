@@ -32,6 +32,7 @@ in
               (import ./codeSnippets.nix)
               (import ./textBlock.nix)
               (import ./builder/markdown.nix)
+              (import ./builder/pandoc.nix)
               (import ./docs.nix)
               (x: core)
               # This is the docs attribute set defined in this file

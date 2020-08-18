@@ -1,38 +1,29 @@
-self: super:
+conix: { lib = rec
+  { pandoc = name: type: buildInputs: module:
+      let
+        contents = (conix.lib.markdownFile name module).drv;
+        fileName = "${name}.${type}";
+      
+        drv = conix.pkgs.stdenv.mkDerivation
+        { inherit name;
+          buildInputs = [ conix.pkgs.pandoc ] ++ buildInputs;
+          dontUnpack = true;
+          buildPhase = 
+            ''
+              ${conix.pkgs.pandoc}/bin/pandoc -s -o ${fileName} -f markdown ${contents}
+            '';
+          installPhase = 
+            ''
+              mkdir -p $out
+              cp ${fileName} $out/${fileName}
+              cp ${contents} $out/${name}.md
+            '';
+        };
+      in
+        { inherit drv; };
 
-{ conix = (super.conix or {}) // 
-  { build = (super.conix.build or {}) //
-    rec
-    { pandoc = args@{buildInputs ? [], name, type, ...}:
-        let
-          contents = super.conix.build.markdown args;
-          fileName = "${name}.${type}";
-        in
-          self.stdenv.mkDerivation
-          { inherit name;
-            buildInputs = [ self.pandoc ] ++ buildInputs;
-            dontUnpack = true;
-            buildPhase = 
-              ''
-                ${self.pandoc}/bin/pandoc -s -o ${fileName} -f markdown ${contents}/${name}.md
-              '';
-            installPhase = 
-              ''
-                mkdir -p $out
-                cp ${fileName} $out/${fileName}
-                cp ${contents}/${name}.md $out/${name}.md
-              '';
-          };
+    htmlFile = name: pandoc name "html" [];
 
-      htmlFile = args: pandoc
-        (args // { type = "html"; });
-
-      pdfFile = args: pandoc 
-        ( args // 
-          { type = "pdf"; 
-            buildInputs = [ self.texlive.combined.scheme-small ]; 
-          }
-        );
-    };
+    pdfFile = name: pandoc name "pdf" [ conix.pkgs.texlive.combined.scheme-small ]; 
   };
 }

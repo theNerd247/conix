@@ -19,7 +19,7 @@ conix: { lib = rec
           (builtins.removeAttrs conix.lib.docs ["text" "drv"])
         );
 
-      drv = conix.lib.markdownFile "conixDocs" docsText;
+      drv = conix.lib.htmlFile "conixDocs" docsText;
     in
       conix.lib.mergeModules docsText drv;
 
