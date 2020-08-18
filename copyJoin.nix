@@ -1,5 +1,10 @@
 conix: { lib =
-  { copyJoin = name: pathsOrModules:
+  { 
+    docs.dir.docstr = ''
+      Copy the modules, derivations, and paths into a directory with the given name.
+      '';
+    docs.dir.type = "Name -> [ Module | Derivation | Path ] -> { drv : derivation }";
+    dir = name: pathsOrModules:
       let
         paths = builtins.map (x: if x ? drv then x.drv else x) pathsOrModules;
 
@@ -8,7 +13,7 @@ conix: { lib =
         mkdir -p $out
         for i in $(cat $pathsPath); do
           if [[ -d $i ]]; then
-            cp -r $i/ $out/$(stripHash $i)
+            cp -r $i/* $out/
           else
             cp $i $out/$(stripHash $i)
           fi

@@ -14,30 +14,24 @@ conix: { lib = rec
     );
 
   refDocs = 
-    let 
-      docsText = conix.lib.texts (
-        [ ''
-          # Conix Documentation
+     conix.lib.texts (
+      [ ''
+        # Conix Documentation
 
-          ## Reference
-          ''
-        ] ++
-        (
-          conix.pkgs.lib.attrsets.mapAttrsToList
-          mkDocLine
-          (builtins.removeAttrs conix.lib.docs ["text" "drv"])
-        ) ++
-        [ ''
-          ## Discussion
+        ## Reference
+        ''
+      ] ++
+      (
+        conix.pkgs.lib.attrsets.mapAttrsToList
+        mkDocLine
+        (builtins.removeAttrs conix.lib.docs ["text" "drv"])
+      ) ++
+      [ ''
+        ## Discussion
 
-          ### Modules
-          ''
-          conix.lib.docs.modules.discussion
-        ]
-      );
-
-      drv = conix.lib.htmlFile "docs" docsText;
-    in
-      conix.lib.mergeModules docsText drv;
-
+        ### Modules
+        ''
+        conix.lib.docs.modules.discussion
+      ]
+    );
 };}
