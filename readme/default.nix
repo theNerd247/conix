@@ -21,35 +21,7 @@ To try out conix:
 ''
 
 ''
-(conix.lib.nixSnippet "volunteersSnippet" ''
-(import <nixpkgs> { 
-  overlays = import (builtins.fetchGit
-    ${conix.lib.indent 4 conix.lib.git.text}
-  );
-}).conix.build 
-(conix: { data = with conix.lib; using (markdownFile "Volunteers") (texts [
-
-'''# Volunteer Handbook
-
-## Emergency Plan
-
-Incase of an emergency please contact: '''
-(t (conix.data.contacts.at 2 0))" at "(t (conix.data.contacts.at 2 1))'''.
-
-## Volunteer Contacts 
-
-_Volunteers still needed!: '''(t (8 - (builtins.length conix.data.contacts.data)))'''_
-'''
-(label "contacts" (table
-    ["Name" "Phone" ]
-  [ ["John"   "555-123-4563"]
-    ["Jacob"  "555-321-9872"]
-    ["Jingle" "555-231-7589"]
-  ]
-))
-]); })
-''
-)
+(conix.lib.nixSnippet "volunteersSnippet" ''${import ./sample.nix}'')
 
 ''
 * The markdown sample was not hand written; the conix sample generated it.

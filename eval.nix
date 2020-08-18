@@ -15,6 +15,12 @@ in
     build
       = page: (builtins.head (builtins.attrValues (eval page))).drv;
 
+    docs.buildPages.docstr = ''
+      Merges the pages into one and then calls `build`.
+      '';
+    docs.buildPages.type = "[ Page ] -> Derivation";
+    buildPages = pages: build (core.lib.foldPages pages);
+
     docs.eval.docstr 
       = "This is the evaluator for a page and returns the final module.";
     docs.eval.type 
@@ -34,9 +40,9 @@ in
               (import ./builder/markdown.nix)
               (import ./builder/pandoc.nix)
               (import ./docs.nix)
-              (import ./readme/default.nix)
               (import ./design/goals.nix)
               (import ./copyJoin.nix)
+              (import ./readme/default.nix)
               (x: core)
               # This is the docs attribute set defined in this file
               (x: { lib.docs = docs; }) 
@@ -49,7 +55,7 @@ in
 
     docs.evalPages.docstr = ''
       Convenience functions for collecting multiple pages and evaluating
-      them all at once. You might be looking for buildPages.
+      them all at once.
     '';
     docs.evalPages.type = "[ Page ] -> Module";
     evalPages
