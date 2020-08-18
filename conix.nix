@@ -1,4 +1,4 @@
-conix: { lib = rec {
+pkgs: { lib = rec {
 
   docs.modules.discussion = ''
     Modules are the core of conix. Their type is defined as:
@@ -36,7 +36,7 @@ conix: { lib = rec {
   docs.mergeModules.type = 
     "Module -> Module -> Module";
   mergeModules = a: b:
-    (conix.pkgs.lib.attrsets.recursiveUpdate a b) 
+    (pkgs.lib.attrsets.recursiveUpdate a b) 
     // { text = (a.text or "") + (b.text or ""); };
 
   docs.mergePages.docstr = '' 
@@ -147,5 +147,5 @@ conix: { lib = rec {
   docs.label.type = "Path -> Module -> Module";
   label 
     = path: x: 
-      mergeModules (conix.pkgs.lib.attrsets.setAttrByPath path x) (text x);
+      mergeModules (pkgs.lib.attrsets.setAttrByPath path x) (text x);
 };}

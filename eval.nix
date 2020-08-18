@@ -1,5 +1,9 @@
 self: super:
 
+let
+  core = (import ./conix.nix) self;
+in
+
 { conix = rec
   { 
     docs.build.docstr = ''
@@ -18,19 +22,20 @@ self: super:
     eval 
       = page: 
         let
-          mkLib = c:
+          toplevel = core.lib.foldPages
             [ 
-              (import ./conix.nix)
               (import ./meta.nix)
               (import ./git.nix)
               (import ./table.nix)
               (import ./markdown.nix)
               (import ./codeSnippets.nix)
               (import ./textBlock.nix)
-              
+              (x: core)
+              # This is the docs attribute set defined in this file
+              (x: docs) 
+              page
             ];
 
-          toplevel = super.conix.mergePages page mkLib;
           finalModule = self.lib.fix toplevel;
         in
           builtins.removeAttrs finalModule ["lib"];
@@ -41,6 +46,6 @@ self: super:
     '';
     docs.evalPages.type = "[ Page ] -> Module";
     evalPages
-      = pages: eval (super.conix.foldPages pages);
+      = pages: eval (core.lib.foldPages pages);
   };
 }
