@@ -135,6 +135,11 @@ pkgs: { lib = rec {
     Will work.
   '';  
   docs.toTextModule.type = "(String | Module)  -> Module";
+  docs.toTextModule.todo = [
+    ''It might be worth investigating whether I could use a small typing system
+      and if x has no type then assume it's a raw, stringable nix value
+    ''
+  ];
   toTextModule 
     = x: if builtins.isString x then text x else x;
 
@@ -160,12 +165,23 @@ pkgs: { lib = rec {
   texts 
     = foldMapModules toTextModule;
 
+  nest = pathStr: x:
+    pkgs.lib.attrsets.setAttrByPath (pkgs.lib.strings.splitString "." pathStr) x;
+
   docs.label.docstr = ''
     This is a convenience function for users to create new modules within texts
     without needing to manually create modules
   '';
-  docs.label.type = "Path -> Module -> Module";
+  docs.label.type = "Path -> Text -> Module";
   label 
     = path: x: 
-      mergeModules (pkgs.lib.attrsets.setAttrByPath (pkgs.lib.strings.splitString "." path) x) (text x);
+    mergeModules (nest path x) (text x);
+
+  docs.set.docstr = ''
+    This is like `label` but for nesting a module. We can't have just `label` and check whether the
+    input is a string or attribute set (yet? see todo for `toTextModule`) because doing so triggers
+    infinite recursion. Thus we need a separate function to achieve the same task.
+    '';
+  docs.set.type = "Path -> Module -> Module";
+  set = path: x: mergeModules (nest path x) (text x.text);
 };}

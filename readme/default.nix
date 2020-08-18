@@ -27,18 +27,18 @@ To try out conix:
     ${conix.lib.indent 4 conix.lib.git.text}
   );
 }).conix.build 
-(conix: { Volunteers = with conix.lib; markdownFile "Volunteers" (texts [
+(conix: { data = with conix.lib; using (markdownFile "Volunteers") (texts [
 
 '''# Volunteer Handbook
 
 ## Emergency Plan
 
 Incase of an emergency please contact: '''
-(t (conix.contacts.at 2 0))" at "(t (conix.contacts.at 2 1))'''.
+(t (conix.data.contacts.at 2 0))" at "(t (conix.data.contacts.at 2 1))'''.
 
 ## Volunteer Contacts 
 
-_Volunteers still needed!: '''(t (builtins.length conix.contacts.data))'''_
+_Volunteers still needed!: '''(t (8 - (builtins.length conix.data.contacts.data)))'''_
 '''
 (label "contacts" (table
     ["Name" "Phone" ]
