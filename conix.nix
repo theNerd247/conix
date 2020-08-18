@@ -167,5 +167,5 @@ pkgs: { lib = rec {
   docs.label.type = "Path -> Module -> Module";
   label 
     = path: x: 
-      mergeModules (pkgs.lib.attrsets.setAttrByPath (conix.pkgs.lib.strings.splitString "." path) x) (text x);
+      mergeModules (pkgs.lib.attrsets.setAttrByPath (pkgs.lib.strings.splitString "." path) x) (text x);
 };}
