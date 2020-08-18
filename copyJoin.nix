@@ -2,8 +2,8 @@ conix: { lib =
   { copyJoin = name: pathsOrModules:
       let
         paths = builtins.map (x: if x ? drv then x.drv else x) pathsOrModules;
-      in
-      conix.pkgs.runCommand name { passAsFile = [ "paths" ]; inherit paths; }
+
+        drv = conix.pkgs.runCommand name { passAsFile = [ "paths" ]; inherit paths; }
         ''
         mkdir -p $out
         for i in $(cat $pathsPath); do
@@ -14,5 +14,7 @@ conix: { lib =
           fi
         done
         '';
+      in
+        { inherit drv; };
   };
 }

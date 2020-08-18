@@ -36,7 +36,7 @@ conix: { lib = rec
         ]
       );
 
-      drv = conix.lib.htmlFile "conixDocs" docsText;
+      drv = conix.lib.htmlFile "docs" docsText;
     in
       conix.lib.mergeModules docsText drv;
 

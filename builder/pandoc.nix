@@ -1,29 +1,18 @@
 conix: { lib = rec
-  { pandoc = name: type: buildInputs: module:
+  { pandoc = name: type: buildInputs: markdownModule:
       let
-        contents = (conix.lib.markdownFile name module).drv;
         fileName = "${name}.${type}";
       
-        drv = conix.pkgs.stdenv.mkDerivation
-        { inherit name;
-          buildInputs = [ conix.pkgs.pandoc ] ++ buildInputs;
-          dontUnpack = true;
-          buildPhase = 
-            ''
-              ${conix.pkgs.pandoc}/bin/pandoc -s -o ${fileName} -f markdown ${contents}
-            '';
-          installPhase = 
-            ''
-              mkdir -p $out
-              cp ${fileName} $out/${fileName}
-              cp ${contents} $out/${name}.md
-            '';
-        };
+        drv = conix.pkgs.runCommand fileName
+          { buildInputs = [ conix.pkgs.pandoc ] ++ buildInputs; }
+          ''
+            ${conix.pkgs.pandoc}/bin/pandoc -s -o $out -f markdown ${markdownModule.drv} -t ${type}
+          '';
       in
-        { inherit drv; };
+        conix.lib.mergeModules markdownModule { inherit drv markdownModule; };
 
-    htmlFile = name: pandoc name "html" [];
+    htmlFile = name: module: pandoc name "html" [] (conix.lib.markdownFile name module);
 
-    pdfFile = name: pandoc name "pdf" [ conix.pkgs.texlive.combined.scheme-small ]; 
+    pdfFile = name: module: pandoc name "pdf" [ conix.pkgs.texlive.combined.scheme-small ] (conix.lib.markdownFile name module);
   };
 }
