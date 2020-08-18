@@ -60,7 +60,7 @@ the document. The conix sample simplifies this process.
 
 # Goals
 
-${conix.lib.docs.goals.list.text}
+${conix.lib.docs.goals.text}
 
 # Contributing
 

@@ -1,4 +1,4 @@
-conix: with conix.lib; { design.goals = texts [
+conix: with conix.lib; { lib.docs.goals = texts [
 # TODO: maybe shorten these goals down so they're title worthy?
 ''# Goals
 
@@ -13,7 +13,7 @@ conix: with conix.lib; { design.goals = texts [
 
 ## Goal 1
 
-> ''(t (builtins.elemAt conix.design.goals.list 0))''
+> ''(t (builtins.elemAt conix.lib.docs.goals.list 0))''
 
 
 Writing prose - especially technical documents - creates lot of implicit
@@ -21,7 +21,7 @@ relationships between content.
 
 For example: 
 
-> there are ''(label ["ngoals"] (builtins.length conix.design.goals.list))'' goals 
+> there are ''(label ["ngoals"] (builtins.length conix.lib.docs.goals.list))'' goals 
 stated at the top of this document.
 
 The number stated above is computed by counting the number of elements in the
@@ -30,7 +30,7 @@ goals.
 
 Most of the time these relationships are very easy to determine in our heads
 and just write them down - I mean, how hard is it to count to ''(t
-conix.design.goals.ngoals)''. However, problems arise when the relationship
+conix.lib.docs.goals.ngoals)''. However, problems arise when the relationship
 changes or the content itself changes.
 
 For example, if I were to add another goal to the above list then chances are I
@@ -40,7 +40,7 @@ such a small detail and yet easy number to come up with.
 
 ## Goal 2
 
-> ''(t (builtins.elemAt conix.design.goals.list 1))''
+> ''(t (builtins.elemAt conix.lib.docs.goals.list 1))''
 
 Markdown is amazing. And for small standalone documents - like readme files -
 running a single command to build a file is easy. Heck, even hosted files on

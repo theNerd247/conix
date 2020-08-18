@@ -35,6 +35,7 @@ in
               (import ./builder/pandoc.nix)
               (import ./docs.nix)
               (import ./readme/default.nix)
+              (import ./design/goals.nix)
               (x: core)
               # This is the docs attribute set defined in this file
               (x: { lib.docs = docs; }) 
