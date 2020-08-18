@@ -143,7 +143,7 @@ pkgs: { lib = rec {
     It allows them to write plain text and assignments alongside each other.
     Here's an example:
 
-    ```
+    ```nix
     conix: { report = conix.lib.texts [
       '''
       The final count for the muffin competition was:

@@ -16,7 +16,7 @@ conix: { lib = rec
   refDocs = 
      conix.lib.texts (
       [ ''
-        # Conix Documentation
+        # Conix Documentation - ${conix.lib.version.text}
 
         ## Reference
         ''
@@ -32,6 +32,11 @@ conix: { lib = rec
         ### Modules
         ''
         conix.lib.docs.modules.discussion
+        ''
+
+        ---
+        Built using ${conix.lib.homePageLink} version ${conix.lib.version.text}
+        ''
       ]
     );
 };}

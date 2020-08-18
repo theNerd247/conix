@@ -26,7 +26,7 @@ conix: { lib = rec
     docs.pdfFile.docstr = ''
       Writes a pdf file to the nix store given some module who's `drv` builds to a markdown file.
     '';
-    docs.pdfFile.type = "Name -> Module -> { drv : derivation }";
+    docs.pdfFile.type = "Name -> Module -> Module";
     pdfFile 
       = name: pandoc name "pdf" [ conix.pkgs.texlive.combined.scheme-small ];
 
@@ -36,7 +36,7 @@ conix: { lib = rec
 
       Typically this should be used with `htmlFile` or `pandocFile`.
       '';
-    docs.withMarkdownFile.type = "Name -> (Name -> { drv : derivation } -> { drv : derivation }) -> Module -> { drv : derivation }";
+    docs.withMarkdownFile.type = "Name -> (Name -> Module -> Module) -> Module -> Module";
     withMarkdownFile 
       = name: builder: module:
       let

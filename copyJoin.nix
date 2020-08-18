@@ -3,7 +3,7 @@ conix: { lib =
     docs.dir.docstr = ''
       Copy the modules, derivations, and paths into a directory with the given name.
       '';
-    docs.dir.type = "Name -> [ Module | Derivation | Path ] -> { drv : derivation }";
+    docs.dir.type = "Name -> [ Module | Derivation | Path ] -> Module";
     dir = name: pathsOrModules:
       let
         paths = builtins.map (x: if x ? drv then x.drv else x) pathsOrModules;
