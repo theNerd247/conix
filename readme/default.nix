@@ -1,4 +1,4 @@
-conix: with conix.lib; { readme = texts [
+conix: with conix.lib; { lib.docs.readme = texts [
 ''# ${homePageLink} - ${version.text} - ${buildStatusBadgeMd}
 
 **Notice: This project is a work in progress and the API will have major
@@ -20,49 +20,47 @@ To try out conix:
 1. Open the `result/Volunteers.md` file. ''#TODO: replace with generated html file.
 ''
 
-''(conix.lib.nixSnippet "volunteersSnippet" ''
-  with (import <nixpkgs> { 
-    overlays = import (builtins.fetchGit
-      ${conix.lib.indent 4 conix.lib.git.text}
-    );
-  }).conix.build.markdown { name = "Volunteers"; text = conix: with conix.lib; texts [
+''
+# (conix.lib.nixSnippet "volunteersSnippet" ''
+#   with (import <nixpkgs> { 
+#     overlays = import (builtins.fetchGit
+#       ${conix.lib.indent 4 conix.lib.git.text}
+#     );
+#   }).conix.build.markdown { name = "Volunteers"; text = conix: with conix.lib; texts [
+# 
+# '''# Volunteer Handbook
+# 
+# ## Emergency Plan
+# 
+# Incase of an emergency please contact: '''
+# (t (conix.contacts.at 2 0))" at "(t (conix.contacts.at 2 1))'''.
+# 
+# ## Volunteer Contacts 
+# 
+# _Volunteers still needed!: '''(t (builtins.length conix.contacts.data))'''_
+# 
+# ( label "contacts" (table
+#     ["Name" "Phone" ]
+#   [ ["John"   "555-123-4563"]
+#     ["Jacob"  "555-321-9872"]
+#     ["Jingle" "555-231-7589"]
+#   ];
+# ))
+# ]}
+# ''
+# )
 
-'''# Volunteer Handbook
-
-## Emergency Plan
-
-Incase of an emergency please contact: '''
-(t (conix.contacts.at 2 0))" at "(t (conix.contacts.at 2 1))'''.
-
-## Volunteer Contacts 
-
-_Volunteers still needed!: '''(t (builtins.length conix.contacts.data))'''_
-
-( label "contacts" (table
-    ["Name" "Phone" ]
-  [ ["John"   "555-123-4563"]
-    ["Jacob"  "555-321-9872"]
-    ["Jingle" "555-231-7589"]
-  ];
-))
-]}
-
-''#TODO: add the code samples corresponding to each item.
 ''
 * The markdown sample was not hand written; the conix sample generated it.
 * The table in the markdown sample has some of its contents duplicated across
 the document. The conix sample simplifies this process.
 * The number of volunteers is a computed value based on the number of rows in 
   the table:
-* Conix provides an out-of-the-box build system for markdown (using
-''(conix.text ["pandocLink"] "[Pandoc](https://pandoc.org)")'').
+* Conix provides an out-of-the-box build system for markdown (using [Pandoc](https://pandoc.org)").
 
 # Goals
 
-''(conix.hidden ((import ../design/goals.nix) conix))
-(conix.textOf ["goals" "list"])
-''
-
+${conix.lib.docs.goals.list.text}
 
 # Contributing
 
@@ -73,8 +71,7 @@ Please read the [./design.md](./design.md) document for the design of conix.
 
 # Related Works
 
-* ''(conix.text ["pollenLink"]
-"[Pollen](https://docs.racket-lang.org/pollen/)")'' - _"Pollen is a publishing
+* [Pollen](https://docs.racket-lang.org/pollen/) - _"Pollen is a publishing
 system that helps authors make functional and beautiful digital books."_
 
 # Acknowledgements
