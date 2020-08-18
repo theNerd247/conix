@@ -102,10 +102,10 @@ pkgs: { lib = rec {
     REFER TO RECURSIVE ATTRIBUTE VALUES THIS WILL CAUSE INFINITE RECURSION
     ERRORS! For example:
     
-      (conix: { favorite = texts_ [ 
+      (conix: { favorite = texts [ 
          "My " 
          ({ color = 256; text = "Blue"; })
-         " color is very $${str conix.favorite.color}"
+         " color is very ''${str conix.favorite.color}"
       ];})
    
     will fail with an infinite recursion error. This is due purely because it
@@ -113,23 +113,23 @@ pkgs: { lib = rec {
     it and in order to construct the equivalent attribute set:
      
      { favorite = 
-       { text = "My Blue color is very $${x.favorite.color}";
+       { text = "My Blue color is very ''${x.favorite.color}";
          color = 256; 
        }
      }
     One must first evaluate the text. Because the last line contains an
     accessor (`x.favorite.color`) which points to some data inside `favorite`
     we get a infinite recursion error. However, if the data is note defined in
-    the same texts_ list then we can use normal string interpolation with no
+    the same texts list then we can use normal string interpolation with no
     issues:
    
-     merge_
+     mergePages
       [ (x: { color.blue = 256; })
    
-        (conix: { favorite = texts_ [ 
+        (conix: { favorite = texts [ 
            "My " 
            ({ color = conix.color.blue; text = "Blue"; })
-           " color is very $${str conix.color.blue}"
+           " color is very ''${str conix.color.blue}"
         ];})
       ]
     Will work.
@@ -139,11 +139,22 @@ pkgs: { lib = rec {
     = x: if builtins.isString x then text x else x;
 
   docs.texts.docstr = ''
-    The toplevel user API function for creating text blocks that have labelled
-    values inter-mixed. This allows users to content that can be referenced
-    within other parts of their document.
-    
-    See the documentation for mergeTexts.
+    This is the most common function for constructing content for the user.
+    It allows them to write plain text and assignments alongside each other.
+    Here's an example:
+
+    ```
+    conix: { report = conix.lib.texts [
+      '''
+      The final count for the muffin competition was:
+      '''
+      (conix.lib.md.list "muffinCount"
+        [ "Blue Berry: ''${t (builtins.length conix.muffins.blueBerry)}
+          "Whole Grain:  ''${t (builtins.length conix.muffins.wholeGrain)}
+        ]
+      )
+    ]; }
+    ```
   '';
   docs.texts.type = "[ String | Module ] -> Module";
   texts 
