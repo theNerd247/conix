@@ -1,4 +1,4 @@
-conix: { lib =
+conix: { lib = rec
   { 
     snippet 
       # String -> String -> String -> Module

@@ -7,22 +7,22 @@ let
   # this is the toplevel agreggation of the modules in question
   pkgs = import <nixpkgs> { overlays = (import ./default.nix); };
 
-  html = pkgs.conix.build.htmlFile 
-    { name = "test";
-      text = pages.h.text;
-    };
+  # html = pkgs.conix.build.htmlFile 
+  #   { name = "test";
+  #     text = pages.h.text;
+  #   };
 
-  design = 
-    pkgs.conix.build.htmlFile 
-      { name = "design"; 
-        text = docs.design.text;
-      };
+  # design = 
+  #   pkgs.conix.build.htmlFile 
+  #     { name = "design"; 
+  #       text = docs.design.text;
+  #     };
 
-  docs = pkgs.conix.evalPages pkgs.conix.docs;
+  # docs = pkgs.conix.evalPages pkgs.conix.docs;
 
-  pages = pkgs.conix.eval test;
+  # pages = pkgs.conix.eval test;
 
-  test = pkgs.conix.foldPages
+  test = pkgs.conix.evalPages
     [ 
       (x: { c = 8; })
       (x: { d = x.c + 2; })
@@ -38,10 +38,7 @@ let
       })
     ];
 in
-  { inherit pages;
+  { 
     inherit (pkgs) conix;
-    inherit html;
-    inherit design;
-    inherit docs;
-    n = pkgs.conix.build.markdown { name = "goals"; text = docs.design.goals.text; };
+    inherit test; 
   }

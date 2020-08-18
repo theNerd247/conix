@@ -96,7 +96,7 @@ pkgs: { lib = rec {
       (conix: { favorite = texts_ [ 
          "My " 
          ({ color = 256; text = "Blue"; })
-         " color is very ${str conix.favorite.color}"
+         " color is very $${str conix.favorite.color}"
       ];})
    
     will fail with an infinite recursion error. This is due purely because it
@@ -104,7 +104,7 @@ pkgs: { lib = rec {
     it and in order to construct the equivalent attribute set:
      
      { favorite = 
-       { text = "My Blue color is very ${x.favorite.color}";
+       { text = "My Blue color is very $${x.favorite.color}";
          color = 256; 
        }
      }
@@ -120,7 +120,7 @@ pkgs: { lib = rec {
         (conix: { favorite = texts_ [ 
            "My " 
            ({ color = conix.color.blue; text = "Blue"; })
-           " color is very ${str conix.color.blue}"
+           " color is very $${str conix.color.blue}"
         ];})
       ]
     Will work.

@@ -32,7 +32,7 @@ in
               (import ./textBlock.nix)
               (x: core)
               # This is the docs attribute set defined in this file
-              (x: docs) 
+              (x: { lib.docs = docs; }) 
               page
             ];
 
