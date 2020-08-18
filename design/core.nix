@@ -1,4 +1,4 @@
-conix: { design.core = conix.lib.texts_ [
+conix: { design.core = conix.lib.texts [
 ''# Core
 
 Conix's design is similar to the nixos module system. Below

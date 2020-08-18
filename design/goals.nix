@@ -1,4 +1,4 @@
-conix: with conix.lib; { design.goals = texts_ [
+conix: with conix.lib; { design.goals = texts [
 # TODO: maybe shorten these goals down so they're title worthy?
 ''# Goals
 

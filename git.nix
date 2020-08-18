@@ -1,8 +1,4 @@
-self: super:
-
-with super.conix;
-
-{ conix = (super.conix or {}) //
+conix: { lib =
   rec
   { git =
     rec
@@ -16,9 +12,5 @@ with super.conix;
         }
         '';
     };
-
-    lib = super.conix.extendLib super.conix.lib (x:
-      { inherit git; }
-    );
   };
 }

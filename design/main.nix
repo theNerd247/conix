@@ -1,4 +1,4 @@
-conix: with conix.lib; { design = texts_ [
+conix: with conix.lib; { design = texts [
 ''# Design
 
 ''(t conix.design.goals.text)''

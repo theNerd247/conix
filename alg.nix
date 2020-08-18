@@ -1,77 +1,70 @@
+# WriterF e a =
+#  = Censor ([e] -> [e]) a
+#  | Tell e a
+# 
+# datas :: WriterF e (Content a) -> Content a
+#
+# censor :: ([e] -> [e]) -> a -> WriterF e a
+#
+# onMerged :: (e -> e) -> a -> WriterF e a
+# onMerged f = censor (pure . f . fold)
+#
+# labelData :: Path -> Content a -> Content a
+# labelData path = datas . onMerged (nest path)
+#
+# ContentF a
+#  = Drvs  (WriterF Drv a)
+#  | Texts (WriterF Text a)
+#  | Datas (WriterF AttrSet a)
+#  | null
+let
+  W = import ./writerF.nix;
+  M = import ./match.nix;
+in
 rec
 {
-  _pure = data: {
-    _type = "pure";
-    inherit data;
-  };
 
-  _merge = contentsList:
-  { _type = "merge"; 
-    inherit contentsList; 
-  };
+  _drvs
+    # WriterF Drv a -> ContentF a
+    = next:
+    { _type = "drvs";
+      inherit next;
+    };
 
-  _modifyText = modifyText: contents:
-  { _type = "modifyText";
-    inherit contents;
-  };
+  _texts
+    # WriterF String a -> ContentF a
+    = next:
+    { _type = "texts";
+      inherit next;
+    };
 
-  _data = data: contents: {
-    _type = "data";
-    inherit contents;
-    inherit data;
-  };
+  _datas
+    # WriterF AttrSet a -> ContentF a
+    = next:
+    { _type = "datas";
+      inherit next;
+    };
 
-  _label = path: contents: {
-    _type = "label";
-    inherit path;
-    inherit contents;
-  };
-
-  _table = headers: rows: {
-    _type = "table";
-    inherit headers;
-    inherit rows;
-  };
-
-  _list = contentsList: {
-    _type = "list";
-    inherit contentsList;
-  };
-
-  _include = drv: contents: {
-    _type = "include";
-    inherit drv;
-    inherit contents;
-  };
-
-  _dir = path: contents: {
-    _type = "dir";
-    inherit path;
-    inherit contents;
-  };
-
-  # Pattern matching on types defined in this file.
-  matchOn 
-    # { (merge | data | ... | file) : (Module -> a) } -> a
-    = fs: x: 
-    let
-      invalidType = throw "Invalid type. Must be one defined in this file";
-    in
-      (fs.${x._type or invalidType} or invalidType) x;
+  _end
+    = { _type = "end"; };
 
   # TODO: verify this implementation does create infinite recursions.
-  fmap = f: matchOn { 
-    pure = x: x;
-    data = x: x // { contents = f x.contents; };
-    dir = x: x // { contents = f x.contents; };
-    include = x: x // { contents = f x.contents; };
-    label = x: x // { contents = f x.contents; };
-    list = x: x // { contentsList = builtins.map f x.contentsList; };
-    merge = x: x // { contentsList = builtins.map f x.contentsList; };
-    modifyText = x: x // { contents = f x.contents; };
-    table = x: x // { headers = builtins.map f x.headers; rows = builtins.map (builtins.map f) x.rows; };
+  fmap = f: M.match 
+  { end   = x: x;
+    drvs  = M.modifyNext (W.fmap f);
+    texts = M.modifyNext (W.fmap f);
+    datas = M.modifyNext (W.fmap f);
   };
 
-  # (Module a -> a) -> Fix Module -> a
-  cata = alg: x: alg (fmap (cata alg) x);
+  evalWriterF = label: x:
+    x.next.next // { ${label} = W.eval (W.fmap (r: r.${label}) x.next); };
+
+  emptyResult = { drvs = []; texts = []; datas = []; };
+
+  eval = M.match
+    { end  = _: emptyResult; 
+      drvs = evalWriterF "drvs";
+      texts = evalWriterF "texts";
+      datas = evalWriterF "datas";
+    };
 }

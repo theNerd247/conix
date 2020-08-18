@@ -2,12 +2,7 @@
 #! nix-shell -p git -i bash
 
 cat > git.nix <<HERE
-self: super:
-
-with super.conix;
-
-{ conix = (super.conix or {}) //
-  rec
+conix: { lib = rec
   { git =
     rec
     { url = "https://github.com/theNerd247/conix.git"; 
@@ -20,10 +15,6 @@ with super.conix;
         }
         '';
     };
-
-    lib = super.conix.extendLib super.conix.lib (x:
-      { inherit git; }
-    );
   };
 }
 HERE

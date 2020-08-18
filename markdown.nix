@@ -1,7 +1,4 @@
-self: super:
-  
-{ conix = (super.conix or {}) //
-  rec
+conix: { lib.md = rec
   {  
     list
       = name: rawTexts: 
@@ -11,10 +8,5 @@ self: super:
         { text = builtins.concatStringsSep "\n" (builtins.map (t: "1. ${t}") texts);
           ${name} = texts;
         };
-
-    lib = super.conix.extendLib super.conix.lib (x:
-      { md = { inherit list; };
-      }
-    );
   };
 }

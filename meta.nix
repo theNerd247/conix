@@ -1,14 +1,6 @@
-self: super:
-
-with super.conix;
-
-{ conix = (super.conix or {}) //
-  rec
+conix: { lib = rec
   { 
     homepageUrl = "https://github.com/theNerd247/conix.git";
-    #TODO: the hash is read from a file stored in the root of the repository.
-    # ./scripts/mkGitHeadHash.sh generates this file as part of the build process
-    # for this library. I'd like to create a better solution to this but...oh well...
     homePageLink = "<a href=\"${homepageUrl.val}\">conix</a>";
     buildStatusBadgeMd = "![CI](https://github.com/theNerd247/conix/workflows/CI/badge.svg?branch=master)";
     version = rec  
@@ -17,16 +9,5 @@ with super.conix;
         minor = 1; 
         patch = 0; 
       };
-
-    lib = super.conix.extendLib super.conix.lib (x:
-      { inherit
-        homepageUrl
-        gitHttpUrl
-        gitHeadHash
-        homePageLink
-        buildStatusBadgeMd
-        version;
-      }
-    );
   };
 }

@@ -1,9 +1,7 @@
-self: super:
-
-{ conix = (super.conix or {}) // rec 
+conix: { lib =
   { 
     snippet 
-      # String -> String -> String -> AttrSet
+      # String -> String -> String -> Module
       = language: code: output:
       let
         text = ''
@@ -30,7 +28,7 @@ self: super:
       # String -> (FilePath -> String) -> String -> String
       = name: evalFile: code:
         let
-          file = super.writeText "${name}.nix" code;
+          file = conix.pkgs.writeText "${name}.nix" code;
         in
           evalFile file;
 
@@ -41,7 +39,7 @@ self: super:
     # however it will not work until https://github.com/Nixos/nix/pulls/3205 becomes
     # a widespread solution.
     #
-    #super.runCommandLocal "${name}-stdout" { buildInputs = [ self.nix ]; } ''
+    #conix.pkgs.runCommandLocal "${name}-stdout" { buildInputs = [ self.nix ]; } ''
     #  ${self.nix}/bin/nix-instantiate --eval ${file} | tee $out
     #'';
     evalPureNixExpr 
@@ -62,7 +60,7 @@ self: super:
 
         printElems = 
           builtins.concatStringsSep " "
-            (super.lib.attrsets.mapAttrsToList printElem e);
+            (conix.pkgs.lib.attrsets.mapAttrsToList printElem e);
       in
         "{ ${printElems} }";
 
@@ -82,7 +80,7 @@ self: super:
         module = snippet "nix" code 
           (cacheAndEvalNix name evalNixFilePath code); 
       in
-        { ${name} = module; } // (super.conix.text_ module.text);
+        { ${name} = module; } // (conix.lib.text module.text);
 
     nixSnippet = name: code: 
       nixSnippetWith name code evalPureNixExpr;
@@ -90,7 +88,7 @@ self: super:
     evalGitCmd
       = name: fp:
         let 
-          r = super.runCommandLocal name { buildInputs = [ super.git ]; } ''
+          r = conix.pkgs.runCommandLocal name { buildInputs = [ conix.pkgs.git ]; } ''
            ${builtins.readFile fp} | tee $out
           '';
         in
@@ -99,14 +97,5 @@ self: super:
     gitCmd 
       = name: code:
         { ${name} = { text = cacheAndEvalNix name evalGitCmd code; }; }; 
-
-    lib = super.conix.extendLib super.conix.lib (x: 
-      { inherit
-        snippet
-        nixSnippet
-        nixSnippetWith
-        gitCmd;
-      }
-    );
   };
 }

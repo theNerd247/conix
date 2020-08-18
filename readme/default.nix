@@ -1,4 +1,4 @@
-conix: with conix.lib; { readme = texts_ [
+conix: with conix.lib; { readme = texts [
 ''# ${homePageLink} - ${version.text} - ${buildStatusBadgeMd}
 
 **Notice: This project is a work in progress and the API will have major
@@ -25,7 +25,7 @@ To try out conix:
     overlays = import (builtins.fetchGit
       ${conix.lib.indent 4 conix.lib.git.text}
     );
-  }).conix.build.markdown { name = "Volunteers"; text = conix: with conix.lib; texts_ [
+  }).conix.build.markdown { name = "Volunteers"; text = conix: with conix.lib; texts [
 
 '''# Volunteer Handbook
 
