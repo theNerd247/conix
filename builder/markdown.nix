@@ -1,11 +1,6 @@
-self: super:
-
-{ conix = (super.conix or {}) // 
-  { build = (super.conix.build or {}) //
-    rec
-    { markdown = name: module:
-      { drv = self.writeTextFile "${name}.md" module.text;
-      };
+conix: { lib = rec
+  { markdownFile = name: module:
+    { drv = conix.pkgs.writeTextFile "${name}.md" module.text;
     };
   };
 }

@@ -30,6 +30,7 @@ in
               (import ./markdown.nix)
               (import ./codeSnippets.nix)
               (import ./textBlock.nix)
+              (import ./builder/markdown.nix)
               (x: core)
               # This is the docs attribute set defined in this file
               (x: { lib.docs = docs; }) 
