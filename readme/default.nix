@@ -20,20 +20,23 @@ To try out conix:
 1. Open the `result/Volunteers.md` file. ''#TODO: replace with generated html file.
 ''
 
-''
-(conix.lib.nixSnippet "volunteersSnippet" ''${import ./sample.nix}'')
 
-''
+_Conix Sample_
+```nix
+${builtins.readFile ./sample.nix}
+```
+
+_markdown output_
+```markdown
+${builtins.readFile (import ./sample.nix)}
+```
+
 * The markdown sample was not hand written; the conix sample generated it.
 * The table in the markdown sample has some of its contents duplicated across
 the document. The conix sample simplifies this process.
 * The number of volunteers is a computed value based on the number of rows in 
   the table:
 * Conix provides an out-of-the-box build system for markdown (using [Pandoc](https://pandoc.org)").
-
-# Goals
-
-${conix.lib.docs.goals.text}
 
 # Contributing
 

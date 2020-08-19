@@ -5,10 +5,7 @@ conix: { lib.md = rec
       '';
     docs.list.type = "Name -> [ String ] -> Module";
     list
-      = name: rawTexts: 
-        let
-          texts = builtins.map (builtins.replaceStrings [ "\n" ] [""]) rawTexts;
-        in
+      = name: texts: 
         { text = builtins.concatStringsSep "\n" (builtins.map (t: "* ${t}") texts);
           ${name} = texts;
         };

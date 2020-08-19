@@ -71,10 +71,25 @@ conix: { lib = rec
       in
         "[ ${printElems} ]";
 
-    # Create a module using the given nix snippet code and
-    # the evaluated result.
-    #
-    # The text is markdown (see snippet for the template)
+    docs.nixSnippetWith.docstr = ''
+      Create a module using the given nix snippet code and
+      the evaluated result.
+     
+      The text is markdown (see snippet for the template)
+    '';
+    docs.nixSnippetWith.todo = [
+      ''
+      This fails in an stack overflow / infinite recursion issue if:
+
+        * the code is importing conix via a fetch git (using `./git.nix`)
+        * and we're building the conix documentation.
+
+        For example the `readme/sample.nix` works on its own, however if its
+        text is passed in as the `code` argument inside of the readme derivation
+        we get infinite recursion.
+      ''
+    ];
+    docs.nixSnippetWith.type = "Name -> String -> Module";
     nixSnippetWith = name: code: evalNixFilePath:
       let
         module = snippet "nix" code 
