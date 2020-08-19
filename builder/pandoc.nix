@@ -18,6 +18,13 @@ conix: { lib = rec
 
     docs.htmlFile.docstr = builtins.replaceStrings ["pdf"] ["html"] docs.pdfFile.docstr;
     docs.htmlFile.type = docs.pdfFile.type;
+    docs.htmlFile.todo = [ 
+      ''
+      Add the ability to auto-include static resources as part of the
+      produced derivation.  For example `--css ./filePath` would be generated
+      via some statement stating to include ./filePath as a css resource.
+      ''
+    ];
     htmlFile 
       = name: pandoc name "html" [];
 
