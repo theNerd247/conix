@@ -3,6 +3,7 @@
 **Notice: This project is a work in progress and the API will have major
 updates pushed to the master branch until the first major release.**
 
+
 Conix is a nix library for writing documents. It's primary goal is to make it
 easy to re-use pieces your content without needing to write content.
 Eventually I'd like to use it to replace markdown and _maybe_ make it user
@@ -95,6 +96,7 @@ system that helps authors make functional and beautiful digital books."_
 
 Many thanks to:
 
-  * [Gabriel Gonzalez]() for his mentorship and guidance. 
-  * [Evan Relf]() for his insightful feedback.
+  * [Gabriel Gonzalez](https://github.com/Gabriel439) for his mentorship and guidance. 
+  * [Evan Relf](https://github.com/evanrelf) for his insightful feedback.
+  * [Paul Young](https://github.com/paulyoung) for great feedback and ideas.
 
