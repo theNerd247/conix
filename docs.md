@@ -5,9 +5,28 @@
 Builds a page that expects the toplevel module to contain an attribute called `drv`.
 Drv typically should be a derivation containing the toplevel render of the content
 
+_Todo_
+
+* The current implementation of build needs to take in a separate set of
+pages that are the actual content from the user. And then a single module
+that defines how to build the top derivation. If done, this may need to
+remove the clunky user interface for needing to define a toplevel
+attribute set with a single name and then turn around and give builders
+(like `markdownFile`) a name - this is redundant.
 
 ```haskell
 build :: Page -> Derivation
+```
+<hr/>
+Run the first builder and then pass its output to the second builder.
+Collect both the resulting derivations into a directory with the given
+name. 
+
+Typically this should be used with `htmlFile` or `pandocFile`.
+
+
+```haskell
+buildBoth :: Name -> a -> (a -> Derivation) -> ((FilePath | Derivation) -> Derivation) -> Derivation
 ```
 <hr/>
 Merges the pages into one and then calls `build`.
@@ -17,11 +36,40 @@ Merges the pages into one and then calls `build`.
 buildPages :: [ Page ] -> Derivation
 ```
 <hr/>
-Copy the modules, derivations, and paths into a directory with the given name.
+Copy contents of paths to a single directory. If a path is a directory 
+its contents are copied and not the directory itself.
+
+For example, given:
+
+```
+A
+ |- a.txt
+
+B
+ |- c.txt
+```
+
+`dir "C" [ A B]` will produce:
+
+```
+C
+ |- a.txt
+ |- b.txt
+```
+
+NOTE: the later directories in the list could overwrite contents from
+other directories. If you wish to copy directories as is use. `dir`
 
 
 ```haskell
-dir :: Name -> [ Module | Derivation | Path ] -> Module
+collect :: Name -> [ Derivation | Path ] -> Derivation
+```
+<hr/>
+Like `collect` but preserves toplevel directories when copying
+
+
+```haskell
+dir :: Name -> [ (FilePath | Derivation) ] -> Derivation
 ```
 <hr/>
 
@@ -109,7 +157,7 @@ Writes a html file to the nix store given some module who's `drv` builds to a ma
 
 
 ```haskell
-htmlFile :: Name -> Module -> Module
+htmlFile :: Name -> (FilePath | Derivation) -> Derivation
 ```
 <hr/>
 This is a convenience function for users to create new modules within texts
@@ -126,7 +174,7 @@ _Todo_
 
 * Maybe refactor the text out?
 ```haskell
-markdownFile :: Name -> Module -> Module
+markdownFile :: Name -> Module -> Derivation
 ```
 <hr/>
 Modules merge by recursiveUpdate but the toplevel text fields
@@ -179,14 +227,14 @@ _Todo_
 
 * Remove hardcoded markdown input type
 ```haskell
-pandoc :: Name -> Type -> { buildInputs : [ derivation ] } -> Module -> { drv : Derivation }
+pandoc :: Name -> Type -> { buildInputs : [ Derivation ] } -> (FilePath | Derivation) -> Derivation
 ```
 <hr/>
 Writes a pdf file to the nix store given some module who's `drv` builds to a markdown file.
 
 
 ```haskell
-pdfFile :: Name -> Module -> Module
+pdfFile :: Name -> (FilePath | Derivation) -> Derivation
 ```
 <hr/>
 This is like `label` but for nesting a module. We can't have just `label` and check whether the
@@ -249,25 +297,6 @@ _Todo_
 
 ```haskell
 toTextModule :: (String | Module)  -> Module
-```
-<hr/>
-This is a quick fix function to merge the result of a builder with the 
-module that produced it. The goal is to give the user less things to
-worry about when creating modules.
-
-
-```haskell
-using :: (Module -> Module) -> Module -> Module
-```
-<hr/>
-Build the given module as markdown and then as the given builder. Finally, save
-both files in a directory. Both files and the directory will have the given name.
-
-Typically this should be used with `htmlFile` or `pandocFile`.
-
-
-```haskell
-withMarkdownFile :: Name -> (Name -> Module -> Module) -> Module -> Module
 ```
 ## Discussion
 

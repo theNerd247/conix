@@ -18,7 +18,7 @@ let
   #       text = docs.design.text;
   #     };
 
-  #docs = pkgs.conix.build (c: { top = c.lib.refDocs; });
+  docs = pkgs.conix.build (c: { drv = with c.lib; dir "foo" [ (dir "bar" [ (markdownFile "docs" c.lib.refDocs) ]) ]; });
 
   # pages = pkgs.conix.eval test;
 
@@ -41,4 +41,5 @@ in
   { 
     inherit (pkgs) conix;
     inherit test; 
+    inherit docs;
   }

@@ -4,19 +4,17 @@ conix: { lib = rec
       Writes a file of the specified type to the nix store using pandoc.
     '';
     docs.pandoc.todo = [ "Remove hardcoded markdown input type" ];
-    docs.pandoc.type = "Name -> Type -> { buildInputs : [ derivation ] } -> Module -> { drv : Derivation }";
+    docs.pandoc.type = "Name -> Type -> { buildInputs : [ Derivation ] } -> (FilePath | Derivation) -> Derivation";
     pandoc 
-      = name: type: buildInputs: markdownModule:
+      = name: type: buildInputs: markdownFile:
       let
         fileName = "${name}.${type}";
-      
-        drv = conix.pkgs.runCommand fileName
+      in
+        conix.pkgs.runCommand fileName
           { buildInputs = [ conix.pkgs.pandoc ] ++ buildInputs; }
           ''
-            ${conix.pkgs.pandoc}/bin/pandoc -s -o $out -f markdown ${markdownModule.drv} -t ${type}
+            ${conix.pkgs.pandoc}/bin/pandoc -s -o $out -f markdown ${markdownFile} -t ${type}
           '';
-      in
-        { inherit drv; };
 
     docs.htmlFile.docstr = builtins.replaceStrings ["pdf"] ["html"] docs.pdfFile.docstr;
     docs.htmlFile.type = docs.pdfFile.type;
@@ -26,23 +24,24 @@ conix: { lib = rec
     docs.pdfFile.docstr = ''
       Writes a pdf file to the nix store given some module who's `drv` builds to a markdown file.
     '';
-    docs.pdfFile.type = "Name -> Module -> Module";
+    docs.pdfFile.type = "Name -> (FilePath | Derivation) -> Derivation";
     pdfFile 
       = name: pandoc name "pdf" [ conix.pkgs.texlive.combined.scheme-small ];
 
-    docs.withMarkdownFile.docstr = ''
-      Build the given module as markdown and then as the given builder. Finally, save
-      both files in a directory. Both files and the directory will have the given name.
+    docs.buildBoth.docstr = ''
+      Run the first builder and then pass its output to the second builder.
+      Collect both the resulting derivations into a directory with the given
+      name. 
 
       Typically this should be used with `htmlFile` or `pandocFile`.
       '';
-    docs.withMarkdownFile.type = "Name -> (Name -> Module -> Module) -> Module -> Module";
-    withMarkdownFile 
-      = name: builder: module:
+    docs.buildBoth.type = "Name -> a -> (a -> Derivation) -> ((FilePath | Derivation) -> Derivation) -> Derivation";
+    buildBoth 
+      = name: module: f: g:
       let
-        md = conix.lib.markdownFile name module;
-        pandocDrv = builder name md;
+        drvA = f module;
+        drvB = g drvA;
       in
-        conix.lib.dir name [ md pandocDrv ];
+        conix.lib.collect name [ drvA drvB ];
   };
 }
