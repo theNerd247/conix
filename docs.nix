@@ -6,19 +6,27 @@ conix: { lib = rec
   docs.mkDocModule.type = "{ name : String; docstr : String; type : String }";
   docs.mkDocModule.todo = 
     [ "Right now this is not language agnostic...maybe it should be?" 
-      "Add rendering todo list for each function"
     ];
   mkDocModule = doc: path: 
     let p = builtins.concatStringsSep "." path; in
     if ! builtins.isAttrs doc then conix.lib.emptyModule else
-    conix.lib.text 
+    conix.lib.texts [ 
       ''
+      <hr/>
       ${doc.docstr or ""}
+      ''
+      ( if doc ? todo 
+        then conix.lib.texts 
+          [ "_Todo_\n\n" (conix.lib.md.list "todo" doc.todo) ]
+        else conix.lib.emptyModule
+      )
+      ''
 
       ```haskell
       ${p} :: ${doc.type or (throw "missing docs.${p}.type assignment")}
       ```
-      '';
+      ''
+    ];
 
   collectDocModules = conix.lib.foldAttrsIxCond 
     (s: s ? type)
