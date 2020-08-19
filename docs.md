@@ -153,6 +153,26 @@ _Todo_
 mkDocModule :: { name : String; docstr : String; type : String }
 ```
 <hr/>
+Create a module using the given nix snippet code and
+the evaluated result.
+
+The text is markdown (see snippet for the template)
+
+_Todo_
+
+* This fails in an stack overflow / infinite recursion issue if:
+
+  * the code is importing conix via a fetch git (using `./git.nix`)
+  * and we're building the conix documentation.
+
+  For example the `readme/sample.nix` works on its own, however if its
+  text is passed in as the `code` argument inside of the readme derivation
+  we get infinite recursion.
+
+```haskell
+nixSnippetWith :: Name -> String -> Module
+```
+<hr/>
 Writes a file of the specified type to the nix store using pandoc.
 
 _Todo_
@@ -224,7 +244,9 @@ Infinite Recursion discussion.
 
 _Todo_
 
-* It might be worth investigating whether I could use a small typing system      and if x has no type then assume it's a raw, stringable nix value
+* It might be worth investigating whether I could use a small typing system
+      and if x has no type then assume it's a raw, stringable nix value
+
 ```haskell
 toTextModule :: (String | Module)  -> Module
 ```
