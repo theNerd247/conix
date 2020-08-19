@@ -17,6 +17,15 @@ To try out conix:
 1. Copy the conix sample into `conix-sample.nix` file.
 1. `nix-build ./conix-sample.nix`
 1. Open the `result/Volunteers.md` file. 
+```nix
+/nix/store/x982wsnl9q63xpa0r5fanagh5ln4ic62-Volunteers.md
+
+```
+output:
+
+```
+/nix/store/x982wsnl9q63xpa0r5fanagh5ln4ic62-Volunteers.md
+```
 * The markdown sample was not hand written; the conix sample generated it.
 * The table in the markdown sample has some of its contents duplicated across
 the document. The conix sample simplifies this process.
@@ -29,8 +38,8 @@ the document. The conix sample simplifies this process.
 # Goals
 
 
-1. Allow users to describe relationships between different pieces of their         content without breaking the natural flow of content.
-1. Provide intuitive build support for various output formats.
+* Allow users to describe relationships between different pieces of their         content without breaking the natural flow of content.
+* Provide intuitive build support for various output formats.
 
 ## Goal 1
 
