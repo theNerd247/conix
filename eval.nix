@@ -17,7 +17,7 @@ in
 
     docs.buildPages.docstr = ''
       Merges the pages into one and then calls `build`.
-      '';
+    '';
     docs.buildPages.type = "[ Page ] -> Derivation";
     buildPages = pages: build (core.lib.foldPages pages);
 
@@ -43,6 +43,7 @@ in
               (import ./design/goals.nix)
               (import ./copyJoin.nix)
               (import ./readme/default.nix)
+              (import ./foldAttr.nix)
               (x: core)
               # This is the docs attribute set defined in this file
               (x: { lib.docs = docs; }) 

@@ -53,14 +53,21 @@ pkgs: { lib = rec {
     = mkModuleA: mkModuleB: x: 
     mergeModules (mkModuleA x) (mkModuleB x);
 
+  docs.foldMapModules.docstr = ''
+    Maps elements to a module and merges the modules;
+  '';
   docs.foldMapModules.type = "(a -> Module) -> [a] -> Module";
   foldMapModules
     = f: builtins.foldl' (m: x: mergeModules m (f x)) emptyModule;
 
+  docs.foldModules.docstr = "Merges a list of modules";
+  docs.foldModules.type = "[Module] -> Module";
+  foldModules = foldMapModules (x: x);
+
+  docs.foldMapPages.docstr = "Maps elements to a page and then merges the pages";
   docs.foldMapPages.type = "(a -> Page) -> [a] -> Page";
   foldMapPages 
-    = f: 
-      builtins.foldl' (m: x: mergePages m (f x)) (x: {});
+    = f: builtins.foldl' (m: x: mergePages m (f x)) (x: {});
 
   docs.foldPages.type = "[ Page ] -> Page";
   foldPages
@@ -89,7 +96,7 @@ pkgs: { lib = rec {
   docs.t.type = docs.text.type;
   t = text;
 
-  docs.toTextModule.docstr = ''
+  docs.infiniteRecursion.discussion = ''
     This is the core function that makes conix work.  It merges the current
     attribute set and preserves the concatenates the toplevel text values. If
     `b` is:
@@ -98,31 +105,36 @@ pkgs: { lib = rec {
      * an attribute set then the resulting attribute set has its `text` field
      set to `a.text + b.text`.
    
-    **NOTE:** if `b` is a string then IT MUST NOT CONTAIN INTERPOLATIONS THAT
-    REFER TO RECURSIVE ATTRIBUTE VALUES THIS WILL CAUSE INFINITE RECURSION
-    ERRORS! For example:
+    **NOTE:** if `b` is a string then _it must not contain interpolations that
+    refer to recursive attribute values this will cause infinite recursion
+    errors_! For example:
     
+    ```nix
       (conix: { favorite = texts [ 
          "My " 
          ({ color = 256; text = "Blue"; })
          " color is very ''${str conix.favorite.color}"
       ];})
+    ```
    
     will fail with an infinite recursion error. This is due purely because it
     is impossible to determine if a value is a string without first evaluating
     it and in order to construct the equivalent attribute set:
      
+    ```nix
      { favorite = 
        { text = "My Blue color is very ''${x.favorite.color}";
          color = 256; 
        }
      }
+    ```
     One must first evaluate the text. Because the last line contains an
     accessor (`x.favorite.color`) which points to some data inside `favorite`
     we get a infinite recursion error. However, if the data is note defined in
     the same texts list then we can use normal string interpolation with no
     issues:
    
+    ```nix
      mergePages
       [ (x: { color.blue = 256; })
    
@@ -132,8 +144,14 @@ pkgs: { lib = rec {
            " color is very ''${str conix.color.blue}"
         ];})
       ]
+    ```
     Will work.
   '';  
+  docs.toTextModule.docstr = ''
+    Converts either text or a module to a module. This is used by the `texts`
+    function.  NOTE: Use of this can cause infinite recursion issues. See the
+    Infinite Recursion discussion.
+  '';
   docs.toTextModule.type = "(String | Module)  -> Module";
   docs.toTextModule.todo = [
     ''It might be worth investigating whether I could use a small typing system
@@ -154,8 +172,8 @@ pkgs: { lib = rec {
       The final count for the muffin competition was:
       '''
       (conix.lib.md.list "muffinCount"
-        [ "Blue Berry: ''${t (builtins.length conix.muffins.blueBerry)}
-          "Whole Grain:  ''${t (builtins.length conix.muffins.wholeGrain)}
+        [ "Blue Berry: ''${t (builtins.length conix.muffins.blueBerry)}"
+          "Whole Grain:  ''${t (builtins.length conix.muffins.wholeGrain)}"
         ]
       )
     ]; }

@@ -1,4 +1,4 @@
-conix:
+conix: { lib = 
 let inherit (conix.pkgs.lib.attrsets) mapAttrs; in
 rec { 
 
@@ -53,4 +53,4 @@ rec {
       cata = x: alg (fmap cata x);
     in
       cata;
-}
+}; }
