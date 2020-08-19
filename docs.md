@@ -155,9 +155,14 @@ foldPages :: [ Page ] -> Page
 <hr/>
 Writes a html file to the nix store given some module who's `drv` builds to a markdown file.
 
+_Todo_
+
+* Add the ability to auto-include static resources as part of the
+produced derivation.  For example `--css ./filePath` would be generated
+via some statement stating to include ./filePath as a css resource.
 
 ```haskell
-htmlFile :: Name -> (FilePath | Derivation) -> Derivation
+htmlFile :: Name -> String -> (FilePath | Derivation) -> Derivation
 ```
 <hr/>
 This is a convenience function for users to create new modules within texts
@@ -223,18 +228,20 @@ nixSnippetWith :: Name -> String -> Module
 <hr/>
 Writes a file of the specified type to the nix store using pandoc.
 
+The list of derivation are extra buildInputs that pandoc should use.
+
 _Todo_
 
 * Remove hardcoded markdown input type
 ```haskell
-pandoc :: Name -> Type -> { buildInputs : [ Derivation ] } -> (FilePath | Derivation) -> Derivation
+pandoc :: Type -> [ Derivation ] -> Name -> String -> (FilePath | Derivation) -> Derivation
 ```
 <hr/>
 Writes a pdf file to the nix store given some module who's `drv` builds to a markdown file.
 
 
 ```haskell
-pdfFile :: Name -> (FilePath | Derivation) -> Derivation
+pdfFile :: Name -> String -> (FilePath | Derivation) -> Derivation
 ```
 <hr/>
 This is like `label` but for nesting a module. We can't have just `label` and check whether the
