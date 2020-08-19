@@ -4,6 +4,9 @@ conix: { lib = rec
       Create a module whos text is a code snippet with some evaluated output.
       If no output is provided then it's codeblock is omitted.
     '';
+    docs.snippet.todo = [
+      "Add an language for the output codeblock as a parameter"
+    ];
     docs.snippet.type = "LanguageString -> CodeString -> OutputString -> Module";
     snippet 
       = language: code: output:

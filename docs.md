@@ -272,7 +272,9 @@ set :: Path -> Module -> Module
 Create a module whos text is a code snippet with some evaluated output.
 If no output is provided then it's codeblock is omitted.
 
+_Todo_
 
+* Add an language for the output codeblock as a parameter
 ```haskell
 snippet :: LanguageString -> CodeString -> OutputString -> Module
 ```
