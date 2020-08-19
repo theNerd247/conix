@@ -33,7 +33,7 @@ pkgs: { lib = rec {
   docs.pages.discussion = ''TODO'';
 
   docs.infiniteRecursion.discussion = ''
-    # TODO
+    TODO
   '';  
 
   docs.emptyModule.type = "Module";
