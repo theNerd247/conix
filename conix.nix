@@ -30,6 +30,12 @@ pkgs: { lib = rec {
     treat the missing text value as an empty string to save memory.
   '';
 
+  docs.pages.discussion = ''TODO'';
+
+  docs.infiniteRecursion.discussion = ''
+    # TODO
+  '';  
+
   docs.emptyModule.type = "Module";
   emptyModule 
     = {};
@@ -96,57 +102,6 @@ pkgs: { lib = rec {
   docs.t.type = docs.text.type;
   t = text;
 
-  docs.infiniteRecursion.discussion = ''
-    This is the core function that makes conix work.  It merges the current
-    attribute set and preserves the concatenates the toplevel text values. If
-    `b` is:
-    
-     * a string then the `a` has its `text` value concatenated with `b`
-     * an attribute set then the resulting attribute set has its `text` field
-     set to `a.text + b.text`.
-   
-    **NOTE:** if `b` is a string then _it must not contain interpolations that
-    refer to recursive attribute values this will cause infinite recursion
-    errors_! For example:
-    
-    ```nix
-      (conix: { favorite = texts [ 
-         "My " 
-         ({ color = 256; text = "Blue"; })
-         " color is very ''${str conix.favorite.color}"
-      ];})
-    ```
-   
-    will fail with an infinite recursion error. This is due purely because it
-    is impossible to determine if a value is a string without first evaluating
-    it and in order to construct the equivalent attribute set:
-     
-    ```nix
-     { favorite = 
-       { text = "My Blue color is very ''${x.favorite.color}";
-         color = 256; 
-       }
-     }
-    ```
-    One must first evaluate the text. Because the last line contains an
-    accessor (`x.favorite.color`) which points to some data inside `favorite`
-    we get a infinite recursion error. However, if the data is note defined in
-    the same texts list then we can use normal string interpolation with no
-    issues:
-   
-    ```nix
-     mergePages
-      [ (x: { color.blue = 256; })
-   
-        (conix: { favorite = texts [ 
-           "My " 
-           ({ color = conix.color.blue; text = "Blue"; })
-           " color is very ''${str conix.color.blue}"
-        ];})
-      ]
-    ```
-    Will work.
-  '';  
   docs.toTextModule.docstr = ''
     Converts either text or a module to a module. This is used by the `texts`
     function.  NOTE: Use of this can cause infinite recursion issues. See the

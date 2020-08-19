@@ -44,7 +44,7 @@ conix: { lib = rec
 
         ### Pages
 
-        TODO
+        ${conix.lib.docs.pages.discussion}
 
         ### Infinite Recursion
         
