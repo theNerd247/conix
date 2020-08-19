@@ -23,12 +23,22 @@ conix: { lib = rec
     overLines = f: text:
       (builtins.concatStringsSep "\n" (f (splitLines text)));
 
+    docs.extractLines.docstr = ''
+      Extract lines of text within the given line range (start and end inclusive).
+
+      This is handy for grabbing certain lines of, say a code block.
+    '';
+    docs.extractLines.type = "NaturalGreaterThan0 -> Natural -> String -> String";
     extractLines = start: end: overLines
       (conix.pkgs.lib.lists.sublist 
         (start - 1) 
         (end - start + 1)
       );
 
+    docs.indent.docstr = ''
+      Indent lines in the given string by an integer number of spaces
+    '';
+    docs.indent.type = "Natural -> String -> String";
     indent = n:
       let
         buffer = builtins.concatStringsSep "" (builtins.genList (_: " ") n);

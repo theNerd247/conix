@@ -1,7 +1,11 @@
 conix: { lib = rec
   { 
+    docs.snippet.docstr = ''
+      Create a module whos text is a code snippet with some evaluated output.
+      If no output is provided then it's codeblock is omitted.
+    '';
+    docs.snippet.type = "LanguageString -> CodeString -> OutputString -> Module";
     snippet 
-      # String -> String -> String -> Module
       = language: code: output:
       let
         text = ''
@@ -9,11 +13,16 @@ conix: { lib = rec
           ${code}
 
           ```
-          output:
-
-          ```
-          ${output}
-          ```
+          ${if output == "" || output == null 
+            then "" 
+            else
+            ''
+            ```
+            ===>
+            ${output}
+            ```
+            ''
+          }
           '';
       in
         { inherit text;
@@ -21,30 +30,6 @@ conix: { lib = rec
           inherit language;
           inherit output;
         };
-
-    # 1. Cache the given nix code in the store
-    # 2. And then evaluate the file.
-    cacheAndEvalNix
-      # String -> (FilePath -> String) -> String -> String
-      = name: evalFile: code:
-        let
-          file = conix.pkgs.writeText "${name}.nix" code;
-        in
-          evalFile file;
-
-    # This creates a string from a file that is assumed to contain 
-    # nix code and evaluates to a pure nix expression.
-    #
-    # NOTE: this may be a proper solution to evaluting arbitrary nix expressions.
-    # however it will not work until https://github.com/Nixos/nix/pulls/3205 becomes
-    # a widespread solution.
-    #
-    #conix.pkgs.runCommandLocal "${name}-stdout" { buildInputs = [ self.nix ]; } ''
-    #  ${self.nix}/bin/nix-instantiate --eval ${file} | tee $out
-    #'';
-    evalPureNixExpr 
-      # FilePath -> String
-      = fp: "${printNixVal (import fp)}";
 
     printNixVal = e:
       if builtins.isAttrs e then printAttrs e
@@ -71,13 +56,13 @@ conix: { lib = rec
       in
         "[ ${printElems} ]";
 
-    docs.nixSnippetWith.docstr = ''
+    docs.nixSnippet.docstr = ''
       Create a module using the given nix snippet code and
       the evaluated result.
      
       The text is markdown (see snippet for the template)
     '';
-    docs.nixSnippetWith.todo = [
+    docs.nixSnippet.todo = [
       ''
       This fails in an stack overflow / infinite recursion issue if:
 
@@ -89,28 +74,11 @@ conix: { lib = rec
         we get infinite recursion.
       ''
     ];
-    docs.nixSnippetWith.type = "Name -> String -> Module";
-    nixSnippetWith = name: code: evalNixFilePath:
+    docs.nixSnippet.type = "Name -> String -> Module";
+    nixSnippet = name: code: evalNixFilePath:
       let
-        module = snippet "nix" code 
-          (cacheAndEvalNix name evalNixFilePath code); 
+        nixFile = conix.pkgs.writeText "${name}.nix" code;
       in
-        { ${name} = module; } // (conix.lib.text module.text);
-
-    nixSnippet = name: code: 
-      nixSnippetWith name code evalPureNixExpr;
-
-    evalGitCmd
-      = name: fp:
-        let 
-          r = conix.pkgs.runCommandLocal name { buildInputs = [ conix.pkgs.git ]; } ''
-           ${builtins.readFile fp} | tee $out
-          '';
-        in
-          "${builtins.readFile r}";
-
-    gitCmd 
-      = name: code:
-        { ${name} = { text = cacheAndEvalNix name evalGitCmd code; }; }; 
+        conix.lib.set name (snippet "nix" code "${printNixVal (import nixFile)}");
   };
 }

@@ -92,6 +92,15 @@ them all at once.
 evalPages :: [ Page ] -> Module
 ```
 <hr/>
+Extract lines of text within the given line range (start and end inclusive).
+
+This is handy for grabbing certain lines of, say a code block.
+
+
+```haskell
+extractLines :: NaturalGreaterThan0 -> Natural -> String -> String
+```
+<hr/>
 Fold an attribute set down while allowing for attribute sets to be a leaf value. 
 
 The first function returns true if the given attribute set is a leaf value.
@@ -165,6 +174,13 @@ via some statement stating to include ./filePath as a css resource.
 htmlFile :: Name -> String -> (FilePath | Derivation) -> Derivation
 ```
 <hr/>
+Indent lines in the given string by an integer number of spaces
+
+
+```haskell
+indent :: Natural -> String -> String
+```
+<hr/>
 This is a convenience function for users to create new modules within texts
 without needing to manually create modules
 
@@ -223,7 +239,7 @@ _Todo_
   we get infinite recursion.
 
 ```haskell
-nixSnippetWith :: Name -> String -> Module
+nixSnippet :: Name -> String -> Module
 ```
 <hr/>
 Writes a file of the specified type to the nix store using pandoc.
@@ -251,6 +267,14 @@ infinite recursion. Thus we need a separate function to achieve the same task.
 
 ```haskell
 set :: Path -> Module -> Module
+```
+<hr/>
+Create a module whos text is a code snippet with some evaluated output.
+If no output is provided then it's codeblock is omitted.
+
+
+```haskell
+snippet :: LanguageString -> CodeString -> OutputString -> Module
 ```
 <hr/>
 An alias for `builtins.toString`
