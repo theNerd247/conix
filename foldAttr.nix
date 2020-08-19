@@ -37,7 +37,8 @@ rec {
 
     # This should return 5.
     nleaves = countLeaves { a = { b = "b"; c = "c"; }; d.e.f = "f"; g = { h = { stop = 2; }; i = 7; }; };
-    '';
+    ```
+  '';
   docs.foldAttrsCond.type = "(a -> Bool) -> (a -> b) -> (AttrSet b -> b) -> AttrSet a -> b";
   foldAttrsCond = pred: onLeaf: mergeLeafs:
     let

@@ -57,6 +57,7 @@ countLeaves = foldAttrsCond
 
 # This should return 5.
 nleaves = countLeaves { a = { b = "b"; c = "c"; }; d.e.f = "f"; g = { h = { stop = 2; }; i = 7; }; };
+```
 
 
 ```haskell
