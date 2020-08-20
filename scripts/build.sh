@@ -11,7 +11,7 @@ else
 fi
 
 git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
-git fetch "$branch"
+git fetch origin "$branch"
 git checkout -t "origin/$branch"
 git config user.email "travis@travis.org"
 git config user.name "travis"
