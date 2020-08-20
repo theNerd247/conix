@@ -1,12 +1,5 @@
 conix: { lib = rec
 {
-  docs.mkDocModule.docstr = ''
-    Construct markdown content for a documentation data structure 
-    '';
-  docs.mkDocModule.type = "{ name : String; docstr : String; type : String }";
-  docs.mkDocModule.todo = 
-    [ "Right now this is not language agnostic...maybe it should be?" 
-    ];
   mkDocModule = doc: path: 
     let p = builtins.concatStringsSep "." path; in
     if ! builtins.isAttrs doc then conix.lib.emptyModule else
@@ -33,7 +26,23 @@ conix: { lib = rec
     mkDocModule
     (moduleMap: conix.lib.foldModules (builtins.attrValues moduleMap));
 
-  refDocs = 
+  docs.mkDocs.docstr = ''
+    Creates a module containing markdown documentation of an nested attribute set
+    where the leaves are docs.
+
+    A doc is:
+
+    ```
+    Doc = { docstr : String; type = String; todo = [ String ]; }
+    ```
+
+    Conix uses this to produce its own reference documentation by setting the
+    `conix.lib.docs` attribute set in its pages and then creates an html
+    derivation by calling this function and passing the resulting module to
+    `htmlFile` and `markdownFile`.  
+  '';
+  docs.mkDocs.type = "AttrSet -> Module";
+  mkDocs = docsAttrSet:
      conix.lib.texts (
       [ ''
         # Conix Documentation - ${conix.lib.version.text}
@@ -41,7 +50,7 @@ conix: { lib = rec
         ## Reference
         ''
       ] ++
-      [ (collectDocModules (builtins.removeAttrs conix.lib.docs ["text" "drv"])) ]
+      [ (collectDocModules (builtins.removeAttrs docsAttrSet ["text" "drv"])) ]
       ++
       [ ''
         ## Discussion

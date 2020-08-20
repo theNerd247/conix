@@ -182,7 +182,11 @@ indent :: Natural -> String -> String
 ```
 <hr/>
 This is a convenience function for users to create new modules within texts
-without needing to manually create modules
+without needing to manually create modules.
+
+```nix
+label "foo" 7 ==> { foo = 7; text = "7"; } 
+```
 
 
 ```haskell
@@ -213,13 +217,23 @@ A Page is the toplevel type used throughout conix.
 mergePages :: Page -> Page -> Page
 ```
 <hr/>
-Construct markdown content for a documentation data structure 
+Creates a module containing markdown documentation of an nested attribute set
+where the leaves are docs.
 
-_Todo_
+A doc is:
 
-* Right now this is not language agnostic...maybe it should be?
+```
+Doc = { docstr : String; type = String; todo = [ String ]; }
+```
+
+Conix uses this to produce its own reference documentation by setting the
+`conix.lib.docs` attribute set in its pages and then creates an html
+derivation by calling this function and passing the resulting module to
+`htmlFile` and `markdownFile`.  
+
+
 ```haskell
-mkDocModule :: { name : String; docstr : String; type : String }
+mkDocs :: AttrSet -> Module
 ```
 <hr/>
 Create a module using the given nix snippet code and
@@ -263,6 +277,10 @@ pdfFile :: Name -> String -> (FilePath | Derivation) -> Derivation
 This is like `label` but for nesting a module. We can't have just `label` and check whether the
 input is a string or attribute set (yet? see todo for `toTextModule`) because doing so triggers
 infinite recursion. Thus we need a separate function to achieve the same task.
+
+```nix
+set "foo" { text = "bar"; x = 3;} ==> { foo = { text = "bar"; x = 3; } text = "bar"; }
+```
 
 
 ```haskell
