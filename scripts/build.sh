@@ -10,9 +10,9 @@ else
   branch=$TRAVIS_BRANCH
 fi
 
-git config --replace-all remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
+git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
 git fetch "$branch"
-git checkout -t origin/branch
+git checkout -t "origin/$branch"
 git config user.email "travis@travis.org"
 git config user.name "travis"
 
