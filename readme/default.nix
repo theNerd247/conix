@@ -1,10 +1,13 @@
-(import <nixpkgs> { overlays = import ../default.nix; }).conix.build.htmlFile "readme" 
+conix: with conix.lib; { lib.docs.readme = texts [
+''# ${homePageLink} - ${version.text} - ${buildStatusBadgeMd}
 
-(conix: conix.texts [] [
-''# ''(conix.homePageLink)" - "(conix.version.text)" - "(conix.buildStatusBadgeMd)''
-
+${if conix.lib.version.major < 1
+then ''
 **Notice: This project is a work in progress and the API will have major
 updates pushed to the master branch until the first major release.**
+'' 
+else ""
+}
 
 Conix is a nix library for writing documents. It's primary goal is to make it
 easy to re-use pieces your content without needing to write content.
@@ -23,32 +26,22 @@ To try out conix:
 ''
 
 
-__Markdown Sample__
-```markdown
-${builtins.readFile "${import ./sample.nix}/Volunteers.md"}
-```
-
-__Conix Sample__
+_Conix Sample_
 ```nix
 ${builtins.readFile ./sample.nix}
 ```
 
-''#TODO: add the code samples corresponding to each item.
-''
+_markdown output_
+```markdown
+${builtins.readFile (import ./sample.nix)}
+```
+
 * The markdown sample was not hand written; the conix sample generated it.
 * The table in the markdown sample has some of its contents duplicated across
 the document. The conix sample simplifies this process.
 * The number of volunteers is a computed value based on the number of rows in 
   the table:
-* Conix provides an out-of-the-box build system for markdown (using
-''(conix.text ["pandocLink"] "[Pandoc](https://pandoc.org)")'').
-
-# Goals
-
-''(conix.hidden ((import ../design/goals.nix) conix))
-(conix.textOf ["goals" "list"])
-''
-
+* Conix provides an out-of-the-box build system for markdown (using [Pandoc](https://pandoc.org)").
 
 # Contributing
 
@@ -59,8 +52,7 @@ Please read the [./design.md](./design.md) document for the design of conix.
 
 # Related Works
 
-* ''(conix.text ["pollenLink"]
-"[Pollen](https://docs.racket-lang.org/pollen/)")'' - _"Pollen is a publishing
+* [Pollen](https://docs.racket-lang.org/pollen/) - _"Pollen is a publishing
 system that helps authors make functional and beautiful digital books."_
 
 # Acknowledgements
@@ -69,5 +61,6 @@ Many thanks to:
 
   * [Gabriel Gonzalez](https://github.com/Gabriel439) for his mentorship and guidance. 
   * [Evan Relf](https://github.com/evanrelf) for his insightful feedback.
+  * [Paul Young](https://github.com/paulyoung) for great feedback and ideas.
 
-''])
+'']; }

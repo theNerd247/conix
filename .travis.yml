@@ -1,0 +1,21 @@
+language: nix
+
+branches:
+  only:
+    - master
+
+script: ./scripts/build.sh
+
+after_success:
+  - git config user.email "travis@travis.org"
+  - git config user.name "travis" # this email and name can be set anything you like
+  - git add README.md
+  - git commit --allow-empty -m "deployment updates"
+  - git push https://theNerd247:${GITHUB_TOKEN}@github.com/theNerd247/conix.git HEAD:HEAD  #clownvary is my username on github, you need to use yourself , do not use travis or others.
+
+# deploy:
+#   provider: pages:git
+#   edge: true
+#   target_branch: test-deploy
+#   # Set in the settings page of your repository, as a secure variable
+#   token: $GITHUB_TOKEN  

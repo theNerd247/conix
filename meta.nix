@@ -1,18 +1,13 @@
-self: super:
-
-with super.conix;
-
-{ conix = (super.conix or {}) //
-  rec
+conix: { lib = rec
   { 
-    homepageUrl = pureModule "https://github.com/theNerd247/conix.git";
-    homePageLink = pureModule "<a href=\"${homepageUrl.val}\">conix</a>";
-    buildStatusBadgeMd = pureModule "![CI](https://github.com/theNerd247/conix/workflows/CI/badge.svg?branch=master)";
+    homepageUrl = "https://github.com/theNerd247/conix.git";
+    homePageLink = "<a href=\"${homepageUrl}\">conix</a>";
+    buildStatusBadgeMd = "![CI](https://travis-ci.com/theNerd247/conix.svg?branch=${conix.lib.git.ref})";
     version = rec  
-      { text = pureModule "${builtins.toString major}.${builtins.toString minor}.${builtins.toString patch}";
+      { text = "${builtins.toString major}.${builtins.toString minor}.${builtins.toString patch}";
         major = 0; 
-        minor = 0; 
-        patch = 4; 
+        minor = 1; 
+        patch = 0; 
       };
   };
 }

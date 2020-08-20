@@ -1,6 +1,8 @@
-# <a href="https://github.com/theNerd247/conix.git">conix</a> - 0.0.4 - ![CI](https://github.com/theNerd247/conix/workflows/CI/badge.svg?branch=master)
+# <a href="https://github.com/theNerd247/conix.git">conix</a> - 0.1.0 - ![CI](https://travis-ci.com/theNerd247/conix.svg?branch=v0.1.0-api)
+
 **Notice: This project is a work in progress and the API will have major
 updates pushed to the master branch until the first major release.**
+
 
 Conix is a nix library for writing documents. It's primary goal is to make it
 easy to re-use pieces your content without needing to write content.
@@ -17,18 +19,53 @@ To try out conix:
 1. `nix-build ./conix-sample.nix`
 1. Open the `result/Volunteers.md` file. 
 
-__Markdown Sample__
+_Conix Sample_
+```nix
+(import <nixpkgs> { 
+  overlays = import (builtins.fetchGit
+    { url = "https://github.com/theNerd247/conix.git"; 
+      rev = "b412557b7f9ed3707994a867453d66308446e064";
+      ref = "v0.1.0-api";
+    }
+  );
+}).conix.build 
+(conix: { data = with conix.lib; using (markdownFile "Volunteers") (texts [
+
+''# Volunteer Handbook
+
+## Emergency Plan
+
+Incase of an emergency please contact: ''
+(t (conix.data.contacts.at 2 0))" at "(t (conix.data.contacts.at 2 1))''.
+
+## Volunteer Contacts 
+
+_Volunteers still needed!: ''(t (8 - (builtins.length conix.data.contacts.data)))''_
+''
+
+
+(set "contacts" (table
+    ["Name" "Phone" ]
+  [ ["John"   "555-123-4563"]
+    ["Jacob"  "555-321-9872"]
+    ["Jingle" "555-231-7589"]
+  ]
+))
+]); })
+
+```
+
+_markdown output_
 ```markdown
 # Volunteer Handbook
 
 ## Emergency Plan
 
-Incase of an emergency please contact: Jingle at 555-231-7589
+Incase of an emergency please contact: Jingle at 555-231-7589.
 
 ## Volunteer Contacts 
 
 _Volunteers still needed!: 5_
-
 Name | Phone
 --- | ---
 John | 555-123-4563
@@ -36,54 +73,12 @@ Jacob | 555-321-9872
 Jingle | 555-231-7589
 ```
 
-__Conix Sample__
-```nix
-(import <nixpkgs> { 
-  overlays = import (builtins.fetchGit
-    { url = "https://github.com/theNerd247/conix.git";
-    });
-}).conix.build.markdownFile "Volunteers" 
-
-(conix: conix.texts [] [
-''# Volunteer Handbook
-
-## Emergency Plan
-
-Incase of an emergency please contact: '' (conix.textOf [ "contacts" "row2" "col0" ])" at "
-(conix.textOf ["contacts" "row2" "col1"]) ''
-
-
-## Volunteer Contacts 
-
-_Volunteers still needed!: ''
-(conix.mapVal (l: builtins.toString (8 - l)) (conix.at [ "contacts" "rows" "length"]))
-''_
-
-'' 
-(conix.table [ "contacts" ]
-  ["Name" "Phone" ]
-  [ ["John"   "555-123-4563"]
-    ["Jacob"  "555-321-9872"]
-    ["Jingle" "555-231-7589"]
-  ]
-)
-])
-
-```
-
 * The markdown sample was not hand written; the conix sample generated it.
 * The table in the markdown sample has some of its contents duplicated across
 the document. The conix sample simplifies this process.
 * The number of volunteers is a computed value based on the number of rows in 
   the table:
-* Conix provides an out-of-the-box build system for markdown (using
-[Pandoc](https://pandoc.org)).
-
-# Goals
-
-1. Allow users to describe relationships between different pieces of their
-   content without breaking the natural flow of content. 
-1. Provide intuitive build support for various output formats.
+* Conix provides an out-of-the-box build system for markdown (using [Pandoc](https://pandoc.org)").
 
 # Contributing
 
@@ -103,4 +98,5 @@ Many thanks to:
 
   * [Gabriel Gonzalez](https://github.com/Gabriel439) for his mentorship and guidance. 
   * [Evan Relf](https://github.com/evanrelf) for his insightful feedback.
+  * [Paul Young](https://github.com/paulyoung) for great feedback and ideas.
 

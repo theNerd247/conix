@@ -1,69 +1,86 @@
-conix: conix.texts [ "design" "core" ] [
+conix: { design.core = conix.lib.texts [
 ''# Core
 
-Conix's design is similar to the nixos module system. 
-
-  1. Users construct an nested attribute set (called the content tree) such
-  that leaf values can be constructed using other leaf values. 
-  1. The resulting attribute set is then used to render the content in
-    a specified output format (such as markdown, html, or a pdf).
-Here's a graphic to explain the process:
-
-  ```
-  |------------------------|     |-------------------|     |---------------------|
-  | Construct Content Tree | ==> | Builder evaluates | ==> | Derivation Produced |
-  |------------------------|     |-------------------|     |---------------------|
-  ```
-
-## Project Directory Structure
+Conix's design is similar to the nixos module system. Below
+is the process conix uses to generate it output.
 
 ```
-|- ./pages.nix
-|- ./run.nix
-|- ./meta.nix
-|- builders/
-  |- pandoc.nix
-  |- markdown.nix
+|------------------|     |-------------------|     |---------------------|
+| Construct A Page | ==> | Builder evaluates | ==> | Derivation Produced |
+|------------------|     |-------------------|     |---------------------|
 ```
 
-`./pages.nix`
-  : lowlevel functions for manipulating and constructing modules are here.
+1. The user uses the conix library to construct what's called a Page.
+1. The user specified builder then evaluates that page
+1. The final result is a derivation that contains the PDF file, static website,
+  or whatever target formats a builder produces.
 
-`./run.nix`
-  : this contains the toplevel `runModule` function and functions that require
-    access to the final content tree
+## Pages
 
-`./builders/`
-  : directory containing various builders for each
+A page is simply a function that takes a module as input and returns a module 
+as output. The input ALWAYS refers to the final module to be produced. The 
+output module is some portion of that final module. 
 
-`./meta.nix`
-  : conix a module that contains the project's meta data.
+For example:
+''(conix.lib.nixSnippet "pagesSnippet" ''
+  with (import <nixpkgs> { 
+    overlays = import (builtins.fetchGit 
+      ${conix.lib.indent 4 conix.lib.git.text}
+    );
+  }).conix;
+
+  let 
+    page1 = x: { page1 = { text = "My first page"; }; };
+    page2 = x: { page2 = { text = "My second page is before ''${x.page1.text}"; }; };
+    allPages = mergePages page1 page2;
+  in
+    eval allPages
+'')''
+
+`page1` and `page2` are pages that return a single module each. The `x` is
+the input to for a page and refers to the final module that is created when
+`allPages` gets evaluated.
+
+  ```nix
+  x = 
+    { page1 = { text = "My first page"; }; 
+      page2 = { text = "My second page"; }; 
+    }
+  ```
 
 ## Modules
 
-The core data type for conix is `Module`:
+The core data type for conix is a module. A module is a attribute set that
+stores the content a user writes. Modules maybe nested attribute sets or not
+depending on how complex the content the user is writing.
 
+Some modules may contain a toplevel `text` attribute. These text attributes are
+concatenated together when 2 or modules get merged. For example:
 
-    ```
-    Module a = { pages = AttrSet; val = a; };
-    ```
-If you're familiar with Haskell this is the `Writer` monad where `pages` refers
-to the writer monoid and val is a contained value. 
+  ```nix
+  s = { text = "a"; x = 4; }
+  t = { text = "b"; y = 5; }
+  u = { text = "c"; }
 
+  foldModules [ s t u ]
+   => { text = "abc"; x = 4; y = 5; }
+  ```
+Text attributes in nested attribute sets _are not_ propagated up the tree. So
 
-`pages` is a partial attribute set that contains the user's content tree.
-`recursiveUpdate` is used to merge pages of 2 different modules together
-instead of the `//` operator. This prevents users from needing to do this
-manually. _NOTE_: merging assumes that `val` contains text. This assumption is
-made because Most of the time merging will be done with modules the user has 
-authored. I suppose a good refactor would be to turn this into a high-order
-function to give users the maximum flexibility.
+  ```nix
+  s = { text = "a"; x = 4; }
+  t = { u = { text = "b"; }; }
+  mergeModules s t 
+    => { text = "a"; x = 4; u = { text = "b"; }; }
+  ```
 
 ## Evaluation
 
 Modules can be hand written by the user. However, recall one of the goals:
 
-> ''(conix.textOf [ "goals" "list" "goal1" ])''
+> '' #(conix.textOf [ "goals" "list" "goal1" ])''
+''
+
 Long story short a good portion of conix is simply providing functions to make
 this construction easier. This includes giving users access to the final 
 content tree. This is done by having the user construct functions of this type:
@@ -88,4 +105,31 @@ derivation with the final format of the content. For example the `pandoc.nix`
 file contains builders that use Pandoc behind the scenes to construct HTML or
 PDF output.
 
-'']
+## Project Directory Structure
+
+Below are some of the main files for this project:
+
+```
+|- ./core.nix
+|- ./eval.nix
+|- ./meta.nix
+|- builders/
+  |- pandoc.nix
+  |- markdown.nix
+```
+
+`./pages.nix`
+  : lowlevel functions for manipulating and constructing modules are here.
+
+`./run.nix`
+  : this contains the toplevel `runModule` function and functions that require
+    access to the final content tree
+
+`./builders/`
+  : directory containing various builders for each
+
+`./meta.nix`
+  : conix a module that contains the project's meta data.
+
+
+'']; }
