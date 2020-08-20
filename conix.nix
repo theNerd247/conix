@@ -143,7 +143,11 @@ pkgs: { lib = rec {
 
   docs.label.docstr = ''
     This is a convenience function for users to create new modules within texts
-    without needing to manually create modules
+    without needing to manually create modules.
+
+    ```nix
+    label "foo" 7 ==> { foo = 7; text = "7"; } 
+    ```
   '';
   docs.label.type = "Path -> Text -> Module";
   label 
@@ -154,6 +158,10 @@ pkgs: { lib = rec {
     This is like `label` but for nesting a module. We can't have just `label` and check whether the
     input is a string or attribute set (yet? see todo for `toTextModule`) because doing so triggers
     infinite recursion. Thus we need a separate function to achieve the same task.
+
+    ```nix
+    set "foo" { text = "bar"; x = 3;} ==> { foo = { text = "bar"; x = 3; } text = "bar"; }
+    ```
     '';
   docs.set.type = "Path -> Module -> Module";
   set = path: x: mergeModules (nest path x) (text x.text);
