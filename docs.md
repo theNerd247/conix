@@ -1,6 +1,5 @@
-# Conix Documentation - 0.1.0
+# Reference Documentation - 0.1.0
 
-## Reference
 <hr/>
 Builds a page that expects the toplevel module to contain an attribute called `drv`.
 Drv typically should be a derivation containing the toplevel render of the content
