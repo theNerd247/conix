@@ -4,11 +4,11 @@ set -ex
 
 # Pull down the branch originating the PR or branch pushed to
 # This makes it so we can create fixup commits
-if $TRAVIS_PULL_REQUEST; then
-  branch=$TRAVIS_PULL_REQUEST_BRANCH
-else
-  branch=$TRAVIS_BRANCH
-fi
+#if $TRAVIS_PULL_REQUEST; then
+#  branch=$TRAVIS_PULL_REQUEST_BRANCH
+#else
+branch=$TRAVIS_BRANCH
+#fi
 
 git config --replace-all remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
 git fetch "$branch"
