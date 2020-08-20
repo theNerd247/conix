@@ -1,10 +1,10 @@
-conix: { lib.md = rec
+conix: { lib = rec
   {  
-    docs.list.docstr = ''
+    docs.md.list.docstr = ''
       Create an bullet list style markdown list.
       '';
-    docs.list.type = "Name -> [ String ] -> Module";
-    list
+    docs.md.list.type = "Name -> [ String ] -> Module";
+    md.list
       = name: texts: 
         { text = builtins.concatStringsSep "\n" (builtins.map (t: "* ${t}") texts);
           ${name} = texts;

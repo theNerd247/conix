@@ -202,6 +202,13 @@ _Todo_
 markdownFile :: Name -> Module -> Derivation
 ```
 <hr/>
+Create an bullet list style markdown list.
+
+
+```haskell
+md.list :: Name -> [ String ] -> Module
+```
+<hr/>
 Modules merge by recursiveUpdate but the toplevel text fields
 are concatenated.
 
