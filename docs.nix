@@ -43,33 +43,5 @@ conix: { lib = rec
   '';
   docs.mkDocs.type = "AttrSet -> Module";
   mkDocs = docsAttrSet:
-     conix.lib.texts (
-      [ ''
-        # Conix Documentation - ${conix.lib.version.text}
-
-        ## Reference
-        ''
-      ] ++
-      [ (collectDocModules (builtins.removeAttrs docsAttrSet ["text" "drv"])) ]
-      ++
-      [ ''
-        ## Discussion
-
-        ### Modules
-        
-        ${conix.lib.docs.modules.discussion}
-
-        ### Pages
-
-        ${conix.lib.docs.pages.discussion}
-
-        ### Infinite Recursion
-        
-        ${conix.lib.docs.infiniteRecursion.discussion}
-
-        ---
-        Built using ${conix.lib.homePageLink} version ${conix.lib.version.text}
-        ''
-      ]
-    );
+      collectDocModules (builtins.removeAttrs docsAttrSet ["text" "drv"]);
 };}
