@@ -20,17 +20,17 @@ As an example this readme file was written using conix.
 
 To try out conix:
 
-1. Copy the conix sample into `conix-sample.nix` file.
-1. `nix-build ./conix-sample.nix`
-1. Open the `result/Volunteers.md` file. ''#TODO: replace with generated html file.
-''
+1. Copy the conix sample into a nix file.
+1. `nix-build` that file
+1. Open `./result` which is the conix generated markdown file.
 
-''(runNixSnippetDrvFile "sampleConix" ''
+''
+(runNixSnippetDrvFile "sampleConix" ''
 (import <nixpkgs> { 
   overlays = import (builtins.fetchGit
-    ${conix.lib.git.text}
+    ${indent 4 conix.lib.git.text}
   );
-  }).conix.buildPages
+}).conix.buildPages
   [ (conix: { drv = with conix.lib; markdownFile "Volunteers" conix.vol; })
     (conix: { vol = with conix.lib; texts [
 

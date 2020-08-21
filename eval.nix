@@ -49,9 +49,7 @@ in
               (import ./builder/markdown.nix)
               (import ./builder/pandoc.nix)
               (import ./docs.nix)
-              (import ./design/goals.nix)
               (import ./copyJoin.nix)
-              (import ./readme/default.nix)
               (import ./foldAttr.nix)
               (x: core)
               # This is the docs attribute set defined in this file

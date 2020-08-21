@@ -1,4 +1,6 @@
-(import <nixpkgs> { overlays = (import ./default.nix); }).conix.build
+(import <nixpkgs> { overlays = (import ./default.nix); }).conix.buildPages [
+  (import ./readme/default.nix)
+  (import ./design/goals.nix)
   (conix: { drv = with conix.lib;
     let
       d = texts
@@ -31,4 +33,4 @@
       [ (buildBoth "docs" d (markdownFile "docs") (htmlFile "docs" ""))
         (buildBoth "readme" docs.readme (markdownFile "readme") (htmlFile "readme" ""))
       ];
-})
+})]
