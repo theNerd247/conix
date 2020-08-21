@@ -25,16 +25,39 @@ To try out conix:
 1. Open the `result/Volunteers.md` file. ''#TODO: replace with generated html file.
 ''
 
+''(runNixSnippetDrvFile "sampleConix" ''
+(import <nixpkgs> { 
+  overlays = import (builtins.fetchGit
+    ${conix.lib.git.text}
+  );
+  }).conix.buildPages
+  [ (conix: { drv = with conix.lib; markdownFile "Volunteers" conix.vol; })
+    (conix: { vol = with conix.lib; texts [
 
-_Conix Sample_
-```nix
-${builtins.readFile ./sample.nix}
-```
+'''# Volunteer Handbook
 
-_markdown output_
-```markdown
-${builtins.readFile (import ./sample.nix)}
-```
+## Emergency Plan
+
+Incase of an emergency please contact: '''
+(t (conix.vol.contacts.at 2 0))" at "(t (conix.vol.contacts.at 2 1))'''.
+
+## Volunteer Contacts 
+
+_Volunteers still needed!: '''(t (8 - (builtins.length conix.vol.contacts.data)))'''_
+
+'''
+
+(set "contacts" (table
+    ["Name" "Phone" ]
+  [ ["John"   "555-123-4563"]
+    ["Jacob"  "555-321-9872"]
+    ["Jingle" "555-231-7589"]
+  ]
+))
+
+];})]
+
+'')''
 
 * The markdown sample was not hand written; the conix sample generated it.
 * The table in the markdown sample has some of its contents duplicated across
