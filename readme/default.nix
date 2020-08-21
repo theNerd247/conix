@@ -25,39 +25,27 @@ To try out conix:
 1. Open the `result/Volunteers.md` file. ''#TODO: replace with generated html file.
 ''
 
-
-_Conix Sample_
-```nix
-''#${builtins.readFile ./sample.nix}
-''
-```
-
-_markdown output_
-```markdown
-''#${builtins.readFile (import ./sample.nix)}
-''
-```
-
-''(nixSnippet "sampleConix" ''
+''(runNixSnippetDrvFile "sampleConix" ''
 (import <nixpkgs> { 
   overlays = import (builtins.fetchGit
-    ${indent 4 conix.lib.git.text}
+    ${conix.lib.git.text}
   );
-}).conix.build 
-(conix: { data = with conix.lib; using (markdownFile "Volunteers") (texts [
+  }).conix.buildPages
+  [ (conix: { drv = with conix.lib; markdownFile "Volunteers" conix.vol; })
+    (conix: { vol = with conix.lib; texts [
 
 '''# Volunteer Handbook
 
 ## Emergency Plan
 
 Incase of an emergency please contact: '''
-(t (conix.data.contacts.at 2 0))" at "(t (conix.data.contacts.at 2 1))'''.
+(t (conix.vol.contacts.at 2 0))" at "(t (conix.vol.contacts.at 2 1))'''.
 
 ## Volunteer Contacts 
 
-_Volunteers still needed!: '''(t (8 - (builtins.length conix.data.contacts.data)))'''_
-'''
+_Volunteers still needed!: '''(t (8 - (builtins.length conix.vol.contacts.data)))'''_
 
+'''
 
 (set "contacts" (table
     ["Name" "Phone" ]
@@ -66,7 +54,8 @@ _Volunteers still needed!: '''(t (8 - (builtins.length conix.data.contacts.data)
     ["Jingle" "555-231-7589"]
   ]
 ))
-]); })
+
+];})]
 
 '')''
 

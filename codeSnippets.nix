@@ -36,6 +36,12 @@ conix: { lib = rec
           inherit output;
         };
 
+    docs.printNixVal.docstr = ''
+      Pretty print a pure nix-value. 
+
+      NOTE: do not call this function on a derivation as it will segfault.
+      '';
+    docs.printNixVal.type = "a -> String";
     printNixVal = e:
       if builtins.isAttrs e then printAttrs e
       else if builtins.isList e then printList e
@@ -61,29 +67,26 @@ conix: { lib = rec
       in
         "[ ${printElems} ]";
 
-    docs.nixSnippet.docstr = ''
-      Create a module using the given nix snippet code and
-      the evaluated result.
-     
-      The text is markdown (see snippet for the template)
+    docs.runSnippet.docstr = ''
+      Create a module using the given code snippet and a function that accepts
+      the a nix store filepath containing the code.  `mkCode` handles executing
+      the code file and producing the output expected by `snippet` 
     '';
-    docs.nixSnippet.todo = [
-      ''
-      This fails in an stack overflow / infinite recursion issue if:
 
-        * the code is importing conix via a fetch git (using `./git.nix`)
-        * and we're building the conix documentation.
-
-        For example the `readme/sample.nix` works on its own, however if its
-        text is passed in as the `code` argument inside of the readme derivation
-        we get infinite recursion.
-      ''
-    ];
-    docs.nixSnippet.type = "Name -> String -> Module";
-    nixSnippet = name: code:
+    docs.runSnippet.type = "Name -> String -> String -> (FilePath -> String) -> Module";
+    runSnippet = name: language: code: mkOutput:
       let
-        nixFile = conix.pkgs.writeText "${name}.nix" code;
+        codeFile = conix.pkgs.writeText "${name}.${language}" code;
       in
-        conix.lib.set name (snippet "nix" code "${printNixVal (import nixFile)}");
+        conix.lib.set name (snippet language code (mkOutput codeFile));
+
+    docs.runNixSnippetDrvFile.docstr = ''
+      Run `runSnippet` for nix code that evaluates to a derivation that points
+      to a single file. The output of the snippet is the contents of the file
+      resulting from the derivation.
+      '';
+    docs.runNixSnippetDrvFile.type = "Name -> String -> Module";
+    runNixSnippetDrvFile = name: code: 
+      runSnippet name "nix" code (nixFilePath: "${builtins.readFile (import nixFilePath)}");
   };
 }
