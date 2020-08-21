@@ -1,19 +1,21 @@
 let
   refDir = ./.git/refs/heads;
   refFile = ./.git/HEAD;
-  refName = builtins.replaceStrings ["ref: refs/heads/" "\n"] ["" ""]  (builtins.readFile refFile);
+  ref = builtins.replaceStrings ["ref: refs/heads/" "\n"] ["" ""]  (builtins.readFile refFile);
 
   # If the ref is 40 characters long then it's most likely a hash
   # in which case we're in a detached head state and are unable to point
   # to a ref - so we'll do without...
-  isHeadless = builtins.stringLength refName == 40; 
-  rev = if isHeadless 
-    then refName
+  rev = if builtins.stringLength ref == 40 
+    then throw 
+      ''
+      You're in a HEADLESS git state and conix can't determine which branch to
+      use for the "ref" value in builtins.fetchgit. Please checkout a branch
+      and retry the build. Also, check to make sure that the branch you're
+      building has been pushed to github.  ''
     else
       builtins.replaceStrings ["\n"] [""] 
-        (builtins.readFile "${refDir}/${refName}");
-
-  ref = if isHeadless then "HEAD" else refName;
+        (builtins.readFile "${refDir}/${ref}");
 in
 rec
 {
