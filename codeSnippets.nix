@@ -80,7 +80,7 @@ conix: { lib = rec
       ''
     ];
     docs.nixSnippet.type = "Name -> String -> Module";
-    nixSnippet = name: code: evalNixFilePath:
+    nixSnippet = name: code:
       let
         nixFile = conix.pkgs.writeText "${name}.nix" code;
       in

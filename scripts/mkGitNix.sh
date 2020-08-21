@@ -1,6 +1,7 @@
 #!/usr/bin/env nix-shell 
 #! nix-shell -p git -i bash
 
+#function mkGitNix() {
 cat > git.nix <<HERE
 conix: { lib = rec
   { git =
@@ -11,10 +12,16 @@ conix: { lib = rec
       text = ''
         { url = "\${url}";
           rev = "\${rev}";
-          ref = "\${ref}";
+          #ref = "\${ref}";
         }
         '';
     };
   };
 }
 HERE
+#}
+
+# function mkDocs() {
+#   docs=$(nix-build ./documentation.nix --show-trace)
+#   cp --no-preserve=mode $docs/*.md ./.
+# }
