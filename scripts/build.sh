@@ -14,6 +14,7 @@ fi
 
 git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
 git fetch origin $branch
-git checkout -t "origin/$branch"
+git branch -a
+git checkout $branch
 
 ./scripts/mkDocs.sh 
