@@ -12,8 +12,6 @@ else
   branch="pull/$TRAVIS_PULL_REQUEST/merge"
 fi
 
-exit 0
-
 git checkout $branch
 
 ./scripts/mkDocs.sh 
