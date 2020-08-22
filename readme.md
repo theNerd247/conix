@@ -25,7 +25,7 @@ To try out conix:
     { 
       url = "https://github.com/theNerd247/conix.git";
       ref = "master";
-      rev = "43715ca620368826615ccbe06874d33b561a6b8a";
+      rev = "93484925dab74e29cc3812a531f302034ae79027";
     }
     
   );
