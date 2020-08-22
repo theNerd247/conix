@@ -13,7 +13,7 @@ else
 fi
 
 git config --replace-all remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
-git fetch origin $branch
+git fetch 
 git branch -a
 git checkout -t "origin/$branch"
 
