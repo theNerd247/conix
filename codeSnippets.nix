@@ -72,6 +72,7 @@ conix: { lib = rec
       the a nix store filepath containing the code.  `mkCode` handles executing
       the code file and producing the output expected by `snippet` 
     '';
+
     docs.runSnippet.type = "Name -> String -> String -> (FilePath -> String) -> Module";
     runSnippet = name: language: code: mkOutput:
       let

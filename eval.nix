@@ -42,7 +42,6 @@ in
             [ 
               (x: { pkgs = self; })
               (import ./meta.nix)
-              (import ./git.nix)
               (import ./table.nix)
               (import ./markdown.nix)
               (import ./codeSnippets.nix)
@@ -55,6 +54,21 @@ in
               (x: core)
               # This is the docs attribute set defined in this file
               (x: { lib.docs = docs; }) 
+              (c: rec { lib.git = 
+                let 
+                  git = import ./git.nix; 
+                  text =
+                  ''
+                  { 
+                    url = "${git.url}";
+                    ref = "${git.ref}";
+                    rev = "${git.rev}";
+                  }
+                  '';
+                in
+                  git // { inherit text; };
+                }
+              )
               page
             ];
 
