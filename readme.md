@@ -1,4 +1,4 @@
-# <a href="https://github.com/theNerd247/conix.git">conix</a> - 0.1.0 - ![CI](https://travis-ci.com/theNerd247/conix.svg?branch=v0.1.0-api)
+# <a href="https://github.com/theNerd247/conix.git">conix</a> - 0.1.0
 
 **Notice: This project is a work in progress and the API will have major
 updates pushed to the master branch until the first major release.**
@@ -15,34 +15,36 @@ As an example this readme file was written using conix.
 
 To try out conix:
 
-1. Copy the conix sample into `conix-sample.nix` file.
-1. `nix-build ./conix-sample.nix`
-1. Open the `result/Volunteers.md` file. 
+1. Copy the conix sample into a nix file.
+1. `nix-build` that file
+1. Open `./result` which is the conix generated markdown file.
 
-_Conix Sample_
 ```nix
 (import <nixpkgs> { 
   overlays = import (builtins.fetchGit
-    { url = "https://github.com/theNerd247/conix.git"; 
-      rev = "b412557b7f9ed3707994a867453d66308446e064";
-      ref = "v0.1.0-api";
+    { 
+      url = "https://github.com/theNerd247/conix.git";
+      ref = "master";
+      rev = "43715ca620368826615ccbe06874d33b561a6b8a";
     }
+    
   );
-}).conix.build 
-(conix: { data = with conix.lib; using (markdownFile "Volunteers") (texts [
+}).conix.buildPages
+  [ (conix: { drv = with conix.lib; markdownFile "Volunteers" conix.vol; })
+    (conix: { vol = with conix.lib; texts [
 
 ''# Volunteer Handbook
 
 ## Emergency Plan
 
 Incase of an emergency please contact: ''
-(t (conix.data.contacts.at 2 0))" at "(t (conix.data.contacts.at 2 1))''.
+(t (conix.vol.contacts.at 2 0))" at "(t (conix.vol.contacts.at 2 1))''.
 
 ## Volunteer Contacts 
 
-_Volunteers still needed!: ''(t (8 - (builtins.length conix.data.contacts.data)))''_
-''
+_Volunteers still needed!: ''(t (8 - (builtins.length conix.vol.contacts.data)))''_
 
+''
 
 (set "contacts" (table
     ["Name" "Phone" ]
@@ -51,12 +53,16 @@ _Volunteers still needed!: ''(t (8 - (builtins.length conix.data.contacts.data))
     ["Jingle" "555-231-7589"]
   ]
 ))
-]); })
+
+];})]
+
+
 
 ```
 
-_markdown output_
-```markdown
+===>
+
+```
 # Volunteer Handbook
 
 ## Emergency Plan
@@ -66,12 +72,14 @@ Incase of an emergency please contact: Jingle at 555-231-7589.
 ## Volunteer Contacts 
 
 _Volunteers still needed!: 5_
+
 Name | Phone
 --- | ---
 John | 555-123-4563
 Jacob | 555-321-9872
 Jingle | 555-231-7589
 ```
+
 
 * The markdown sample was not hand written; the conix sample generated it.
 * The table in the markdown sample has some of its contents duplicated across

@@ -242,26 +242,6 @@ derivation by calling this function and passing the resulting module to
 mkDocs :: AttrSet -> Module
 ```
 <hr/>
-Create a module using the given nix snippet code and
-the evaluated result.
-
-The text is markdown (see snippet for the template)
-
-_Todo_
-
-* This fails in an stack overflow / infinite recursion issue if:
-
-  * the code is importing conix via a fetch git (using `./git.nix`)
-  * and we're building the conix documentation.
-
-  For example the `readme/sample.nix` works on its own, however if its
-  text is passed in as the `code` argument inside of the readme derivation
-  we get infinite recursion.
-
-```haskell
-nixSnippet :: Name -> String -> Module
-```
-<hr/>
 Writes a file of the specified type to the nix store using pandoc.
 
 The list of derivation are extra buildInputs that pandoc should use.
@@ -278,6 +258,33 @@ Writes a pdf file to the nix store given some module who's `drv` builds to a mar
 
 ```haskell
 pdfFile :: Name -> String -> (FilePath | Derivation) -> Derivation
+```
+<hr/>
+Pretty print a pure nix-value. 
+
+NOTE: do not call this function on a derivation as it will segfault.
+
+
+```haskell
+printNixVal :: a -> String
+```
+<hr/>
+Run `runSnippet` for nix code that evaluates to a derivation that points
+to a single file. The output of the snippet is the contents of the file
+resulting from the derivation.
+
+
+```haskell
+runNixSnippetDrvFile :: Name -> String -> Module
+```
+<hr/>
+Create a module using the given code snippet and a function that accepts
+the a nix store filepath containing the code.  `mkCode` handles executing
+the code file and producing the output expected by `snippet` 
+
+
+```haskell
+runSnippet :: Name -> String -> String -> (FilePath -> String) -> Module
 ```
 <hr/>
 This is like `label` but for nesting a module. We can't have just `label` and check whether the
