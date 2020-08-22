@@ -16,8 +16,3 @@ git fetch origin "$branch"
 git checkout $branch
 
 ./scripts/mkDocs.sh 
-
-# git add ./docs.md ./readme.md
-# 
-# git commit -m "updates docs and readme"
-# git push https://theNerd247:${GITHUB_TOKEN}@github.com/theNerd247/conix.git "$branch"

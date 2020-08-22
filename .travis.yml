@@ -6,9 +6,11 @@ branches:
 
 script: ./scripts/build.sh
 
-# deploy:
-#   provider: pages:git
-#   edge: true
-#   target_branch: test-deploy
-#   # Set in the settings page of your repository, as a secure variable
-#   token: $GITHUB_TOKEN  
+deploy:
+  provider: pages:git
+  edge: true
+  keep_history: true
+  commit_message: "Updating docs"
+  target_branch: master
+  # Set in the settings page of your repository, as a secure variable
+  token: $GITHUB_TOKEN  
