@@ -12,9 +12,8 @@ else
   branch="pull/$TRAVIS_PULL_REQUEST/merge"
 fi
 
-git branch -a
-
 git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
+git fetch $branch
 git checkout -t "origin/$branch"
 
 ./scripts/mkDocs.sh 
