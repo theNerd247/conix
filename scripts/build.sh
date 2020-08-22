@@ -13,6 +13,6 @@ else
 fi
 
 git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
-git checkout $branch
+git checkout -t "origin/$branch"
 
 ./scripts/mkDocs.sh 
