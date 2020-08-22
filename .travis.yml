@@ -10,7 +10,7 @@ deploy:
   provider: pages:git
   edge: true
   keep_history: true
-  commit_message: "Updating docs"
+  commit_message: "Updating docs\n\n[skip travis]"
   target_branch: master
   # Set in the settings page of your repository, as a secure variable
   token: $GITHUB_TOKEN  
