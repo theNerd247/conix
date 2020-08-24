@@ -4,7 +4,8 @@ conix: with conix.lib; { lib.docs.goals = texts [
 
 ''(md.list "list" [
 ''
-Tighten the relationship between content and how it's rendered.
+Allow users to use logic in writing prose without leaving
+the sentence they are writing.
 ''
  
 ''
@@ -17,8 +18,8 @@ Provide intuitive build support for various output formats.
 
 > ''(t (builtins.elemAt conix.lib.docs.goals.list 0))''
 
-Good programmers separate data from how that data is rendered. Using this paradigmn 
-provides the programmer a solution to the following problems:
+Good programmers separate data from how that data is rendered. The programmer
+solves multiple problems with this paradigm:
 
   * Store duplicated data in a single place.
   * Generate new content with logic (for example a list of words is sorted
@@ -28,31 +29,60 @@ provides the programmer a solution to the following problems:
   ```
   Data --> Render --> Output
   ```
-However, for someone writing prose the above solution becomes a problem. That
-is, the data an author is working with is also content that they are writing.
-The 
+However, for writing prose the above solution becomes a problem. Here's what I
+mean. The data an author is working with is the content that they are writing.
+And if the author follows the above paradigm - for example by using JSON
+and a templating language - then they must write their content separate from
+how that document is to be rendered. Consider the following code that uses
+JSON and a templating language[^I'm not using a real templating language; this
+is just an example. Hopefully, it's clear enough]:
 
-And,
-primarily, this is done as an attempt to keep duplicated data to a minimum. If
-content is to be re-used it's stuffed into a data structure and then called
-upon in multiple places in the rendering system. 
+```json
+chapters: [
+  { sections = 
+    [ 
+      { contents: "..." }
+      { contents: "..." }
+      { contents: "..." }
+      { contents: "..." }
+    ]
+    references = 
+    [ ...
+    ]
+    notes = 
+    [ ...
+    ]
+  }
+]
+```
 
-However, writing documents - particularly documentation - is not the place for
-the separation of data and rendering.  What a person writes and how their
-writing is displayed often go hand in hand.  For example, a newspaper or
-resume. These mediums often provide limited realistate in which one's penwork
-must be restricted to the 2 dimensions paper. I recognize that the didital 
-brothers of these works may not have as much a restriction, but they do exist
-nonetheless. They are not free, however, from the duplication problem or even
-some of the advantages of keeping the content in well structured data.
+```
+Chapter {{chapters.index}
 
-Simply put:
+{{for section in chapter.sections}}
 
-  * There is a need to manipulate content as a data structure. This includes
-    embedding logical statements into content that one writes.
-  * Seperating content and how it's rendered is not possible for authors. Maybe for programmers,
-    but not the daily writer.
-  * 
+Section {{section.index}}
+
+{{section.contents}}
+
+{{endfor}}
+```
+
+This is a mess! If I'm writing a book I'd prefer to not have to write JSON.
+It's not distributable across files, it's difficult to tell which section or
+chapter I'm working on - I'd prefer to have a file per section and a directory
+per chapter. Finally, what if the content that I write needs to depend on the
+templating language? I've really broken the data/render separation above.
+
+There's no way around it. When we write we want to have the power that
+programming gives us (which templating languages provide) and the ability to
+using logic to construct our content (which data structures provide), however
+traditional ways of writing do not provide this.
+
+Markdown, LaTeX, and the family of languages makes the user interface for
+rendered content convenient - however none of them provide the power of a
+programming language[^Well maybe LaTeX does...but's not user friendly and has
+a steep learning curve.].
 
 ## Goal 2
 
