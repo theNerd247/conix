@@ -88,5 +88,37 @@ conix: { lib = rec
     docs.runNixSnippetDrvFile.type = "Name -> String -> Module";
     runNixSnippetDrvFile = name: code: 
       runSnippet name "nix" code (nixFilePath: "${builtins.readFile (import nixFilePath)}");
+
+    docs.sampleConixSnippet.docstr = ''
+      Creates a nix snippet using the given conix code. The content
+      is put under a single attribute called "sample" and creates 
+      markdown as its output.
+
+      The expected code should evaluate to a module.
+
+      Only the code the user writes will appear in the code block. Read the implementation
+      for this function to see what will actually get evaluated.
+
+      Use this if you're writing sample conix code and would like to verify that 
+      you code works.
+      '';
+    docs.sampleConixSnippet.type = "Name -> String -> Module";
+    sampleConixSnippet = name: code:
+      let
+        sampleCodeFile = conix.pkgs.writeText "${name}.nix"
+          ''
+          (import <nixpkgs> { 
+            overlays = import (builtins.fetchGit
+              ${conix.lib.indent 4 conix.lib.git.text}
+            );
+          }).conix.buildPages
+            [ (conix: { drv = with conix.lib; markdownFile "${name}" conix.sample; })
+              (conix: { sample = with conix.lib;
+                ${code}
+              ;})
+            ]
+          '';
+      in
+        conix.lib.set name (snippet "nix" code "${builtins.readFile (import sampleCodeFile)}");
   };
 }
