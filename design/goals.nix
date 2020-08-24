@@ -1,13 +1,15 @@
 conix: with conix.lib; { lib.docs.goals = texts [
-# TODO: maybe shorten these goals down so they're title worthy?
 ''# Goals
 
 
 ''(md.list "list" [
-    ''Allow users to describe relationships between different pieces of their
-         content without breaking the natural flow of content.''
+''
+Tighten the relationship between content and how it's rendered.
+''
  
-   "Provide intuitive build support for various output formats."
+''
+Provide intuitive build support for various output formats.
+''
 ])''
 
 
@@ -15,28 +17,42 @@ conix: with conix.lib; { lib.docs.goals = texts [
 
 > ''(t (builtins.elemAt conix.lib.docs.goals.list 0))''
 
+Good programmers separate data from how that data is rendered. Using this paradigmn 
+provides the programmer a solution to the following problems:
 
-Writing prose - especially technical documents - creates lot of implicit
-relationships between content.
+  * Store duplicated data in a single place.
+  * Generate new content with logic (for example a list of words is sorted
+  before rendered).
+  * Swap out the rendering system without changing the content's structure.
 
-For example: 
+  ```
+  Data --> Render --> Output
+  ```
+However, for someone writing prose the above solution becomes a problem. That
+is, the data an author is working with is also content that they are writing.
+The 
 
-> there are ''(label "ngoals" (builtins.length conix.lib.docs.goals.list))'' goals 
-stated at the top of this document.
+And,
+primarily, this is done as an attempt to keep duplicated data to a minimum. If
+content is to be re-used it's stuffed into a data structure and then called
+upon in multiple places in the rendering system. 
 
-The number stated above is computed by counting the number of elements in the
-list above. This is a relationship between that statement and the list of
-goals. 
+However, writing documents - particularly documentation - is not the place for
+the separation of data and rendering.  What a person writes and how their
+writing is displayed often go hand in hand.  For example, a newspaper or
+resume. These mediums often provide limited realistate in which one's penwork
+must be restricted to the 2 dimensions paper. I recognize that the didital 
+brothers of these works may not have as much a restriction, but they do exist
+nonetheless. They are not free, however, from the duplication problem or even
+some of the advantages of keeping the content in well structured data.
 
-Most of the time these relationships are very easy to determine in our heads
-and just write them down - I mean, how hard is it to count to ''(t
-conix.lib.docs.goals.ngoals)''. However, problems arise when the relationship
-changes or the content itself changes.
+Simply put:
 
-For example, if I were to add another goal to the above list then chances are I
-would forget to go back and update the number in the above statement and some
-reader would tell me of the typo. I would be embarrassed to have overlooked
-such a small detail and yet easy number to come up with.
+  * There is a need to manipulate content as a data structure. This includes
+    embedding logical statements into content that one writes.
+  * Seperating content and how it's rendered is not possible for authors. Maybe for programmers,
+    but not the daily writer.
+  * 
 
 ## Goal 2
 
@@ -48,5 +64,8 @@ GitHub automatically render as markdown. However, many documents are not simple
 markdown files and often require messy build scripts.
 
 Conix aspires to hide as much of the build process for documents as possible.
+
+Part of the motiviation for this is to have the build process as integrated
+with the content generation. This includes generating the 
 
 '']; }
