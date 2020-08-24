@@ -114,7 +114,7 @@ conix: { lib = rec
           }).conix.buildPages
             [ (conix: { drv = with conix.lib; markdownFile "${name}" conix.sample; })
               (conix: { sample = with conix.lib;
-                ${code}
+                ${conix.lib.indent 6 code}
               ;})
             ]
           '';
