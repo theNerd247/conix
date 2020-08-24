@@ -64,7 +64,8 @@ _Volunteers still needed!: '''(t (8 - (builtins.length conix.vol.contacts.data))
 the document. The conix sample simplifies this process.
 * The number of volunteers is a computed value based on the number of rows in 
   the table:
-* Conix provides an out-of-the-box build system for markdown (using [Pandoc](https://pandoc.org)").
+* Conix provides an out-of-the-box build system for markdown (using ''(label
+  "pandocLink" "[Pandoc](https://pandoc.org)")''.
 
 # Contributing
 
