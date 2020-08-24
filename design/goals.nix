@@ -87,20 +87,56 @@ neither allows us to use logic to create content.
 
 Conix fixes all of these problems. Simply put conix uses the Nix programming
 language as a host language for creating markdown and then processing that
-markdown.
+markdown. Conix is simply a library that makes it convenient to create the
+content datastructure while writing markdown and then consume that data
+structure without leaving the sentence the user is writing. 
+
+Here's an example. Say I'm writing a sentence about how many buttermilk
+biscuits and fried chicken [^I'm from the South...] that I need for a party:
+
+
+  ```markdown
+  ''(t conix.lib.docs.goals.sampleBiscuits.output)''
+
+  ```
+
+There is some logic going on here: 
+
+  * 1 chicken feeds 3 people
+  * 2 biscuits feeds 1 person
+
+But if were to just write the above in a markdown file I'd have to compute
+those numbers by hand...bleh! I'm a programmer...I'm lazy. I'd like the
+computer to do the computing for me. Here's the same snippet written in conix:
+
+''(sampleConixSnippet "sampleBiscuits" ''
+texts [
+''' 
+# of guests: '''(label "guestCount" 9)'''
+
+Fried Chickens: '''(t (conix.sample.guestCount / 3))'''
+
+Buttermilk Biscuits: '''(t (conix.sample.guestCount * 2))
+]
+'')''
+
+Now, using conix, we can tell the computer that the number of guests can be
+referenced in other places of our content. Because the number is stored (not
+its text) we can use it to compute how many chickens and biscuits we need for
+the party.
 
 ## Goal 2
 
 > ''(t (builtins.elemAt conix.lib.docs.goals.list 1))''
 
-Markdown is amazing. And for small standalone documents - like readme files -
-running a single command to build a file is easy. Heck, even hosted files on
-GitHub automatically render as markdown. However, many documents are not simple
-markdown files and often require messy build scripts.
+Markdown is amazing. However, building documents from multiple files is
+difficult and often requires a bash script build system. Conix builds on the
+solution to the first goal to provide users a build system that's convenient.
+The user describes the file structure types of their output and conix takes
+care of the rest. 
 
-Conix aspires to hide as much of the build process for documents as possible.
-
-Part of the motiviation for this is to have the build process as integrated
-with the content generation. This includes generating the 
+Currently conix uses ${conix.lib.docs.readme.pandocLink} to render the markdown
+content and html files. However conix is easily extensible to support other
+build types.
 
 '']; }
