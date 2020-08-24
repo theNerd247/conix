@@ -73,16 +73,21 @@ It's not distributable across files, it's difficult to tell which section or
 chapter I'm working on - I'd prefer to have a file per section and a directory
 per chapter. Finally, what if the content that I write needs to depend on the
 templating language? I've really broken the data/render separation above.
+Templating languages do not solve the last problem above.
 
-There's no way around it. When we write we want to have the power that
-programming gives us (which templating languages provide) and the ability to
-using logic to construct our content (which data structures provide), however
-traditional ways of writing do not provide this.
+The family of Markdown and LaTex languages have user convenient interfaces for
+rendering content however none of them provide the power of a programming
+language[^Well maybe LaTeX does...but's not user friendly and has a steep
+learning curve.]. They do not solve the first problems above.
 
-Markdown, LaTeX, and the family of languages makes the user interface for
-rendered content convenient - however none of them provide the power of a
-programming language[^Well maybe LaTeX does...but's not user friendly and has
-a steep learning curve.].
+There's no way around it. When we write prose we want to have the power that
+programming gives us. Templating languages only solve half the problem, and
+markdown only solves the other half (switching out the rendering system). And
+neither allows us to use logic to create content.
+
+Conix fixes all of these problems. Simply put conix uses the Nix programming
+language as a host language for creating markdown and then processing that
+markdown.
 
 ## Goal 2
 
