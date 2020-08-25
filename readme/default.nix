@@ -1,4 +1,5 @@
-conix: with conix.lib; { lib.docs.readme = using [(markdownFile "readme")] (texts [
+conix: with conix.lib; { lib.docs.readme = using [(markdownFile "readme") (htmlFile "readme" "--metadata title=readme")] 
+(texts [
 ''# ${homePageLink} - ${version.text} - ${buildBadgeLink}
 
 ${if conix.lib.version.major < 1
