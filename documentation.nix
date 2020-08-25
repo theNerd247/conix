@@ -32,5 +32,6 @@
     collect "conix-docs" 
       [ (buildBoth "docs" d (markdownFile "docs") (htmlFile "docs" ""))
         (buildBoth "readme" docs.readme (markdownFile "readme") (htmlFile "readme" ""))
+        (buildBoth "goals" docs.goals (markdownFile "goals") (htmlFile "goals" ""))
       ];
 })]

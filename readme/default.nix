@@ -1,5 +1,5 @@
 conix: with conix.lib; { lib.docs.readme = texts [
-''# ${homePageLink} - ${version.text}
+''# ${homePageLink} - ${version.text} - ${buildBadgeLink}
 
 ${if conix.lib.version.major < 1
 then ''
@@ -25,7 +25,7 @@ To try out conix:
 1. Open `./result` which is the conix generated markdown file.
 
 ''
-(runNixSnippetDrvFile "sampleConix" ''
+(runNixSnippetDrvFile "volunteerSample" ''
 (import <nixpkgs> { 
   overlays = import (builtins.fetchGit
     ${indent 4 conix.lib.git.text}
@@ -64,7 +64,8 @@ _Volunteers still needed!: '''(t (8 - (builtins.length conix.vol.contacts.data))
 the document. The conix sample simplifies this process.
 * The number of volunteers is a computed value based on the number of rows in 
   the table:
-* Conix provides an out-of-the-box build system for markdown (using [Pandoc](https://pandoc.org)").
+* Conix provides an out-of-the-box build system for markdown (using ''(label
+  "pandocLink" "[Pandoc](https://pandoc.org)")''.
 
 # Contributing
 

@@ -7,20 +7,12 @@ let
   # this is the toplevel agreggation of the modules in question
   pkgs = import <nixpkgs> { overlays = (import ./default.nix); };
 
-  # html = pkgs.conix.build.htmlFile 
-  #   { name = "test";
-  #     text = pages.h.text;
-  #   };
-
-  # design = 
-  #   pkgs.conix.build.htmlFile 
-  #     { name = "design"; 
-  #       text = docs.design.text;
-  #     };
-
-  docs = pkgs.conix.build (c: { drv = with c.lib; dir "foo" [ (dir "bar" [ (markdownFile "docs" c.lib.refDocs) ]) ]; });
-
-  # pages = pkgs.conix.eval test;
+  docs = pkgs.conix.buildPages [
+    (c: { drv = with c.lib; 
+      buildBoth "goals" c.lib.docs.goals (markdownFile "goals") (htmlFile "goals" "");
+    })
+    (import ./design/goals.nix)
+  ];
 
   test = pkgs.conix.evalPages
     [ 
@@ -36,7 +28,9 @@ let
           [ (x.i.at 0 0) (x.i.at 0 1)  ((x.i.at 1 0) + (x.i.at 1 1))]
         ];
       })
+      (x: { s = with x.lib; texts [ (sampleConixSnippet "t" "texts [ \"foo\" ]") ]; })
     ];
+
 in
   { 
     inherit (pkgs) conix;

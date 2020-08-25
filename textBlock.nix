@@ -1,25 +1,24 @@
 conix: { lib = rec
   {  
+    foldNull = b: f: x: if x == null then b else f x;
+
+    docs.splitLines.type = "String -> [String]";
     splitLines = text:
       let
-        splitLines_ = {lines, line}: ix:
-          let 
-            char = builtins.substring ix 1 text;
-            newLine = if line == null then char else "${line}${char}";
+        collectLines = len: 
+          let
+            char = builtins.substring (len - 1) 1 text;
           in
-            if char == "\n"
-              then { lines = lines ++ [ line ]; line = null; }
-              else { lines = lines; line = newLine; };
+            if len == 0 then { lines = []; line = ""; }
+            else let l = collectLines (len - 1); in
+            if char == "\n" then { lines = l.lines ++ [l.line]; line = ""; }
+            else { lines = l.lines; line = "${l.line}${char}"; };
 
-        linesAndLine = builtins.foldl'
-          splitLines_ 
-          { lines = []; line = null; } 
-          (conix.pkgs.lib.lists.range 0 ((builtins.stringLength text) - 1));
-
-        lastLine = if linesAndLine.line == null then [] else [linesAndLine.line];
+        linesAndLine = collectLines (builtins.stringLength text);
       in
-        linesAndLine.lines ++ lastLine;
+        linesAndLine.lines ++ [linesAndLine.line];
 
+    docs.overLines.type  = "([String] -> [String]) -> String -> String";
     overLines = f: text:
       (builtins.concatStringsSep "\n" (f (splitLines text)));
 
@@ -36,13 +35,39 @@ conix: { lib = rec
       );
 
     docs.indent.docstr = ''
-      Indent lines in the given string by an integer number of spaces
+      Indent all lines (except the first one) in the given string by an integer
+      number of spaces.
     '';
     docs.indent.type = "Natural -> String -> String";
-    indent = n:
-      let
+    indent = n: 
+      let 
         buffer = builtins.concatStringsSep "" (builtins.genList (_: " ") n);
       in
-        builtins.replaceStrings ["\n"] ["\n${buffer}"];
+       builtins.replaceStrings ["\n"] ["\n${buffer}"];
+
+    docs.prefixLines.docstr = conix.lib.texts [''
+      Prefix each line with the given text. For example, to make a block of text a block
+      quote do: 
+
+      ''(conix.lib.sampleConixSnippet "prefixLinesSample" ''
+      text (conix.lib.prefixLines "> "
+        '''
+        this 
+        is a 
+        code block'''
+      )
+      '')
+      ];
+    docs.prefixLines.type = "String -> String -> String";
+    prefixLines = prefix: str: prefix+(builtins.replaceStrings ["\n"] ["\n${prefix}"] str);
+
+    docs.lineNumbers.docstr = ''
+      Prefix lines with their line numbers.
+      '';
+    docs.lineNumbers.type = "String -> String";
+    lineNumbers = overLines 
+      (conix.lib.foldlIx 
+        (ix: strs: str: strs ++ ["${builtins.toString (ix + 1)} ${str}"]) []
+      );
   };
 }
