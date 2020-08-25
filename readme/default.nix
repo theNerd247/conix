@@ -1,4 +1,4 @@
-conix: with conix.lib; { lib.docs.readme = using (markdownFile "readme") (texts [
+conix: with conix.lib; { lib.docs.readme = using [(markdownFile "readme")] (texts [
 ''# ${homePageLink} - ${version.text} - ${buildBadgeLink}
 
 ${if conix.lib.version.major < 1
@@ -30,7 +30,7 @@ To try out conix:
   overlays = import (builtins.fetchGit
     ${indent 4 conix.lib.git.text}
   );
-}).conix.build (conix: { vol = with conix.lib; using (markdownFile "Volunteers") (texts [
+}).conix.build (conix: { vol = with conix.lib; using [(markdownFile "Volunteers")] (texts [
 
 '''# Volunteer Handbook
 

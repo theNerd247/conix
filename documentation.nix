@@ -3,7 +3,7 @@
   (import ./design/goals.nix)
   (conix: { drv = with conix.lib;
     let
-      d = using (markdownFile "docs") (texts [ 
+      d = using [(markdownFile "docs")] (texts [ 
         ''
         # Reference Documentation - ${conix.lib.version.text}
 

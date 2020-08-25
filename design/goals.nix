@@ -1,4 +1,4 @@
-conix: with conix.lib; { lib.docs.goals = using (markdownFile "goals") (texts [
+conix: with conix.lib; { lib.docs.goals = using [(markdownFile "goals")] (texts [
 ''# Goals
 
 

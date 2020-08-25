@@ -112,9 +112,9 @@ conix: { lib = rec
               ${conix.lib.indent 4 conix.lib.git.text}
             );
           }).conix.build
-          (conix: { sample = with conix.lib; using (markdownFile "${name}")
-            (${conix.lib.indent 2 code})
-          ;})
+          (conix: { sample = with conix.lib; using [(markdownFile "${name}")] (
+            ${conix.lib.indent 2 code}
+          );})
           '';
       in
       conix.lib.set name (snippet "nix" code (readConixResult sampleCodeFile));
