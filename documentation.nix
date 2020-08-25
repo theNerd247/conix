@@ -2,7 +2,7 @@
   (conix: { drv = with conix.lib;
     let
       c = collect "conix-docs" (
-        conixReferenceDocumentation
+        conixReferenceDocumentation.drvs
         ++ docs.readme.drvs
         ++ docs.goals.drvs
       );
