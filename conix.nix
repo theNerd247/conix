@@ -147,6 +147,10 @@ pkgs: { lib = rec {
   texts 
     = foldMapModules toTextModule;
 
+  docs.nest.docstr = texts [''
+    Nest a value into an attribute set with a given path string.
+  ''];
+  docs.nest.type = "Path -> a -> AttrSet";
   nest = pathStr: x:
     pkgs.lib.attrsets.setAttrByPath (pkgs.lib.strings.splitString "." pathStr) x;
 
@@ -173,5 +177,21 @@ pkgs: { lib = rec {
     ```
     '';
   docs.set.type = "Path -> Module -> Module";
-  set = path: x: mergeModules (nest path x) (text x.text);
+  set = path: x: mergeModules (nest path x) ({ text = x.text or ""; drvs = x.drvs or []; });
+
+
+  # [ Derivation ] -> Module -> Module
+  docs.setDrvs.docstr = ''
+    Overwrite the derivations for the given module;
+    '';
+  docs.setDrvs.type = "[Derivation] -> Module -> Module";
+  setDrvs = drvs: module: module // { inherit drvs; };
+
+  # [ Derivation ] -> Module -> Module
+  docs.setText.docstr = ''
+    Overwrite the texts for the given module;
+    '';
+  docs.setText.type = "String -> Module -> Module";
+  setText = text: module: module // { inherit text; };
+
 };}
