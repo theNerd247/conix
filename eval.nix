@@ -51,6 +51,7 @@ in
               (import ./docs.nix)
               (import ./copyJoin.nix)
               (import ./foldAttr.nix)
+              (import ./drvs.nix)
               (x: core)
               # This is the docs attribute set defined in this file
               (x: { lib.docs = docs; }) 
