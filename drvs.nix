@@ -19,11 +19,11 @@ conix: { lib = rec
 
   docs.dirWithMarkdown.type = "Name -> Module -> Module";
   dirWithMarkdown = name: module: 
-    using (m: conix.lib.dir name m.drvs) (using (markdownFile name) module);
+    using (m: conix.lib.dir name m.drvs) (using (conix.lib.markdownFile name) module);
 
   docs.collectWithMarkdown.docstr = builtins.replaceStrings ["`dir`"] ["`collect`"];
   docs.collectWithMarkdown.type = "Name -> Module -> Module";
   collectWithMarkdown = name: module: 
-    using (m: conix.lib.collect name m.drvs) (using (markdownFile name) module);
+    using (m: conix.lib.collect name m.drvs) (using (conix.lib.markdownFile name) module);
 
 }; }
