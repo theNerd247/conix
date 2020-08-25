@@ -36,13 +36,31 @@ conix: { lib = rec
       );
 
     docs.indent.docstr = ''
-      Indent lines in the given string by an integer number of spaces
+      Indent all lines (except the first one) in the given string by an integer
+      number of spaces.
     '';
     docs.indent.type = "Natural -> String -> String";
-    indent = n:
-      let
+    indent = n: 
+      let 
         buffer = builtins.concatStringsSep "" (builtins.genList (_: " ") n);
       in
-        builtins.replaceStrings ["\n"] ["\n${buffer}"];
+       builtins.replaceStrings ["\n"] ["\n${buffer}"];
+
+    docs.prefixLines.docstr = conix.lib.texts [''
+      Prefix each line with the given text. For example, to make a block of text a block
+      quote do: 
+
+      ''(conix.lib.sampleConixSnippet "prefixLinesSample" ''
+      text (conix.lib.prefixLines "> "
+        '''
+        this 
+        is a 
+        code block
+        '''
+      )
+      '')
+      ];
+    docs.prefixLines.type = "String -> String -> String";
+    prefixLines = prefix: str: prefix+(builtins.replaceStrings ["\n"] ["\n${prefix}"] str);
   };
 }

@@ -131,9 +131,20 @@ the party.
 
 Markdown is amazing. However, building documents from multiple files is
 difficult and often requires a bash script build system. Conix builds on the
-solution to the first goal to provide users a build system that's convenient.
-The user describes the file structure types of their output and conix takes
-care of the rest. 
+solution to the first goal to provide a build system that's convenient.
+The user describes the file structure of their output and conix takes
+care of the rest. Here's an example:
+
+```nix
+${docs.readme.volunteerSample.code}
+```
+
+You'll notice that we've stated that the output should be a markdownFile. Conix
+takes care of creating that markdown file with the final derivation's text.
+
+  We also have functions like `collect` and `dir`:
+
+''(mkDocs {collect = docs.collect; dir = docs.dir; })''
 
 Currently conix uses ${conix.lib.docs.readme.pandocLink} to render the markdown
 content and html files. However conix is easily extensible to support other

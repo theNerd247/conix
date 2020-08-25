@@ -6,8 +6,8 @@ conix: { lib = rec
     conix.lib.texts [ 
       ''
       <hr/>
-      ${doc.docstr or ""}
       ''
+      (doc.docstr or conix.lib.emptyModule)
       ( if doc ? todo 
         then conix.lib.texts 
           [ "_Todo_\n\n" (conix.lib.md.list "todo" doc.todo) ]

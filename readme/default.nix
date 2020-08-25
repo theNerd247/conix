@@ -25,7 +25,7 @@ To try out conix:
 1. Open `./result` which is the conix generated markdown file.
 
 ''
-(runNixSnippetDrvFile "sampleConix" ''
+(runNixSnippetDrvFile "volunteerSample" ''
 (import <nixpkgs> { 
   overlays = import (builtins.fetchGit
     ${indent 4 conix.lib.git.text}
