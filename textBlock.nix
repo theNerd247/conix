@@ -55,8 +55,7 @@ conix: { lib = rec
         '''
         this 
         is a 
-        code block
-        '''
+        code block'''
       )
       '')
       ];
