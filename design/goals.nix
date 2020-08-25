@@ -139,15 +139,17 @@ care of the rest. Here's an example:
 ${docs.readme.volunteerSample.code}
 ```
 
-You'll notice that we've stated that the output should be a markdownFile. Conix
+Here we've stated that the output should be a markdownFile. Conix
 takes care of creating that markdown file with the final derivation's text.
 
-  We also have functions like `collect` and `dir`:
+We also have functions like `collect` and `dir`. Here are their reference 
+documentation snippets:
 
-''(mkDocs {collect = docs.collect; dir = docs.dir; })''
+''(prefixLines " >" (mkDocs {collect = docs.collect; dir = docs.dir; }).text)''
 
-Currently conix uses ${conix.lib.docs.readme.pandocLink} to render the markdown
-content and html files. However conix is easily extensible to support other
-build types.
+
+Conix is not restricted to just markdown support. Currently, though, conix uses
+${conix.lib.docs.readme.pandocLink} to render the markdown content and html
+files. However conix is easily extensible to support other build types.
 
 '']; }
