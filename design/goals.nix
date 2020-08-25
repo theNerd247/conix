@@ -133,10 +133,10 @@ Markdown is amazing. However, building documents from multiple files is
 difficult and often requires a bash script build system. Conix builds on the
 solution to the first goal to provide a build system that's convenient.
 The user describes the file structure of their output and conix takes
-care of the rest. Here's an example:
+care of the rest. Here's an example taken from the project readme:
 
 ```nix
-${docs.readme.volunteerSample.code}
+${extractLines 11 11 docs.readme.volunteerSample.code}
 ```
 
 Here we've stated that the output should be a markdownFile. Conix
