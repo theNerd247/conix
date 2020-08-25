@@ -29,6 +29,6 @@ rec {
       })
       (x: { s = with x.lib; texts [ (sampleConixSnippet "t" "texts [ \"foo\" ]") ]; })
       (x: { t = with x.lib; asMd "foo" (texts [ "asdf: " (t x.t.x) { x = 3; } ]); })
-      (x: { u = with x.lib; dirWithMarkdown "foo" (texts [ "boo" (asMd "joe" (text "jack")) ]); })
+      (x: { u = with x.lib; dirWithMarkdown "foo" (texts [ "boo" (using (markdownFile "joe") (text "jack")) ]); })
     ];
 }
