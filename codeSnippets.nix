@@ -84,7 +84,10 @@ conix: { lib = rec
       '';
     docs.runNixSnippetDrvFile.type = "Name -> String -> Module";
     runNixSnippetDrvFile = name: code: 
-      runSnippet name "nix" code (nixFilePath: "${builtins.readFile (import nixFilePath)}");
+      runSnippet name "nix" code readConixResult;
+
+    readConixResult = nixFile:
+      builtins.foldl' (s: d: "${s}\n${builtins.readFile d}") "" (import nixFile);
 
     docs.sampleConixSnippet.docstr = ''
       Creates a nix snippet using the given conix code. The content
@@ -109,11 +112,11 @@ conix: { lib = rec
               ${conix.lib.indent 4 conix.lib.git.text}
             );
           }).conix.build
-          (conix: { sample = with conix.lib; dirWithMarkdown "${name}"
+          (conix: { sample = with conix.lib; using (markdownFile "${name}")
             (${conix.lib.indent 2 code})
           ;})
           '';
       in
-        conix.lib.set name (snippet "nix" code "${builtins.readFile (import sampleCodeFile)}");
+      conix.lib.set name (snippet "nix" code (readConixResult sampleCodeFile));
   };
 }
