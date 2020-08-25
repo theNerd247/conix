@@ -3,8 +3,8 @@
   (import ./design/goals.nix)
   (conix: { drv = with conix.lib;
     let
-      d = texts
-      [ ''
+      d = using (markdownFile "docs") (texts [ 
+        ''
         # Reference Documentation - ${conix.lib.version.text}
 
         ''
@@ -27,13 +27,13 @@
         ---
         Built using ${conix.lib.homePageLink} version ${conix.lib.version.text}
         ''
-      ];
+      ]);
 
-      c = collect "conix-docs" 
-        [ (buildBoth "docs" d (markdownFile "docs") (htmlFile "docs" ""))
-          (buildBoth "readme" docs.readme (markdownFile "readme") (htmlFile "readme" ""))
-          (buildBoth "goals" docs.goals (markdownFile "goals") (htmlFile "goals" ""))
-        ];
+      c = collect "conix-docs" (
+        d.drvs
+        ++ docs.readme.drvs
+        ++ docs.goals.drvs
+      );
     in
       { drvs = [ c ]; };
 })]

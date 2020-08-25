@@ -1,4 +1,4 @@
-conix: with conix.lib; { lib.docs.readme = texts [
+conix: with conix.lib; { lib.docs.readme = using (markdownFile "readme") (texts [
 ''# ${homePageLink} - ${version.text} - ${buildBadgeLink}
 
 ${if conix.lib.version.major < 1
@@ -84,4 +84,4 @@ Many thanks to:
   * [Evan Relf](https://github.com/evanrelf) for his insightful feedback.
   * [Paul Young](https://github.com/paulyoung) for great feedback and ideas.
 
-'']; }
+'']); }
