@@ -1,5 +1,5 @@
 conix: with conix.lib; { lib.docs.readme = texts [
-''# ${homePageLink} - ${version.text}
+''# ${homePageLink} - ${version.text} - ${buildBadgeLink}
 
 ${if conix.lib.version.major < 1
 then ''
