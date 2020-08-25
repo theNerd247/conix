@@ -30,9 +30,7 @@ To try out conix:
   overlays = import (builtins.fetchGit
     ${indent 4 conix.lib.git.text}
   );
-}).conix.buildPages
-  [ (conix: { drv = with conix.lib; markdownFile "Volunteers" conix.vol; })
-    (conix: { vol = with conix.lib; texts [
+}).conix.build (conix: { vol = with conix.lib; using (markdownFile "Volunteers") (texts [
 
 '''# Volunteer Handbook
 
@@ -55,9 +53,8 @@ _Volunteers still needed!: '''(t (8 - (builtins.length conix.vol.contacts.data))
   ]
 ))
 
-];})]
-
-'')''
+]);})''
+)''
 
 * The markdown sample was not hand written; the conix sample generated it.
 * The table in the markdown sample has some of its contents duplicated across
