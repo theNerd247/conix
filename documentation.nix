@@ -28,10 +28,12 @@
         Built using ${conix.lib.homePageLink} version ${conix.lib.version.text}
         ''
       ];
+
+      c = collect "conix-docs" 
+        [ (buildBoth "docs" d (markdownFile "docs") (htmlFile "docs" ""))
+          (buildBoth "readme" docs.readme (markdownFile "readme") (htmlFile "readme" ""))
+          (buildBoth "goals" docs.goals (markdownFile "goals") (htmlFile "goals" ""))
+        ];
     in
-    collect "conix-docs" 
-      [ (buildBoth "docs" d (markdownFile "docs") (htmlFile "docs" ""))
-        (buildBoth "readme" docs.readme (markdownFile "readme") (htmlFile "readme" ""))
-        (buildBoth "goals" docs.goals (markdownFile "goals") (htmlFile "goals" ""))
-      ];
+      { drvs = [ c ]; };
 })]

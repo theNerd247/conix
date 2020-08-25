@@ -108,12 +108,10 @@ conix: { lib = rec
             overlays = import (builtins.fetchGit
               ${conix.lib.indent 4 conix.lib.git.text}
             );
-          }).conix.buildPages
-            [ (conix: { drv = with conix.lib; markdownFile "${name}" conix.sample; })
-              (conix: { sample = with conix.lib;
-                ${conix.lib.indent 6 code}
-              ;})
-            ]
+          }).conix.build
+          (conix: { sample = with conix.lib; dirWithMarkdown "${name}"
+            (${conix.lib.indent 2 code})
+          ;})
           '';
       in
         conix.lib.set name (snippet "nix" code "${builtins.readFile (import sampleCodeFile)}");
