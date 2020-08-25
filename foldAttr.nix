@@ -54,4 +54,12 @@ rec {
       cata = x: alg (fmap cata x);
     in
       cata;
+
+  docs.foldlIx.type = "(Natural -> b -> a -> b) -> b -> [a] -> b";
+  foldlIx = f: b: as:
+    (builtins.foldl' 
+      ({ix, b}: a: {ix = ix+1; b = f ix b a;}) 
+      {ix = 0; inherit b; }
+      as
+    ).b;
 }; }

@@ -30,6 +30,7 @@ let
       })
       (x: { s = with x.lib; texts [ (sampleConixSnippet "t" "texts [ \"foo\" ]") ]; })
     ];
+
 in
   { 
     inherit (pkgs) conix;
