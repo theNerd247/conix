@@ -1,4 +1,4 @@
-# <a href="https://github.com/theNerd247/conix.git">conix</a> - 0.1.0
+# <a href="https://github.com/theNerd247/conix.git">conix</a> - 0.1.0 - ![](https://travis-ci.com/theNerd247/conix.svg?branch=master)
 
 **Notice: This project is a work in progress and the API will have major
 updates pushed to the master branch until the first major release.**
@@ -25,7 +25,7 @@ To try out conix:
     { 
       url = "https://github.com/theNerd247/conix.git";
       ref = "master";
-      rev = "d013d85fea5522b45a71ff0655420cfc13336a6c";
+      rev = "1ff8a8741314d45b3eee482be616ac907c08c9f1";
     }
     
   );
@@ -59,9 +59,6 @@ _Volunteers still needed!: ''(t (8 - (builtins.length conix.vol.contacts.data)))
 
 
 ```
-
-===>
-
 ```
 # Volunteer Handbook
 
@@ -86,7 +83,7 @@ Jingle | 555-231-7589
 the document. The conix sample simplifies this process.
 * The number of volunteers is a computed value based on the number of rows in 
   the table:
-* Conix provides an out-of-the-box build system for markdown (using [Pandoc](https://pandoc.org)").
+* Conix provides an out-of-the-box build system for markdown (using [Pandoc](https://pandoc.org).
 
 # Contributing
 

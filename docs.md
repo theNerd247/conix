@@ -3,7 +3,6 @@
 <hr/>
 Builds a page that expects the toplevel module to contain an attribute called `drv`.
 Drv typically should be a derivation containing the toplevel render of the content
-
 _Todo_
 
 * The current implementation of build needs to take in a separate set of
@@ -23,13 +22,11 @@ name.
 
 Typically this should be used with `htmlFile` or `pandocFile`.
 
-
 ```haskell
 buildBoth :: Name -> a -> (a -> Derivation) -> ((FilePath | Derivation) -> Derivation) -> Derivation
 ```
 <hr/>
 Merges the pages into one and then calls `build`.
-
 
 ```haskell
 buildPages :: [ Page ] -> Derivation
@@ -59,33 +56,28 @@ C
 NOTE: the later directories in the list could overwrite contents from
 other directories. If you wish to copy directories as is use. `dir`
 
-
 ```haskell
 collect :: Name -> [ Derivation | Path ] -> Derivation
 ```
 <hr/>
 Like `collect` but preserves toplevel directories when copying
 
-
 ```haskell
 dir :: Name -> [ (FilePath | Derivation) ] -> Derivation
 ```
 <hr/>
-
 
 ```haskell
 emptyModule :: Module
 ```
 <hr/>
 This is the evaluator for a page and returns the final module.
-
 ```haskell
 eval :: Page -> Module
 ```
 <hr/>
 Convenience functions for collecting multiple pages and evaluating
 them all at once.
-
 
 ```haskell
 evalPages :: [ Page ] -> Module
@@ -94,7 +86,6 @@ evalPages :: [ Page ] -> Module
 Extract lines of text within the given line range (start and end inclusive).
 
 This is handy for grabbing certain lines of, say a code block.
-
 
 ```haskell
 extractLines :: NaturalGreaterThan0 -> Natural -> String -> String
@@ -122,7 +113,6 @@ countLeaves = foldAttrsCond
 nleaves = countLeaves { a = { b = "b"; c = "c"; }; d.e.f = "f"; g = { h = { stop = 2; }; i = 7; }; };
 ```
 
-
 ```haskell
 foldAttrsCond :: (a -> Bool) -> (a -> b) -> (AttrSet b -> b) -> AttrSet a -> b
 ```
@@ -131,38 +121,37 @@ This is just like `foldAttrsCond` except the function to convert leaf
 values into final values also takes in the path from the top of the
 attribute set for that leaf value.
 
-
 ```haskell
 foldAttrsIxCond :: ((AttrSet e ) -> Bool) -> (a -> Path -> b) -> (AttrSet b -> b) -> AttrSet a -> Path -> b
 ```
 <hr/>
 Maps elements to a module and merges the modules;
 
-
 ```haskell
 foldMapModules :: (a -> Module) -> [a] -> Module
 ```
 <hr/>
 Maps elements to a page and then merges the pages
-
 ```haskell
 foldMapPages :: (a -> Page) -> [a] -> Page
 ```
 <hr/>
 Merges a list of modules
-
 ```haskell
 foldModules :: [Module] -> Module
 ```
 <hr/>
 
-
 ```haskell
 foldPages :: [ Page ] -> Page
 ```
 <hr/>
-Writes a html file to the nix store given some module who's `drv` builds to a markdown file.
 
+```haskell
+foldlIx :: (Natural -> b -> a -> b) -> b -> [a] -> b
+```
+<hr/>
+Writes a html file to the nix store given some module who's `drv` builds to a markdown file.
 _Todo_
 
 * Add the ability to auto-include static resources as part of the
@@ -173,8 +162,8 @@ via some statement stating to include ./filePath as a css resource.
 htmlFile :: Name -> String -> (FilePath | Derivation) -> Derivation
 ```
 <hr/>
-Indent lines in the given string by an integer number of spaces
-
+Indent all lines (except the first one) in the given string by an integer
+number of spaces.
 
 ```haskell
 indent :: Natural -> String -> String
@@ -187,13 +176,17 @@ without needing to manually create modules.
 label "foo" 7 ==> { foo = 7; text = "7"; } 
 ```
 
-
 ```haskell
 label :: Path -> Text -> Module
 ```
 <hr/>
-Builds a markdown file derivation with the given name to the nix store.
+Prefix lines with their line numbers.
 
+```haskell
+lineNumbers :: String -> String
+```
+<hr/>
+Builds a markdown file derivation with the given name to the nix store.
 _Todo_
 
 * Maybe refactor the text out?
@@ -203,7 +196,6 @@ markdownFile :: Name -> Module -> Derivation
 <hr/>
 Create an bullet list style markdown list.
 
-
 ```haskell
 md.list :: Name -> [ String ] -> Module
 ```
@@ -211,13 +203,11 @@ md.list :: Name -> [ String ] -> Module
 Modules merge by recursiveUpdate but the toplevel text fields
 are concatenated.
 
-
 ```haskell
 mergeModules :: Module -> Module -> Module
 ```
 <hr/>
 A Page is the toplevel type used throughout conix. 
-
 
 ```haskell
 mergePages :: Page -> Page -> Page
@@ -237,15 +227,18 @@ Conix uses this to produce its own reference documentation by setting the
 derivation by calling this function and passing the resulting module to
 `htmlFile` and `markdownFile`.  
 
-
 ```haskell
 mkDocs :: AttrSet -> Module
+```
+<hr/>
+
+```haskell
+overLines :: ([String] -> [String]) -> String -> String
 ```
 <hr/>
 Writes a file of the specified type to the nix store using pandoc.
 
 The list of derivation are extra buildInputs that pandoc should use.
-
 _Todo_
 
 * Remove hardcoded markdown input type
@@ -255,15 +248,37 @@ pandoc :: Type -> [ Derivation ] -> Name -> String -> (FilePath | Derivation) ->
 <hr/>
 Writes a pdf file to the nix store given some module who's `drv` builds to a markdown file.
 
-
 ```haskell
 pdfFile :: Name -> String -> (FilePath | Derivation) -> Derivation
+```
+<hr/>
+Prefix each line with the given text. For example, to make a block of text a block
+quote do: 
+
+```nix
+text (conix.lib.prefixLines "> "
+  ''
+  this 
+  is a 
+  code block''
+)
+
+
+```
+```
+> this 
+> is a 
+> code block
+```
+
+
+```haskell
+prefixLines :: String -> String -> String
 ```
 <hr/>
 Pretty print a pure nix-value. 
 
 NOTE: do not call this function on a derivation as it will segfault.
-
 
 ```haskell
 printNixVal :: a -> String
@@ -273,7 +288,6 @@ Run `runSnippet` for nix code that evaluates to a derivation that points
 to a single file. The output of the snippet is the contents of the file
 resulting from the derivation.
 
-
 ```haskell
 runNixSnippetDrvFile :: Name -> String -> Module
 ```
@@ -282,9 +296,24 @@ Create a module using the given code snippet and a function that accepts
 the a nix store filepath containing the code.  `mkCode` handles executing
 the code file and producing the output expected by `snippet` 
 
-
 ```haskell
 runSnippet :: Name -> String -> String -> (FilePath -> String) -> Module
+```
+<hr/>
+Creates a nix snippet using the given conix code. The content
+is put under a single attribute called "sample" and creates 
+markdown as its output.
+
+The expected code should evaluate to a module.
+
+Only the code the user writes will appear in the code block. Read the implementation
+for this function to see what will actually get evaluated.
+
+Use this if you're writing sample conix code and would like to verify that 
+you code works.
+
+```haskell
+sampleConixSnippet :: Name -> String -> Module
 ```
 <hr/>
 This is like `label` but for nesting a module. We can't have just `label` and check whether the
@@ -295,14 +324,12 @@ infinite recursion. Thus we need a separate function to achieve the same task.
 set "foo" { text = "bar"; x = 3;} ==> { foo = { text = "bar"; x = 3; } text = "bar"; }
 ```
 
-
 ```haskell
 set :: Path -> Module -> Module
 ```
 <hr/>
 Create a module whos text is a code snippet with some evaluated output.
 If no output is provided then it's codeblock is omitted.
-
 _Todo_
 
 * Add an language for the output codeblock as a parameter
@@ -310,10 +337,14 @@ _Todo_
 snippet :: LanguageString -> CodeString -> OutputString -> Module
 ```
 <hr/>
+
+```haskell
+splitLines :: String -> [String]
+```
+<hr/>
 An alias for `builtins.toString`
 This is a convenience function so users don't clutter up their content
 with long bits of code for small things.
-
 
 ```haskell
 str :: (IsString t) => String
@@ -322,7 +353,6 @@ str :: (IsString t) => String
 This is an alias for `text`.
 A convenience function for creating 
 TODO: it might be a better user experience to rename this to `txt` instead.
-
 
 ```haskell
 t :: (IsString t) => t -> Module
@@ -345,7 +375,6 @@ conix: { report = conix.lib.texts [
 ]; }
 ```
 
-
 ```haskell
 texts :: [ String | Module ] -> Module
 ```
@@ -353,7 +382,6 @@ texts :: [ String | Module ] -> Module
 Converts either text or a module to a module. This is used by the `texts`
 function.  NOTE: Use of this can cause infinite recursion issues. See the
 Infinite Recursion discussion.
-
 _Todo_
 
 * It might be worth investigating whether I could use a small typing system
