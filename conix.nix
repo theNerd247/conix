@@ -4,7 +4,7 @@ pkgs: { lib = rec {
     Modules are the core of conix. Their type is defined as:
    
     ```haskell
-    Module = { text : String; ... }
+    Module = { text : String; drvs = [Derivation]; ... }
     ```
    
     The rest of the attribute set defines the structure of the user's
@@ -14,7 +14,7 @@ pkgs: { lib = rec {
     look like:
    
     ```nix
-    { drv = <derivation>; 
+    { drvs = [<derivation>]; 
       text = "Call me at: 555-123-456"; 
       phone = "555-123-456"; 
     }
@@ -28,6 +28,12 @@ pkgs: { lib = rec {
 
     The empty module contains nothing. The core functions defined in this file
     treat the missing text value as an empty string to save memory.
+
+    The `drvs` field is the free monoid over (aka: list of) derivations. This
+    is because the core of conix needs to defer choosing how to combine module
+    derivations and leave that up to the user. In the future we may need to
+    just keep only a single drv and restrict how the derivations are combined
+    through "collect" and "dir". However, for now we'll defer this decision.
   '';
 
   docs.pages.discussion = ''TODO'';
@@ -47,8 +53,11 @@ pkgs: { lib = rec {
   docs.mergeModules.type = 
     "Module -> Module -> Module";
   mergeModules = a: b:
-    (pkgs.lib.attrsets.recursiveUpdate a b) 
-    // { text = (a.text or "") + (b.text or ""); };
+    (pkgs.lib.attrsets.recursiveUpdate a b)
+    //
+    { text = (a.text or "") + (b.text or ""); 
+      drvs = (a.drvs or []) ++ (b.drvs or []); 
+    };
 
   docs.mergePages.docstr = '' 
     A Page is the toplevel type used throughout conix. 
