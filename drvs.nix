@@ -22,11 +22,11 @@ conix: { lib = rec
     It's more likely you'll use this instead of `using_`.
   '';
   docs.using.type = "[(Module -> Derivation)] -> Module -> Module";
-  using = fs: using_ apply1
+  using = fs: using_ (apply1 fs);
 
   docs.as.docstr = builtins.replaceStrings ["using_"] ["as_"] docs.using.docstr;
   docs.as.type = docs.using.type;
-  as = fs: as_ apply1
+  as = fs: as_ (apply1 fs);
 
   docs.usingDir.docstr = ''
     Like `using` but nest all of the created derivations under a directory with
