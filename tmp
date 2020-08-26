@@ -1,0 +1,162 @@
+Data ===> Render
+ ^----------|
+
+  * - Syntax separation. i.e. JSON + Mustache Template
+  * - No high order logic support between data and rendering languages. i.e:
+    the text to be rendered depends on the output format or page size.
+  * + swap out rendering format
+  * + logic support for data layer
+
+Data <===> Render
+
+  * + marry the data and render syntaxes
+  * i.e auto link generation
+  * + non-turring complete
+  * + types lots of 'em and inference.
+  * extensible "markup language" syntax
+  * keep all provanence information for output files / derivations (for any
+    build system)
+    - the most general information is the file system heirarchy of the final
+      produced derivation
+
+Nix 
+
+1. Write Text <--|-- Content
+1. Create data <-|
+1. Create outputs (derivations)
+
+  |-------------------------|
+  v--------------|          |
+datastructure ~ text ~ (derivation - fs. Hierarchy)
+
+Final Encoding
+
+Module = { text : Text; drvs = ???; a = { text = ???; drvs = ???; } }
+
+text :: Lens Module Text
+
+list :: [Module] -> Module
+
+Text is the language provided by the rendering system.
+
+Conix 
+
+Initial
+DhallAeson a -> Text
+
+Final 
+type Doc = (Text, Text)
+
+bulletList :: [Doc] -> Doc
+
+mdList :: [Content a] -> Content a
+
+asCodeBlock = modifyText (\t -> "```\n${t}\n```")
+
+modifyText :: (Text -> Text) -> Content a -> Content a
+modifyText f (Markup t) = Markup (f t)
+modifyText _ x = x
+
+data Content2F r a 
+  = Markup Text <-- stores raw markdown code
+  | Rendered r  <-- store the result of a render action
+
+render :: (Text -> a) -> Content2 a -> Content2 a
+render r (Markup t) = Rendered (r t)
+render _ x = x
+
+data ContentF a
+  = TextLit Text
+  | OrderedList [a]
+  | BulletList (Set a)
+  | Pair (a, a)
+  | Heading Natural a
+  | Record a
+  | Table [Map HeaderTitle a]
+  | ... -> what are all the constructors I need to cover the markdown, rst, ...
+
+data ListType = Enum | Bullet | Ordered
+data ListItem = 
+
+final encode
+mdList :: [Text] -> Text
+
+  mdList [ (f a) (g b) ... ]
+
+mdList' :: [[Text]] -> [Text]
+mdList = pure . mdList . fmap mconcat
+
+
+1. a derivation at the top of the tree 
+  (not needed because not fixing this gives the user more power)
+1. 
+
+
+````````
+conix: dir "bar" [(mdFile "foo") (htmlFile "baz")] ()
+
+`````
+
+type MarkupCode = Pandoc
+
+type FileHierarchy 
+  = File RenderType MarkupCode
+  | LocalPath FilePath
+  | Dir (Map Name FileHierarchy)
+
+type RenderType
+  = Html HtmlPandocArgs
+  | PDF PDFPandocArgs
+  | Markdown
+
+type PureData = NixValue
+
+type FSPath = [Name] --i.e "a.b.c"
+
+-- Good API design: avoid parsing / patching things.
+
+--                   md
+-- linkTo "a.b.c.d" ======> "a/b/c.md"
+--                  ======> "a/b/c#d"
+--                   html
+
+renderCode :: MarkupCode -> FileHierarchy
+renderCode = File
+
+Markdown/RST/LaTeX Formatted Text
+          |
+          V
+code :: MarkupCode -> FileHierarchy
+code = drv . renderCode
+
+modifyCode :: (MarkupCode -> MarkupCode) -> FileHierarchy -> FileHierarchy
+modifyCode = over mds
+
+mds :: Traversal FileHierarchy MarkupCode
+
+toText :: PureData -> MarkupCode
+
+instance Monoid FileHierarchy
+
+instance Monoid Page
+
+-- FSPath -> Lens FileHierarchy a
+get :: FSPath -> FileHierarchy -> a
+set :: FSPath -> a -> FileHierarchy -> FileHierarchy
+
+evalPage :: (FileHierarchy -> FileHierarchy) -> FileHierarchy
+
+linkTo :: FSPath -> FileHierarchy -> MarkupCode
+linkTo = ???
+
+dir :: DirPath -> [ FileHierarchy ] -> FileHierarchy
+
+file :: Name -> Text -> FileHierarchy
+
+-- 
+-- DELETE:
+-- renderProvanence :: Provenance -> MarkupCode
+-- 
+-- getProvanence :: FSPath -> FileHierarchy -> Provenance 
+-- data Provenance = Provenance FilePath ContentPath
+--
