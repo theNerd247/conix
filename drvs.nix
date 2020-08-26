@@ -33,11 +33,11 @@ conix: { lib = rec
     the given name.
     '';
   docs.usingDir.type = "Name -> [(Module -> Derivation)] -> Module -> Module";
-  usingDir = name: fs: using_ (m: conix.lib.dir name (apply1 fs m));
+  usingDir = name: fs: using_ (m: [ (conix.lib.dir name (apply1 fs m)) ]);
 
   docs.asDir.docstr = builtins.replaceStrings ["`using`"] ["`as`"] docs.usingDir.docstr;
   docs.asDir.type = docs.usingDir.type;
-  asDir = name: fs: as_ (m: conix.lib.dir name (apply1 fs m));
+  asDir = name: fs: as_ (m: [ (conix.lib.dir name (apply1 fs m))] );
 
   # [(a -> b)] -> a -> [b]
   apply1 = fs: x: builtins.map (f: f x) fs;
