@@ -22,34 +22,23 @@ conix: { lib = rec
     It's more likely you'll use this instead of `using_`.
   '';
   docs.using.type = "[(Module -> Derivation)] -> Module -> Module";
-  using = fs: using_ (a: builtins.map (f: f a) fs) 
+  using = fs: using_ apply1
 
   docs.as.docstr = builtins.replaceStrings ["using_"] ["as_"] docs.using.docstr;
   docs.as.type = docs.using.type;
-  as = fs: as_ (a: builtins.map (f: f a) fs) 
+  as = fs: as_ apply1
 
-  docs.dirWithMarkdown.docstr = ''
-    Create a directory called `name` and within it a markdown file called
-    `name` whos text is from the given module. The directory also contains
-    files produced by any deririvations created in the given module. These
-    files are aggregated using `dir`.
+  docs.usingDir.docstr = ''
+    Like `using` but nest all of the created derivations under a directory with
+    the given name.
+    '';
+  docs.usingDir.type = "Name -> [(Module -> Derivation)] -> Module -> Module";
+  usingDir = name: fs: using_ (m: conix.lib.dir name (apply1 fs m));
 
-    Use this as your toplevel file derivation.
+  docs.asDir.docstr = builtins.replaceStrings ["`using`"] ["`as`"] docs.usingDir.docstr;
+  docs.asDir.type = docs.usingDir.type;
+  asDir = name: fs: as_ (m: conix.lib.dir name (apply1 fs m));
 
-    The returned module's
-    ```
-    A 
-      |- A.md
-      |- ... <any otherfiles from the given module's drvs>
-    ```
-  '';
-
-  docs.dirWithMarkdown.type = "Name -> Module -> Module";
-  dirWithMarkdown = name: module: 
-    as (m: conix.lib.dir name m.drvs) (using (conix.lib.markdownFile name) module);
-
-  docs.collectWithMarkdown.docstr = builtins.replaceStrings ["`dir`"] ["`collect`"] docs.dirWithMarkdown.docstr;
-  docs.collectWithMarkdown.type = "Name -> Module -> Module";
-  collectWithMarkdown = name: module: 
-    as (m: conix.lib.collect name m.drvs) (using (conix.lib.markdownFile name) module);
+  # [(a -> b)] -> a -> [b]
+  apply1 = fs: x: builtins.map (f: f x) fs;
 }; }
