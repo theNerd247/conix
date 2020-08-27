@@ -26,21 +26,21 @@ conix: { lib = rec
     mkDocModule
     (moduleMap: conix.lib.foldModules (builtins.attrValues moduleMap));
 
-  docs.mkDocs.docstr = ''
+  docs.mkDocs.docstr = conix.lib.texts [''
     Creates a module containing markdown documentation of an nested attribute set
     where the leaves are docs.
 
     A doc is:
 
     ```
-    Doc = { docstr : String; type = String; todo = [ String ]; }
+    Doc = ''(conix.lib.label "docType" "{ docstr : String; type = String; todo = [ String ]; }")''
     ```
 
     Conix uses this to produce its own reference documentation by setting the
     `conix.lib.docs` attribute set in its pages and then creates an html
     derivation by calling this function and passing the resulting module to
     `htmlFile` and `markdownFile`.  
-  '';
+  ''];
   docs.mkDocs.type = "AttrSet -> Module";
   mkDocs = docsAttrSet:
       collectDocModules (builtins.removeAttrs docsAttrSet ["text" "drv"]);
