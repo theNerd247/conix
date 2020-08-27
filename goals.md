@@ -90,6 +90,7 @@ biscuits and fried chicken [^I'm from the South...] that I need for a party:
 
 
   ```markdown
+
 # of guests: 9
 Fried Chickens: 3
 Buttermilk Biscuits: 18
@@ -117,6 +118,7 @@ Buttermilk Biscuits: ''(t (conix.sample.guestCount * 2))
 
 ```
 ```
+
 # of guests: 9
 Fried Chickens: 3
 Buttermilk Biscuits: 18
@@ -139,7 +141,7 @@ The user describes the file structure of their output and conix takes
 care of the rest. Here's an example taken from the project readme:
 
 ```nix
-  [ (conix: { drv = with conix.lib; markdownFile "Volunteers" conix.vol; })
+
 ```
 
 Here we've stated that the output should be a markdownFile. Conix

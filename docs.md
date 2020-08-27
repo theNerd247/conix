@@ -1,19 +1,34 @@
 # Reference Documentation - 0.1.0
 
 <hr/>
-Builds a page that expects the toplevel module to contain an attribute called `drv`.
-Drv typically should be a derivation containing the toplevel render of the content
-_Todo_
+Like `as_` but uses a list of functions that return a single derivation 
+each.
 
-* The current implementation of build needs to take in a separate set of
-pages that are the actual content from the user. And then a single module
-that defines how to build the top derivation. If done, this may need to
-remove the clunky user interface for needing to define a toplevel
-attribute set with a single name and then turn around and give builders
-(like `markdownFile`) a name - this is redundant.
+It's more likely you'll use this instead of `as_`.
 
 ```haskell
-build :: Page -> Derivation
+as :: [(Module -> Derivation)] -> Module -> Module
+```
+<hr/>
+Like `as` but nest all of the created derivations under a directory with
+the given name.
+
+```haskell
+asDir :: Name -> [(Module -> Derivation)] -> Module -> Module
+```
+<hr/>
+Construct derivations from the given module and then replace that modules
+derivations with the constructed ones.
+
+```haskell
+as_ :: (Module -> [Derivation]) -> Module -> Module
+```
+<hr/>
+Builds a page and collects all of the derivations from the toplevel modules.
+Use this to build the final output of your content.
+
+```haskell
+build :: Page -> [Derivation]
 ```
 <hr/>
 Run the first builder and then pass its output to the second builder.
@@ -231,6 +246,12 @@ derivation by calling this function and passing the resulting module to
 mkDocs :: AttrSet -> Module
 ```
 <hr/>
+Nest a value into an attribute set with a given path string.
+
+```haskell
+nest :: Path -> a -> AttrSet
+```
+<hr/>
 
 ```haskell
 overLines :: ([String] -> [String]) -> String -> String
@@ -243,7 +264,7 @@ _Todo_
 
 * Remove hardcoded markdown input type
 ```haskell
-pandoc :: Type -> [ Derivation ] -> Name -> String -> (FilePath | Derivation) -> Derivation
+pandoc :: Type -> [ Derivation ] -> Name -> String -> Module -> Derivation
 ```
 <hr/>
 Writes a pdf file to the nix store given some module who's `drv` builds to a markdown file.
@@ -266,6 +287,7 @@ text (conix.lib.prefixLines "> "
 
 ```
 ```
+
 > this 
 > is a 
 > code block
@@ -326,6 +348,18 @@ set "foo" { text = "bar"; x = 3;} ==> { foo = { text = "bar"; x = 3; } text = "b
 
 ```haskell
 set :: Path -> Module -> Module
+```
+<hr/>
+Overwrite the derivations for the given module;
+
+```haskell
+setDrvs :: [Derivation] -> Module -> Module
+```
+<hr/>
+Overwrite the texts for the given module;
+
+```haskell
+setText :: String -> Module -> Module
 ```
 <hr/>
 Create a module whos text is a code snippet with some evaluated output.
@@ -390,6 +424,29 @@ _Todo_
 ```haskell
 toTextModule :: (String | Module)  -> Module
 ```
+<hr/>
+Like `using_` but uses a list of functions that return a single derivation 
+each.
+
+It's more likely you'll use this instead of `using_`.
+
+```haskell
+using :: [(Module -> Derivation)] -> Module -> Module
+```
+<hr/>
+Like `using` but nest all of the created derivations under a directory with
+the given name.
+
+```haskell
+usingDir :: Name -> [(Module -> Derivation)] -> Module -> Module
+```
+<hr/>
+Constructs derivations from the given module, and then append
+that to the module's derivations. 
+
+```haskell
+using_ :: (Module -> [Derivation]) -> Module -> Module
+```
 ## Discussion
 
 ### Modules
@@ -397,7 +454,7 @@ toTextModule :: (String | Module)  -> Module
 Modules are the core of conix. Their type is defined as:
 
 ```haskell
-Module = { text : String; ... }
+Module = { text : String; drvs = [Derivation]; ... }
 ```
 
 The rest of the attribute set defines the structure of the user's
@@ -407,7 +464,7 @@ For example the final module describing a single markdown file might
 look like:
 
 ```nix
-{ drv = <derivation>; 
+{ drvs = [<derivation>]; 
   text = "Call me at: 555-123-456"; 
   phone = "555-123-456"; 
 }
@@ -421,6 +478,12 @@ their content and the structure of the rendered in the same data structure.
 
 The empty module contains nothing. The core functions defined in this file
 treat the missing text value as an empty string to save memory.
+
+The `drvs` field is the free monoid over (aka: list of) derivations. This
+is because the core of conix needs to defer choosing how to combine module
+derivations and leave that up to the user. In the future we may need to
+just keep only a single drv and restrict how the derivations are combined
+through "collect" and "dir". However, for now we'll defer this decision.
 
 
 ### Pages

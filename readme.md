@@ -25,13 +25,11 @@ To try out conix:
     { 
       url = "https://github.com/theNerd247/conix.git";
       ref = "master";
-      rev = "2372c8af1a7b2119c3fa5c675b3f0840504b1b93";
+      rev = "63e8cee59b60e8366784a97425c59e6c88020b44";
     }
     
   );
-}).conix.buildPages
-  [ (conix: { drv = with conix.lib; markdownFile "Volunteers" conix.vol; })
-    (conix: { vol = with conix.lib; texts [
+}).conix.build (conix: { vol = with conix.lib; using [(markdownFile "Volunteers")] (texts [
 
 ''# Volunteer Handbook
 
@@ -54,12 +52,11 @@ _Volunteers still needed!: ''(t (8 - (builtins.length conix.vol.contacts.data)))
   ]
 ))
 
-];})]
-
-
+]);})
 
 ```
 ```
+
 # Volunteer Handbook
 
 ## Emergency Plan
