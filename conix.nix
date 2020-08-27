@@ -194,4 +194,11 @@ pkgs: { lib = rec {
   docs.setText.type = "String -> Module -> Module";
   setText = text: module: module // { inherit text; };
 
+  docs.hidden.docstr = ''
+    Sets the text to an empty string for a module.
+
+    Use this if you only want to keep the drvs and data a module produces.
+    '';
+  docs.hidden.type = "Module -> Module";
+  hidden = module: module // { text = ""; };
 };}

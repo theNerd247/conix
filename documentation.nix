@@ -5,6 +5,7 @@
         conixReferenceDocumentation.drvs
         ++ docs.readme.drvs
         ++ docs.goals.drvs
+        ++ docs.integration.drvs
       );
     in
       { drvs = [ c ]; };
