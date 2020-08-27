@@ -1,11 +1,11 @@
-conix: with conix.lib; { lib.docs.goals = using [(markdownFile "goals") (htmlFile "goals" "--metadata title=goals")] (
+conix: with conix.lib; { lib.docs.goals = using [(markdownFile "goals") (htmlFile "goals" "--metadata pagetitle=goals")] (
 texts [
 ''# Goals
 
 
 ''(md.list "list" [
 ''
-Allow users to use logic in writing prose without leaving
+Allow users to use logic for writing prose without leaving
 the sentence they are writing.
 ''
  
@@ -15,116 +15,109 @@ Provide intuitive build support for various output formats.
 ])''
 
 
-## Goal 1
+## The Problem With Template Languages
 
 > ''(t (builtins.elemAt conix.lib.docs.goals.list 0))''
 
-Good programmers separate data from how that data is rendered. The programmer
-solves multiple problems with this paradigm:
+A common architecture for writing documents that contain dynamic data is 
+shown below:
 
-  * Store duplicated data in a single place.
-  * Generate new content with logic (for example a list of words is sorted
-  before rendered).
-  * Swap out the rendering system without changing the content's structure.
-
+''(label "templatePipeline"
+''
   ```
-  Data --> Render --> Output
+  Data -> Template -> Output
   ```
-However, for writing prose the above solution becomes a problem. Here's what I
-mean. The data an author is working with is the content that they are writing.
-And if the author follows the above paradigm - for example by using JSON
-and a templating language - then they must write their content separate from
-how that document is to be rendered. Consider the following code that uses
-JSON and a templating language[^I'm not using a real templating language; this
-is just an example. Hopefully, it's clear enough]:
+'')''
 
-```json
-chapters: [
-  { sections = 
-    [ 
-      { contents: "..." }
-      { contents: "..." }
-      { contents: "..." }
-      { contents: "..." }
-    ]
-    references = 
-    [ ...
-    ]
-    notes = 
-    [ ...
-    ]
-  }
-]
-```
+Data is used to fill in place holders specified by a template. The filled-in
+template is then used to produce some document(s). For example, 
 
-```
-Chapter {{chapters.index}
+1.
+  ```
+  Markdown + YAML -> HTML Template -> Static Website
+  ```
+  Markdown and YAML are fed into an HTML template to produce a static website. 
 
-{{for section in chapter.sections}}
+1.
+  ```
+  JSON -> LaTeX Template -> PDF
+  ```
+  JSON and a LaTeX template are used to produce a PDF document.
 
-Section {{section.index}}
+There are a few problems with this workflow:
 
-{{section.contents}}
+''(md.list "problems" [
+(texts [
+"_"(label "title" "Content switching")"_: "(label "problem" ''
+Context switching is an enemy of writing and template systems are a losing
+battle for the author.  Re-usable text must be stored in a separate file
+(like JSON) and the consuming template is in another. Authors are forced to
+learn 3 languages to write: a template language, a markup language, and a
+data language.
+'')])
+])''
 
-{{endfor}}
-```
+* Template languages do not support higher order logic and data languages
+typically don't support even first order logic. If an author needs these
+features then they need to bring in a 4th language the spits out at least
+the data structure consumed by the template language.
 
-This is a mess! If I'm writing a book I'd prefer to not have to write JSON.
-It's not distributable across files, it's difficult to tell which section or
-chapter I'm working on - I'd prefer to have a file per section and a directory
-per chapter. Finally, what if the content that I write needs to depend on the
-templating language? I've really broken the data/render separation above.
-Templating languages do not solve the last problem above.
+* IO is not supported at all by templating languages. Writing documentation
+that enforces valid sample code is a matter of error-prone copy and paste by
+the author - instead of executing at least a type checker on the sample
+program. Why write:
 
-The family of Markdown and LaTex languages have user convenient interfaces for
-rendering content however none of them provide the power of a programming
-language[^Well maybe LaTeX does...but's not user friendly and has a steep
-learning curve.]. They do not solve the first problems above.
+> For example `add7 (3)` produces `4`
 
-There's no way around it. When we write prose we want to have the power that
-programming gives us. Templating languages only solve half the problem, and
-markdown only solves the other half (switching out the rendering system). And
-neither allows us to use logic to create content.
+by hand? Automating this process attaches runtime errors to the documentation
+being written; if code samples fail to type-check/execute then the output of
+the document is not produced.
 
-Conix fixes all of these problems. Simply put conix uses the Nix programming
-language as a host language for creating markdown and then processing that
-markdown. Conix is simply a library that makes it convenient to create the
-content datastructure while writing markdown and then consume that data
-structure without leaving the sentence the user is writing. 
+## Conix
 
-Here's an example. Say I'm writing a sentence about how many buttermilk
-biscuits and fried chicken [^I'm from the South...] that I need for a party:
+Again, here's the data pipeline for templating languages:
 
+''(t conix.lib.docs.goals.templatePipeline)''
+
+Conix solves the above problems:
+
+Here's an example[^2]. Say I'm writing down how many fried chicken and waffles[^1]
+that I need:
+
+[^1]: This is vital documentation to keep programmes healthy.
+[^2]: Btw. This document is dogfooding conix to produce this example. I didn't manually write 
+the example you are seeing here.
 
   ```markdown
-  ''(t conix.lib.docs.goals.sampleBiscuits.output)''
-
+  ''(t conix.lib.docs.goals.sampleBiscuits.output)'' 
   ```
 
-There is some logic going on here: 
+Notice the logic involved to produce the correct text:
 
-  * 1 chicken feeds 3 people
-  * 2 biscuits feeds 1 person
+  * The amount of food depends on the number of guests. In this case there are
+  ''(label "guestCount" 9)''\ people.
+  * 1 chicken feeds ''(label "personsPerChicken" 3)''\ people.
+  * 1 person eats ''(label "wafflesPerPerson" 2)''\ waffles.
 
 But if were to just write the above in a markdown file I'd have to compute
 those numbers by hand...bleh! I'm a programmer...I'm lazy. I'd like the
-computer to do the computing for me. Here's the same snippet written in conix:
+computer to do the computing for me. Here's the same snippet written in conix
+and the output auto-generated by conix:
 
-''(sampleConixSnippet "sampleBiscuits" ''
+''
+(sampleConixSnippet "sampleBiscuits" ''
 texts [
 ''' 
-# of guests: '''(label "guestCount" 9)'''
+# of guests: '''(label "guestCount" ${str docs.goals.guestCount})'''
 
-Fried Chickens: '''(t (conix.sample.guestCount / 3))'''
+Fried Chickens: '''(t (conix.sample.guestCount / ${str docs.goals.personsPerChicken}))'''
 
-Buttermilk Biscuits: '''(t (conix.sample.guestCount * 2))
+Buttermilk Biscuits: '''(t (conix.sample.guestCount * ${str docs.goals.wafflesPerPerson}))
 ]
 '')''
 
-Now, using conix, we can tell the computer that the number of guests can be
-referenced in other places of our content. Because the number is stored (not
-its text) we can use it to compute how many chickens and biscuits we need for
-the party.
+Conix allows the user to label different pieces of their content as NixValues and then later
+reference that data to create new content. This makes a separate data layer unnecessary.
 
 ## Goal 2
 
