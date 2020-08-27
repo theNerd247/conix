@@ -97,12 +97,25 @@ conix: dir "bar" [(mdFile "foo") (htmlFile "baz")] ()
 
 `````
 
-type MarkupCode = Pandoc
+type PandocF a
+  = TextLit Text
+  | BulletList [a]
+  | EnumList [a]
+  | Table (Map Text [a])
+  | Heading Natural a
+  | HRule
+  | Paragraph [a]
+  deriving Functor
 
-type FileHierarchy 
-  = File RenderType MarkupCode
+type MarkupCode a = FreeA a PandocF
+
+data FileHierarchyF v a
+  = File RenderType (MarkupCode v)
   | LocalPath FilePath
-  | Dir (Map Name FileHierarchy)
+  | Dir (Map Name a)
+  deriving Functor
+
+type FileHierarchy = FreeA NixValue FileHierarchyF
 
 type RenderType
   = Html HtmlPandocArgs
