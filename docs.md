@@ -212,7 +212,7 @@ markdownFile :: Name -> Module -> Derivation
 Create an bullet list style markdown list.
 
 ```haskell
-md.list :: Name -> [ String ] -> Module
+md.list :: Name -> [ Module ] -> Module
 ```
 <hr/>
 Modules merge by recursiveUpdate but the toplevel text fields
