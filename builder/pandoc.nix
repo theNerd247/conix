@@ -6,11 +6,12 @@ conix: { lib = rec
       The list of derivation are extra buildInputs that pandoc should use.
     '';
     docs.pandoc.todo = [ "Remove hardcoded markdown input type" ];
-    docs.pandoc.type = "Type -> [ Derivation ] -> Name -> String -> (FilePath | Derivation) -> Derivation";
+    docs.pandoc.type = "Type -> [ Derivation ] -> Name -> String -> Module -> Derivation";
     pandoc 
-      = type: buildInputs: name: args: markdownFile:
+      = type: buildInputs: name: args: module:
       let
         fileName = "${name}.${type}";
+        markdownFile = conix.lib.markdownFile name module;
       in
         conix.pkgs.runCommand fileName
           { buildInputs = [ conix.pkgs.pandoc ] ++ buildInputs; }

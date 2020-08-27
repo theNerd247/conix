@@ -45,8 +45,8 @@ conix: { lib = rec
   mkDocs = docsAttrSet:
       collectDocModules (builtins.removeAttrs docsAttrSet ["text" "drv"]);
 
-  conixReferenceDocumentation = conix.lib.texts 
-    [ ''
+  conixReferenceDocumentation = with conix.lib; using [(markdownFile "docs") (htmlFile "docs" "--metadata title=docs")] (texts [
+      ''
       # Reference Documentation - ${conix.lib.version.text}
 
       ''
@@ -69,5 +69,5 @@ conix: { lib = rec
       ---
       Built using ${conix.lib.homePageLink} version ${conix.lib.version.text}
       ''
-    ];
+    ]);
 };}

@@ -1,4 +1,5 @@
-conix: with conix.lib; { lib.docs.readme = texts [
+conix: with conix.lib; { lib.docs.readme = using [(markdownFile "readme") (htmlFile "readme" "--metadata title=readme")] 
+(texts [
 ''# ${homePageLink} - ${version.text} - ${buildBadgeLink}
 
 ${if conix.lib.version.major < 1
@@ -30,9 +31,7 @@ To try out conix:
   overlays = import (builtins.fetchGit
     ${indent 4 conix.lib.git.text}
   );
-}).conix.buildPages
-  [ (conix: { drv = with conix.lib; markdownFile "Volunteers" conix.vol; })
-    (conix: { vol = with conix.lib; texts [
+}).conix.build (conix: { vol = with conix.lib; using [(markdownFile "Volunteers")] (texts [
 
 '''# Volunteer Handbook
 
@@ -55,9 +54,8 @@ _Volunteers still needed!: '''(t (8 - (builtins.length conix.vol.contacts.data))
   ]
 ))
 
-];})]
-
-'')''
+]);})''
+)''
 
 * The markdown sample was not hand written; the conix sample generated it.
 * The table in the markdown sample has some of its contents duplicated across
@@ -87,4 +85,4 @@ Many thanks to:
   * [Evan Relf](https://github.com/evanrelf) for his insightful feedback.
   * [Paul Young](https://github.com/paulyoung) for great feedback and ideas.
 
-'']; }
+'']); }

@@ -7,23 +7,16 @@ in
 { conix = rec
   { 
     docs.build.docstr = ''
-      Builds a page that expects the toplevel module to contain an attribute called `drv`.
-      Drv typically should be a derivation containing the toplevel render of the content
+      Builds a page and collects all of the derivations from the toplevel modules.
+      Use this to build the final output of your content.
     '';
-    docs.build.todo = [ 
-      ''
-      The current implementation of build needs to take in a separate set of
-      pages that are the actual content from the user. And then a single module
-      that defines how to build the top derivation. If done, this may need to
-      remove the clunky user interface for needing to define a toplevel
-      attribute set with a single name and then turn around and give builders
-      (like `markdownFile`) a name - this is redundant.
-      ''
-    ];
     docs.build.type 
-      = "Page -> Derivation";
+      = "Page -> [Derivation]";
     build
-      = page: (eval page).drv;
+      = page: builtins.foldl' 
+        (drvs: mod: drvs ++ (mod.drvs or [])) 
+        [] 
+        (builtins.attrValues (eval page));
 
     docs.buildPages.docstr = ''
       Merges the pages into one and then calls `build`.
@@ -51,6 +44,7 @@ in
               (import ./docs.nix)
               (import ./copyJoin.nix)
               (import ./foldAttr.nix)
+              (import ./drvs.nix)
               (import ./readme/default.nix)
               (import ./design/goals.nix)
               (x: core)

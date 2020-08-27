@@ -1,11 +1,9 @@
-# Module = ReaderT AttrSet (Writer AttrSet)
-# 
-# type Pages = AttrSet
-# BuildPageSet :: Module -> AttrSet 
-let
+rec {
 
   # this is the toplevel agreggation of the modules in question
   pkgs = import <nixpkgs> { overlays = (import ./default.nix); };
+
+  conix = pkgs.conix;
 
   docs = pkgs.conix.buildPages [
     (c: { drv = with c.lib; 
@@ -13,6 +11,7 @@ let
     })
     (import ./design/goals.nix)
   ];
+
 
   test = pkgs.conix.evalPages
     [ 
@@ -29,11 +28,7 @@ let
         ];
       })
       (x: { s = with x.lib; texts [ (sampleConixSnippet "t" "texts [ \"foo\" ]") ]; })
+      (x: { t = with x.lib; asMd "foo" (texts [ "asdf: " (t x.t.x) { x = 3; } ]); })
+      (x: { u = with x.lib; dirWithMarkdown "foo" (texts [ "boo" (using [(markdownFile "joe")] (text "jack")) ]); })
     ];
-
-in
-  { 
-    inherit (pkgs) conix;
-    inherit test; 
-    inherit docs;
-  }
+}

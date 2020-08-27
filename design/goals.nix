@@ -1,4 +1,5 @@
-conix: with conix.lib; { lib.docs.goals = texts [
+conix: with conix.lib; { lib.docs.goals = using [(markdownFile "goals") (htmlFile "goals" "--metadata title=goals")] (
+texts [
 ''# Goals
 
 
@@ -152,4 +153,4 @@ Conix is not restricted to just markdown support. Currently, though, conix uses
 ${conix.lib.docs.readme.pandocLink} to render the markdown content and html
 files. However conix is easily extensible to support other build types.
 
-'']; }
+'']); }
