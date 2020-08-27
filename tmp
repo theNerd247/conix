@@ -168,8 +168,8 @@ run alg f = fix (cata alg . f)
       |                                     |
 Evaluated to Create                         |
       |                                     |
------------------                           v
+---------------------                       v
 File System Tree                       |------------|
------------------                      | Data Tree  |
+---------------------                  | Data Tree  |
 Content Tree   <--Consumed To Create---|------------|
------------------
+---------------------
