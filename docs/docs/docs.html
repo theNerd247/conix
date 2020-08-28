@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>docs</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="../static/latex.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="reference-documentation---0.1.0">Reference Documentation - 0.1.0</h1>
+<hr/>
+<p>Like <code>as_</code> but uses a list of functions that return a single derivation each.</p>
+<p>It’s more likely you’ll use this instead of <code>as_</code>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="ot">as ::</span> [(<span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Derivation</span>)] <span class="ot">-&gt;</span> <span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>Like <code>as</code> but nest all of the created derivations under a directory with the given name.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="ot">asDir ::</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> [(<span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Derivation</span>)] <span class="ot">-&gt;</span> <span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>Construct derivations from the given module and then replace that modules derivations with the constructed ones.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="ot">as_ ::</span> (<span class="dt">Module</span> <span class="ot">-&gt;</span> [<span class="dt">Derivation</span>]) <span class="ot">-&gt;</span> <span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>Builds a page and collects all of the derivations from the toplevel modules. Use this to build the final output of your content.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="ot">build ::</span> <span class="dt">Page</span> <span class="ot">-&gt;</span> [<span class="dt">Derivation</span>]</span></code></pre></div>
+<hr/>
+<p>Run the first builder and then pass its output to the second builder. Collect both the resulting derivations into a directory with the given name.</p>
+<p>Typically this should be used with <code>htmlFile</code> or <code>pandocFile</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="ot">buildBoth ::</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">Derivation</span>) <span class="ot">-&gt;</span> ((<span class="dt">FilePath</span> <span class="op">|</span> <span class="dt">Derivation</span>) <span class="ot">-&gt;</span> <span class="dt">Derivation</span>) <span class="ot">-&gt;</span> <span class="dt">Derivation</span></span></code></pre></div>
+<hr/>
+<p>Merges the pages into one and then calls <code>build</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="ot">buildPages ::</span> [ <span class="dt">Page</span> ] <span class="ot">-&gt;</span> <span class="dt">Derivation</span></span></code></pre></div>
+<hr/>
+<p>Copy contents of paths to a single directory. If a path is a directory its contents are copied and not the directory itself.</p>
+<p>For example, given:</p>
+<pre><code>A
+ |- a.txt
+
+B
+ |- c.txt</code></pre>
+<p><code>dir "C" [ A B]</code> will produce:</p>
+<pre><code>C
+ |- a.txt
+ |- b.txt</code></pre>
+<p>NOTE: the later directories in the list could overwrite contents from other directories. If you wish to copy directories as is use. <code>dir</code></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="ot">collect ::</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> [ <span class="dt">Derivation</span> <span class="op">|</span> <span class="dt">Path</span> ] <span class="ot">-&gt;</span> <span class="dt">Derivation</span></span></code></pre></div>
+<hr/>
+<p>Like <code>collect</code> but preserves toplevel directories when copying</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="ot">dir ::</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> [ (<span class="dt">FilePath</span> <span class="op">|</span> <span class="dt">Derivation</span>) ] <span class="ot">-&gt;</span> <span class="dt">Derivation</span></span></code></pre></div>
+<hr/>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="ot">emptyModule ::</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>This is the evaluator for a page and returns the final module.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="ot">eval ::</span> <span class="dt">Page</span> <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>Convenience functions for collecting multiple pages and evaluating them all at once.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="ot">evalPages ::</span> [ <span class="dt">Page</span> ] <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>Extract lines of text within the given line range (start and end inclusive).</p>
+<p>This is handy for grabbing certain lines of, say a code block.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a><span class="ot">extractLines ::</span> <span class="dt">NaturalGreaterThan0</span> <span class="ot">-&gt;</span> <span class="dt">Natural</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span></code></pre></div>
+<hr/>
+<p>Fold an attribute set down while allowing for attribute sets to be a leaf value.</p>
+<p>The first function returns true if the given attribute set is a leaf value. The second function maps leaf values to final values. The third function returns a combined final value from the final values of the lower branches.</p>
+<p>For example, to sum the leaf values in an attribute set where a leaf is either a nix value or attribute set containing “stop” as an attribute is:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a><span class="ex">countLeaves</span> = foldAttrsCond </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a>  <span class="co"># An attribute set is a leaf if it contains &quot;stop&quot; as an attribute.</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true"></a>  <span class="kw">(</span><span class="ex">s</span>: s ? stop<span class="kw">)</span> </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true"></a>  <span class="co"># return the value 1 for each leaf. We don&#39;t need the actual value to compute the result.</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true"></a>  <span class="kw">(</span><span class="ex">_</span>: 1<span class="kw">)</span>        </span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true"></a>  <span class="co"># countMap is a flat attribute set containing the previously counted branches.</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true"></a>  <span class="kw">(</span><span class="ex">countMap</span>: builtins.foldl<span class="st">&#39; (sum: count: sum + count) 0 (builtins.attrValues countMap));</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true"></a><span class="st"># This should return 5.</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true"></a><span class="st">nleaves = countLeaves { a = { b = &quot;b&quot;; c = &quot;c&quot;; }; d.e.f = &quot;f&quot;; g = { h = { stop = 2; }; i = 7; }; };</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a><span class="ot">foldAttrsCond ::</span> (a <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (<span class="dt">AttrSet</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">AttrSet</span> a <span class="ot">-&gt;</span> b</span></code></pre></div>
+<hr/>
+<p>This is just like <code>foldAttrsCond</code> except the function to convert leaf values into final values also takes in the path from the top of the attribute set for that leaf value.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true"></a><span class="ot">foldAttrsIxCond ::</span> ((<span class="dt">AttrSet</span> e ) <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">Path</span> <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (<span class="dt">AttrSet</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">AttrSet</span> a <span class="ot">-&gt;</span> <span class="dt">Path</span> <span class="ot">-&gt;</span> b</span></code></pre></div>
+<hr/>
+<p>Maps elements to a module and merges the modules;</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a><span class="ot">foldMapModules ::</span> (a <span class="ot">-&gt;</span> <span class="dt">Module</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>Maps elements to a page and then merges the pages</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true"></a><span class="ot">foldMapPages ::</span> (a <span class="ot">-&gt;</span> <span class="dt">Page</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Page</span></span></code></pre></div>
+<hr/>
+<p>Merges a list of modules</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true"></a><span class="ot">foldModules ::</span> [<span class="dt">Module</span>] <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true"></a><span class="ot">foldPages ::</span> [ <span class="dt">Page</span> ] <span class="ot">-&gt;</span> <span class="dt">Page</span></span></code></pre></div>
+<hr/>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true"></a><span class="ot">foldlIx ::</span> (<span class="dt">Natural</span> <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> b</span></code></pre></div>
+<hr/>
+<p>Sets the text to an empty string for a module.</p>
+<p>Use this if you only want to keep the drvs and data a module produces.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true"></a><span class="ot">hidden ::</span> <span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>Writes a html file to the nix store given some module who’s <code>drv</code> builds to a markdown file. <em>Todo</em></p>
+<ul>
+<li>Add the ability to auto-include static resources as part of the produced derivation. For example <code>--css ./filePath</code> would be generated via some statement stating to include ./filePath as a css resource.</li>
+</ul>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true"></a><span class="ot">htmlFile ::</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> (<span class="dt">FilePath</span> <span class="op">|</span> <span class="dt">Derivation</span>) <span class="ot">-&gt;</span> <span class="dt">Derivation</span></span></code></pre></div>
+<hr/>
+<p>Indent all lines (except the first one) in the given string by an integer number of spaces.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true"></a><span class="ot">indent ::</span> <span class="dt">Natural</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span></code></pre></div>
+<hr/>
+<p>This is a convenience function for users to create new modules within texts without needing to manually create modules.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true"></a><span class="ex">label</span> <span class="st">&quot;foo&quot;</span> 7 ==<span class="op">&gt;</span> { foo = 7<span class="kw">;</span> <span class="ex">text</span> = <span class="st">&quot;7&quot;</span><span class="kw">;</span> } </span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true"></a><span class="ot">label ::</span> <span class="dt">Path</span> <span class="ot">-&gt;</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>Prefix lines with their line numbers.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true"></a><span class="ot">lineNumbers ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span></code></pre></div>
+<hr/>
+<p>Builds a markdown file derivation with the given name to the nix store. <em>Todo</em></p>
+<ul>
+<li>Maybe refactor the text out?</li>
+</ul>
+<div class="sourceCode" id="cb29"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true"></a><span class="ot">markdownFile ::</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> <span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Derivation</span></span></code></pre></div>
+<hr/>
+<p>Create an bullet list style markdown list.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true"></a>md<span class="op">.</span><span class="ot">list ::</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> [ <span class="dt">Module</span> ] <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>Modules merge by recursiveUpdate but the toplevel text fields are concatenated.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true"></a><span class="ot">mergeModules ::</span> <span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>A Page is the toplevel type used throughout conix.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true"></a><span class="ot">mergePages ::</span> <span class="dt">Page</span> <span class="ot">-&gt;</span> <span class="dt">Page</span> <span class="ot">-&gt;</span> <span class="dt">Page</span></span></code></pre></div>
+<hr/>
+<p>Creates a module containing markdown documentation of an nested attribute set where the leaves are docs.</p>
+<p>A doc is:</p>
+<pre><code>Doc = { docstr : String; type = String; todo = [ String ]; }```
+
+Conix uses this to produce its own reference documentation by setting the
+`conix.lib.docs` attribute set in its pages and then creates an html
+derivation by calling this function and passing the resulting module to
+`htmlFile` and `markdownFile`.  
+
+```haskell
+mkDocs :: AttrSet -&gt; Module</code></pre>
+<hr/>
+<p>Nest a value into an attribute set with a given path string.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true"></a><span class="ot">nest ::</span> <span class="dt">Path</span> <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">AttrSet</span></span></code></pre></div>
+<hr/>
+<div class="sourceCode" id="cb35"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true"></a><span class="ot">overLines ::</span> ([<span class="dt">String</span>] <span class="ot">-&gt;</span> [<span class="dt">String</span>]) <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span></code></pre></div>
+<hr/>
+<p>Writes a file of the specified type to the nix store using pandoc.</p>
+<p>The list of derivation are extra buildInputs that pandoc should use. <em>Todo</em></p>
+<ul>
+<li>Remove hardcoded markdown input type</li>
+</ul>
+<div class="sourceCode" id="cb36"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true"></a><span class="ot">pandoc ::</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> [ <span class="dt">Derivation</span> ] <span class="ot">-&gt;</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Derivation</span></span></code></pre></div>
+<hr/>
+<p>Writes a pdf file to the nix store given some module who’s <code>drv</code> builds to a markdown file.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true"></a><span class="ot">pdfFile ::</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> (<span class="dt">FilePath</span> <span class="op">|</span> <span class="dt">Derivation</span>) <span class="ot">-&gt;</span> <span class="dt">Derivation</span></span></code></pre></div>
+<hr/>
+<p>Prefix each line with the given text. For example, to make a block of text a block quote do:</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true"></a><span class="ex">text</span> (conix.lib.prefixLines <span class="st">&quot;&gt; &quot;</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true"></a>  <span class="st">&#39;&#39;</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true"></a>  <span class="ex">this</span> </span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true"></a>  <span class="ex">is</span> a </span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true"></a>  <span class="ex">code</span> block<span class="st">&#39;&#39;</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true"></a>)</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true"></a></span></code></pre></div>
+<pre><code>
+&gt; this 
+&gt; is a 
+&gt; code block</code></pre>
+<div class="sourceCode" id="cb40"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true"></a><span class="ot">prefixLines ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span></span></code></pre></div>
+<hr/>
+<p>Pretty print a pure nix-value.</p>
+<p>NOTE: do not call this function on a derivation as it will segfault.</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true"></a><span class="ot">printNixVal ::</span> a <span class="ot">-&gt;</span> <span class="dt">String</span></span></code></pre></div>
+<hr/>
+<p>Run <code>runSnippet</code> for nix code that evaluates to a derivation that points to a single file. The output of the snippet is the contents of the file resulting from the derivation.</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true"></a><span class="ot">runNixSnippetDrvFile ::</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>Create a module using the given code snippet and a function that accepts the a nix store filepath containing the code. <code>mkCode</code> handles executing the code file and producing the output expected by <code>snippet</code></p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true"></a><span class="ot">runSnippet ::</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> (<span class="dt">FilePath</span> <span class="ot">-&gt;</span> <span class="dt">String</span>) <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>Creates a nix snippet using the given conix code. The content is put under a single attribute called “sample” and creates markdown as its output.</p>
+<p>The expected code should evaluate to a module.</p>
+<p>Only the code the user writes will appear in the code block. Read the implementation for this function to see what will actually get evaluated.</p>
+<p>Use this if you’re writing sample conix code and would like to verify that you code works.</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true"></a><span class="ot">sampleConixSnippet ::</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>This is like <code>label</code> but for nesting a module. We can’t have just <code>label</code> and check whether the input is a string or attribute set (yet? see todo for <code>toTextModule</code>) because doing so triggers infinite recursion. Thus we need a separate function to achieve the same task.</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true"></a><span class="kw">set</span> <span class="st">&quot;foo&quot;</span> <span class="kw">{</span> <span class="ex">text</span> = <span class="st">&quot;bar&quot;</span><span class="kw">;</span> <span class="ex">x</span> = 3<span class="kw">;}</span> ==<span class="op">&gt;</span> <span class="kw">{</span> <span class="ex">foo</span> = { text = <span class="st">&quot;bar&quot;</span><span class="kw">;</span> <span class="ex">x</span> = 3<span class="kw">;</span> <span class="kw">}</span> <span class="ex">text</span> = <span class="st">&quot;bar&quot;</span><span class="kw">;</span> }</span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true"></a><span class="ot">set ::</span> <span class="dt">Path</span> <span class="ot">-&gt;</span> <span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>Overwrite the derivations for the given module;</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true"></a><span class="ot">setDrvs ::</span> [<span class="dt">Derivation</span>] <span class="ot">-&gt;</span> <span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>Overwrite the texts for the given module;</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true"></a><span class="ot">setText ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>Create a module whos text is a code snippet with some evaluated output. If no output is provided then it’s codeblock is omitted. <em>Todo</em></p>
+<ul>
+<li>Add an language for the output codeblock as a parameter</li>
+</ul>
+<div class="sourceCode" id="cb49"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true"></a><span class="ot">snippet ::</span> <span class="dt">LanguageString</span> <span class="ot">-&gt;</span> <span class="dt">CodeString</span> <span class="ot">-&gt;</span> <span class="dt">OutputString</span> <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<div class="sourceCode" id="cb50"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true"></a><span class="ot">splitLines ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">String</span>]</span></code></pre></div>
+<hr/>
+<p>An alias for <code>builtins.toString</code> This is a convenience function so users don’t clutter up their content with long bits of code for small things.</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true"></a><span class="ot">str ::</span> (<span class="dt">IsString</span> t) <span class="ot">=&gt;</span> <span class="dt">String</span></span></code></pre></div>
+<hr/>
+<p>This is an alias for <code>text</code>. A convenience function for creating TODO: it might be a better user experience to rename this to <code>txt</code> instead.</p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true"></a><span class="ot">t ::</span> (<span class="dt">IsString</span> t) <span class="ot">=&gt;</span> t <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>This is the most common function for constructing content for the user. It allows them to write plain text and assignments alongside each other. Here’s an example:</p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true"></a><span class="ex">conix</span>: { report = conix.lib.texts [</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true"></a>  <span class="st">&#39;&#39;</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true"></a>  <span class="ex">The</span> final count for the muffin competition was:</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true"></a>  <span class="st">&#39;&#39;</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true"></a>  <span class="kw">(</span><span class="ex">conix.lib.md.list</span> <span class="st">&quot;muffinCount&quot;</span></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true"></a>    [ <span class="st">&quot;Blue Berry: </span><span class="va">${t</span><span class="er"> (builtins.length conix.muffins.blueBerry)</span><span class="va">}</span><span class="st">&quot;</span></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true"></a>      <span class="st">&quot;Whole Grain:  </span><span class="va">${t</span><span class="er"> (builtins.length conix.muffins.wholeGrain)</span><span class="va">}</span><span class="st">&quot;</span></span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true"></a>    ]</span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true"></a>  <span class="kw">)</span></span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true"></a>]; }</span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true"></a><span class="ot">texts ::</span> [ <span class="dt">String</span> <span class="op">|</span> <span class="dt">Module</span> ] <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>Converts either text or a module to a module. This is used by the <code>texts</code> function. NOTE: Use of this can cause infinite recursion issues. See the Infinite Recursion discussion. <em>Todo</em></p>
+<ul>
+<li>It might be worth investigating whether I could use a small typing system and if x has no type then assume it’s a raw, stringable nix value</li>
+</ul>
+<div class="sourceCode" id="cb55"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true"></a><span class="ot">toTextModule ::</span> (<span class="dt">String</span> <span class="op">|</span> <span class="dt">Module</span>)  <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>Like <code>using_</code> but uses a list of functions that return a single derivation each.</p>
+<p>It’s more likely you’ll use this instead of <code>using_</code>.</p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true"></a><span class="ot">using ::</span> [(<span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Derivation</span>)] <span class="ot">-&gt;</span> <span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>Like <code>using</code> but nest all of the created derivations under a directory with the given name.</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true"></a><span class="ot">usingDir ::</span> <span class="dt">Name</span> <span class="ot">-&gt;</span> [(<span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Derivation</span>)] <span class="ot">-&gt;</span> <span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<hr/>
+<p>Constructs derivations from the given module, and then append that to the module’s derivations.</p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true"></a><span class="ot">using_ ::</span> (<span class="dt">Module</span> <span class="ot">-&gt;</span> [<span class="dt">Derivation</span>]) <span class="ot">-&gt;</span> <span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<h2 id="discussion">Discussion</h2>
+<h3 id="modules">Modules</h3>
+<p>Modules are the core of conix. Their type is defined as:</p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true"></a><span class="kw">type</span> <span class="dt">Module</span> <span class="ot">=</span> {<span class="ot"> text ::</span> <span class="dt">String</span>,<span class="ot"> drvs ::</span> [<span class="dt">Derivation</span>], <span class="op">...</span> }</span></code></pre></div>
+<dl>
+<dt><code>text</code></dt>
+<dd>the final authored content that the module produces. If a module is used to create say, a markdown file, then this is the contents of that file. When two modules are merged (see <code>mergeModules</code>) there text values are concatenated (left to right).
+</dd>
+<dt><code>drvs</code></dt>
+<dd>this is the list of derivations that may be produced along side some content. Normally modules would either contain only text or only derivations alongside the user’s data. Example derivations in this list would be a list of files that the given texts produces (markdown, html, etc.)
+</dd>
+<dt><code>...</code></dt>
+<dd>These are user defined attribute key/values that store custom data required to build the text value.
+</dd>
+</dl>
+<p>An example module looks like:</p>
+<div class="sourceCode" id="cb60"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true"></a><span class="kw">(</span><span class="ex">rec</span> </span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true"></a><span class="kw">{</span> <span class="ex">drvs</span> = [ (conix.pkgs.writeText <span class="st">&quot;foo.md&quot;</span> text) ];</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true"></a>  <span class="ex">welcomeMessage</span> = <span class="st">&quot;I &lt;3 F-algebras&quot;</span><span class="kw">;</span> </span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true"></a>  <span class="ex">text</span> = <span class="st">&#39;&#39;</span></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true"></a>    <span class="co"># Hello World</span></span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true"></a></span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true"></a>    <span class="va">${welcomeMessage}</span></span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true"></a>  <span class="st">&#39;&#39;</span>;</span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true"></a><span class="kw">})</span></span></code></pre></div>
+<p>And here is that module evaluated:</p>
+<div class="sourceCode" id="cb61"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true"></a><span class="kw">(</span><span class="ex">import</span> <span class="op">&lt;</span>nixpkgs<span class="op">&gt;</span> { </span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true"></a>  <span class="ex">overlays</span> = import (builtins.fetchGit</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true"></a>    <span class="kw">{</span> </span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true"></a>      <span class="ex">url</span> = <span class="st">&quot;https://github.com/theNerd247/conix.git&quot;</span><span class="kw">;</span></span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true"></a>      <span class="ex">ref</span> = <span class="st">&quot;master&quot;</span><span class="kw">;</span></span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true"></a>      <span class="fu">rev</span> = <span class="st">&quot;ba78bc6f2c68885ea315c223a424f8a02a7ab4bf&quot;</span><span class="kw">;</span></span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true"></a>    <span class="kw">}</span></span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true"></a>    </span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true"></a>  <span class="kw">)</span>;</span>
+<span id="cb61-10"><a href="#cb61-10" aria-hidden="true"></a>})<span class="ex">.conix.eval</span> </span>
+<span id="cb61-11"><a href="#cb61-11" aria-hidden="true"></a><span class="kw">(</span><span class="ex">conix</span>: { sample = </span>
+<span id="cb61-12"><a href="#cb61-12" aria-hidden="true"></a>  <span class="kw">(</span><span class="ex">rec</span> </span>
+<span id="cb61-13"><a href="#cb61-13" aria-hidden="true"></a>  <span class="kw">{</span> <span class="ex">drvs</span> = [ (conix.pkgs.writeText <span class="st">&quot;foo.md&quot;</span> text) ];</span>
+<span id="cb61-14"><a href="#cb61-14" aria-hidden="true"></a>    <span class="ex">welcomeMessage</span> = <span class="st">&quot;I &lt;3 F-algebras&quot;</span><span class="kw">;</span> </span>
+<span id="cb61-15"><a href="#cb61-15" aria-hidden="true"></a>    <span class="ex">text</span> = <span class="st">&#39;&#39;</span></span>
+<span id="cb61-16"><a href="#cb61-16" aria-hidden="true"></a>      <span class="co"># Hello World</span></span>
+<span id="cb61-17"><a href="#cb61-17" aria-hidden="true"></a>  </span>
+<span id="cb61-18"><a href="#cb61-18" aria-hidden="true"></a>      <span class="va">${welcomeMessage}</span></span>
+<span id="cb61-19"><a href="#cb61-19" aria-hidden="true"></a>    <span class="st">&#39;&#39;</span>;</span>
+<span id="cb61-20"><a href="#cb61-20" aria-hidden="true"></a>  <span class="kw">})</span></span>
+<span id="cb61-21"><a href="#cb61-21" aria-hidden="true"></a>  </span>
+<span id="cb61-22"><a href="#cb61-22" aria-hidden="true"></a>;}<span class="kw">)</span></span>
+<span id="cb61-23"><a href="#cb61-23" aria-hidden="true"></a></span></code></pre></div>
+<pre><code>{ drvs = [  ]; sample = { drvs = [ &lt;derivation&gt; ]; text = &quot;# Hello World\n\nI &lt;3 F-algebras\n&quot;; welcomeMessage = &quot;I &lt;3 F-algebras&quot;; }; text = &quot;&quot;; }</code></pre>
+<h4 id="why-is-drvs-a-list">Why Is Drvs a List?</h4>
+<p>The <code>drvs</code> field is the free monoid over (aka: list of) derivations. I made this decision out of pure laziness; defering what it means to merge derivations until the user tells me so. Right now the library only provides <code>dir</code> and <code>collect</code> for creating derivations that merge other derivations.</p>
+<h3 id="pages">Pages</h3>
+<p>A Page is just a function from what’s called “the final module” to a portion of the final module. Here’s a Page’s type:</p>
+<div class="sourceCode" id="cb63"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true"></a><span class="kw">type</span> <span class="dt">Page</span> <span class="ot">=</span> <span class="dt">Module</span> <span class="ot">-&gt;</span> <span class="dt">Module</span></span></code></pre></div>
+<p>and an example of a page:</p>
+<div class="sourceCode" id="cb64"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true"></a><span class="kw">(</span><span class="ex">conix</span>: { sample = { text = <span class="st">&quot;foo&quot;</span><span class="kw">;</span> <span class="ex">drvs</span> = []<span class="kw">;</span> <span class="ex">x</span> = 3<span class="kw">;</span> }; }<span class="kw">)</span></span></code></pre></div>
+<p>And here is that page when evaluated:</p>
+<div class="sourceCode" id="cb65"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true"></a><span class="kw">(</span><span class="ex">import</span> <span class="op">&lt;</span>nixpkgs<span class="op">&gt;</span> { </span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true"></a>  <span class="ex">overlays</span> = import (builtins.fetchGit</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true"></a>    <span class="kw">{</span> </span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true"></a>      <span class="ex">url</span> = <span class="st">&quot;https://github.com/theNerd247/conix.git&quot;</span><span class="kw">;</span></span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true"></a>      <span class="ex">ref</span> = <span class="st">&quot;master&quot;</span><span class="kw">;</span></span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true"></a>      <span class="fu">rev</span> = <span class="st">&quot;ba78bc6f2c68885ea315c223a424f8a02a7ab4bf&quot;</span><span class="kw">;</span></span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true"></a>    <span class="kw">}</span></span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true"></a>    </span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true"></a>  <span class="kw">)</span>;</span>
+<span id="cb65-10"><a href="#cb65-10" aria-hidden="true"></a>})<span class="ex">.conix.eval</span> </span>
+<span id="cb65-11"><a href="#cb65-11" aria-hidden="true"></a><span class="kw">(</span><span class="ex">conix</span>: { sample = { text = <span class="st">&quot;foo&quot;</span><span class="kw">;</span> <span class="ex">drvs</span> = []<span class="kw">;</span> <span class="ex">x</span> = 3<span class="kw">;</span> }; }<span class="kw">)</span></span>
+<span id="cb65-12"><a href="#cb65-12" aria-hidden="true"></a></span></code></pre></div>
+<pre><code>{ drvs = [  ]; sample = { drvs = [  ]; text = &quot;foo&quot;; x = 3; }; text = &quot;&quot;; }</code></pre>
+<p>The eval function is used to convert a page into the final module. This final module is what gets passed as the <code>conix</code> argument for each page. By giving each page access to the final module set one is able to create multiple pages where each module returned by a page is only a small subset of the final module.</p>
+<p>Another example:</p>
+<div class="sourceCode" id="cb67"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true"></a>[<span class="kw">(</span><span class="ex">conix</span>: { sample = { text = <span class="st">&quot;foo&quot;</span><span class="kw">;</span> <span class="ex">drvs</span> = []<span class="kw">;</span> <span class="ex">x</span> = 3<span class="kw">;</span> }; }<span class="kw">)</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true"></a> <span class="kw">(</span><span class="ex">conix</span>: { sample.y = conix.sample.x + 5<span class="kw">;</span> <span class="ex">sample2</span> = { text = <span class="st">&quot;bar&quot;</span><span class="kw">;</span> <span class="ex">drvs</span> = []<span class="kw">;</span> <span class="ex">y</span> = 4<span class="kw">;</span> }; }<span class="kw">)</span></span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true"></a>]</span></code></pre></div>
+<p>And here is that page when evaluated:</p>
+<div class="sourceCode" id="cb68"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true"></a><span class="kw">(</span><span class="ex">import</span> <span class="op">&lt;</span>nixpkgs<span class="op">&gt;</span> { </span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true"></a>  <span class="ex">overlays</span> = import (builtins.fetchGit</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true"></a>    <span class="kw">{</span> </span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true"></a>      <span class="ex">url</span> = <span class="st">&quot;https://github.com/theNerd247/conix.git&quot;</span><span class="kw">;</span></span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true"></a>      <span class="ex">ref</span> = <span class="st">&quot;master&quot;</span><span class="kw">;</span></span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true"></a>      <span class="fu">rev</span> = <span class="st">&quot;ba78bc6f2c68885ea315c223a424f8a02a7ab4bf&quot;</span><span class="kw">;</span></span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true"></a>    <span class="kw">}</span></span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true"></a>    </span>
+<span id="cb68-9"><a href="#cb68-9" aria-hidden="true"></a>  <span class="kw">)</span>;</span>
+<span id="cb68-10"><a href="#cb68-10" aria-hidden="true"></a>})<span class="ex">.conix.evalPages</span></span>
+<span id="cb68-11"><a href="#cb68-11" aria-hidden="true"></a>[<span class="kw">(</span><span class="ex">conix</span>: { sample = { text = <span class="st">&quot;foo&quot;</span><span class="kw">;</span> <span class="ex">drvs</span> = []<span class="kw">;</span> <span class="ex">x</span> = 3<span class="kw">;</span> }; }<span class="kw">)</span></span>
+<span id="cb68-12"><a href="#cb68-12" aria-hidden="true"></a> <span class="kw">(</span><span class="ex">conix</span>: { sample.y = conix.sample.x + 5<span class="kw">;</span> <span class="ex">sample2</span> = { text = <span class="st">&quot;bar&quot;</span><span class="kw">;</span> <span class="ex">drvs</span> = []<span class="kw">;</span> <span class="ex">y</span> = 4<span class="kw">;</span> }; }<span class="kw">)</span></span>
+<span id="cb68-13"><a href="#cb68-13" aria-hidden="true"></a>]</span>
+<span id="cb68-14"><a href="#cb68-14" aria-hidden="true"></a></span>
+<span id="cb68-15"><a href="#cb68-15" aria-hidden="true"></a></span></code></pre></div>
+<pre><code>{ drvs = [  ]; sample = { drvs = [  ]; text = &quot;foo&quot;; x = 3; y = 8; }; sample2 = { drvs = [  ]; text = &quot;bar&quot;; y = 4; }; text = &quot;&quot;; }</code></pre>
+<p>You’ll notice that <code>sample</code> has <code>x</code> defined in the first page and <code>y</code> defined in the second. But in the final module <code>sample</code> contains both <code>x</code> and <code>y</code> attributes. Even more, the <code>y</code> value is computed by using the <code>sample.x</code> value from the final module. This is what gives conix its power, users can reference arbitrary data from the final module to create new modules. This means content can be created by re-using content from other pieces of content.</p>
+<p>Also, you’ll notice that <code>sample2</code> defines another toplevel module with its own data. When evaluating multiple pages conix simply recursively merges each module together.</p>
+<h3 id="infinite-recursion">Infinite Recursion</h3>
+<p>Internally conix is using the <code>fix</code> function<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
+<p>Because of this one can run into infinite recursion issues if they are not careful. Particularly, if one defines data in a module and then tries to consume that data; depending on how that data is used you might get an infinite recursion error. To avoid this simply use the <code>t</code> function (see the documentation above).</p>
+<hr />
+<p>Built using <a href="https://theNerd247.github.io/conix">conix</a> version 0.1.0</p>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>For those who don’t know what the <code>fix</code> function is:</p>
+<div class="sourceCode" id="cb70"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true"></a><span class="ot">fix ::</span> (a <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> a</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true"></a>fix f <span class="ot">=</span> <span class="kw">let</span> x <span class="ot">=</span> f x <span class="kw">in</span> x</span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true"></a><span class="co">-- which expands to: fix f = f (fix (f (fix (f ...))))</span></span></code></pre></div>
+<p>Also you might want to read up on it. <a href="https://en.wikipedia.org/wiki/Fixed-point_combinator">Fixed Point</a>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</body>
+</html>
