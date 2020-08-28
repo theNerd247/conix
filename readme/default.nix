@@ -14,12 +14,12 @@ updates pushed to the master branch until the first major release.**
 else ""
 }
 
-Conix is a nix library for writing documents. It's primary goal is to make it
-easy to re-use pieces your content without needing to write content.
-Eventually I'd like to use it to replace markdown and _maybe_ make it user
-friendly enough to replace word processors (for small things).
+Conix is a meta-language for extending markup languages and replacing their
+build systems with convenience.
 
-As an example this readme file was written using conix.
+It brings the full power of the Nix programming language to Markdown, HTML,
+LaTeX, or whatever language you fancy. It also brings convenience to the
+build systems for creating markdown content.
 
 # Resources
 
@@ -68,13 +68,22 @@ _Volunteers still needed!: '''(t (8 - (builtins.length conix.vol.contacts.data))
 ]);})''
 )''
 
-* The markdown sample was not hand written; the conix sample generated it.
+* The markdown sample was written by hand; conix generated it - read the [source
+  code](https://github.com/theNerd247/conix/blob/master/readme/default.nix) for
+  this file.
 * The table in the markdown sample has some of its contents duplicated across
-the document. The conix sample simplifies this process.
+  the document. The conix makes it super easy to grab pieces of content across
+  your document.
 * The number of volunteers is a computed value based on the number of rows in 
-  the table:
+  the table.
 * Conix provides an out-of-the-box build system for markdown (using ''(label
-  "pandocLink" "[Pandoc](https://pandoc.org)")''.
+  "pandocLink" "[Pandoc](https://pandoc.org)")''. Long gone are the days
+  of bash scripts and fancy ad hoc programs for static website generators. With
+  conix you simply state what the output should look like and it takes care of
+  the rest!
+
+For more benefits of the language I highly encourage that you browse the source
+code of this repository - the documentation for conix uses conix!
 
 # Contributing
 
