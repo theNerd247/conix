@@ -1,4 +1,8 @@
-conix: with conix.lib; { lib.docs.readme = using [(markdownFile "readme") (htmlFile "readme" "--metadata pagetitle=readme --css ./static/latex.css")] 
+conix: with conix.lib; { lib.docs.readme = using 
+[ (markdownFile "readme") 
+  (htmlFile "readme" "--metadata pagetitle=readme --css ./static/latex.css")
+  (htmlFile "index" "--metadata pagetitle=readme --css ./static/latex.css")
+] 
 (texts [
 ''# ${homePageLink} - ${version.text} - ${buildBadgeLink}
 
