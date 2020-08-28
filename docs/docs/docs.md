@@ -504,7 +504,7 @@ And here is that module evaluated:
     { 
       url = "https://github.com/theNerd247/conix.git";
       ref = "master";
-      rev = "e4f956c716f9af6d0c830adbb433dbf081a7eec2";
+      rev = "a54eadf8b16a9592c93f2d3d0612e981c0fa9dcb";
     }
     
   );
@@ -557,7 +557,7 @@ And here is that page when evaluated:
     { 
       url = "https://github.com/theNerd247/conix.git";
       ref = "master";
-      rev = "e4f956c716f9af6d0c830adbb433dbf081a7eec2";
+      rev = "a54eadf8b16a9592c93f2d3d0612e981c0fa9dcb";
     }
     
   );
@@ -593,7 +593,7 @@ And here is that page when evaluated:
     { 
       url = "https://github.com/theNerd247/conix.git";
       ref = "master";
-      rev = "e4f956c716f9af6d0c830adbb433dbf081a7eec2";
+      rev = "a54eadf8b16a9592c93f2d3d0612e981c0fa9dcb";
     }
     
   );

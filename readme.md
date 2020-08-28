@@ -1,4 +1,8 @@
-# <a href="https://theNerd247.github.io/conix">conix</a> - 0.1.0 - ![](https://travis-ci.com/theNerd247/conix.svg?branch=master)
+# <a href="https://theNerd247.github.io/conix">conix</a> 
+
+<div class="center">
+![](https://travis-ci.com/theNerd247/conix.svg?branch=master) - 0.1.0 - [GitHub Repo](https://github.com/theNerd247/conix.git)
+</div>
 
 **Notice: This project is a work in progress and the API will have major
 updates pushed to the master branch until the first major release.**
@@ -32,7 +36,7 @@ To try out conix:
     { 
       url = "https://github.com/theNerd247/conix.git";
       ref = "master";
-      rev = "e4f956c716f9af6d0c830adbb433dbf081a7eec2";
+      rev = "a54eadf8b16a9592c93f2d3d0612e981c0fa9dcb";
     }
     
   );
