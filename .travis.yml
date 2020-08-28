@@ -7,10 +7,20 @@ branches:
 script: ./scripts/build.sh
 
 deploy:
-  provider: pages:git
-  edge: true
-  keep_history: true
-  commit_message: "Updating docs\n\n[skip travis]"
-  target_branch: master
+  - provider: pages:git
+    edge: true
+    keep_history: true
+    commit_message: "Updating docs\n\n[skip travis]"
+    target_branch: master
+    # Set in the settings page of your repository, as a secure variable
+    token: $GITHUB_TOKEN  
+
+
+ - provider: pages:git
+   edge: true
+   keep_history: false
+   commit_message: "Deploying GH-pages\n\n[skip travis]"
+   target_branch: gh-pages
+   local_dir: ./result
   # Set in the settings page of your repository, as a secure variable
-  token: $GITHUB_TOKEN  
+   token: $GITHUB_TOKEN  
