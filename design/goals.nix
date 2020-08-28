@@ -22,12 +22,25 @@ Provide intuitive build support for various output formats.
 A common architecture for writing documents that contain dynamic data is 
 shown below:
 
-''(label "templatePipeline"
-''
-  ```
-  Data -> Template -> Output
-  ```
-'')''
+''(set "templatePipeline"
+ (let 
+   graphvizCode = conix.pkgs.writeText "templatePipeline.dot"
+     ''
+     digraph {
+ 
+       Data -> Template
+       Template -> "Rendered File(s)"
+     }
+     '';
+ 
+   diagraph = conix.pkgs.runCommandLocal "templatePipeline.svg" { buildInputs = [ conix.pkgs.graphviz ]; }
+     ''
+     dot -Tsvg -o $out ${graphvizCode} 
+     '';
+   in
+    { drvs = [ diagraph ]; text = "\n![Traditional Author Tools Data Flow](./templatePipeline.svg)\n"; }
+ )
+)''
 
 Data is used to fill in place holders specified by a template. The filled-in
 template is then used to produce some document(s). For example, 
@@ -76,9 +89,31 @@ process.  Essentially, documentation can fail.
 
 Again, here's the data pipeline for templating languages:
 
-''(t conix.lib.docs.goals.templatePipeline)''
+''(t conix.lib.docs.goals.templatePipeline.text)''
 
-Conix solves the above problems:
+Conix solves the above problems by allowing the user to have complete 
+intermingling of the data, templates, and filesystem output.
+
+''(set "conixPipeline"
+ (let 
+   graphvizCode = conix.pkgs.writeText "conixPipeline.dot"
+     ''
+     digraph {
+ 
+       Data -> Template [dir="both"]
+       Template -> "Rendered File(s)" [dir="both"]
+       "Rendered File(s)" -> Data [dir="both"]
+     }
+     '';
+ 
+   diagraph = conix.pkgs.runCommandLocal "conixPipeline.svg" { buildInputs = [ conix.pkgs.graphviz ]; }
+     ''
+     dot -Tsvg -o $out ${graphvizCode} 
+     '';
+   in
+    { drvs = [ diagraph ]; text = "\n![Traditional Author Tools Data Flow](./conixPipeline.svg)\n"; }
+ )
+)''
 
 Here's an example[^2]. Say I'm writing down how many fried chicken and waffles[^1]
 that I need:
