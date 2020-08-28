@@ -1,4 +1,4 @@
-conix: { lib.docs.integration = with conix.lib; using [ (markdownFile "integration") (htmlFile "integration" "--metadata pagetitle=\"Integrating With Conix\"")] (
+conix: { lib.docs.integration = with conix.lib; using [ (markdownFile "integration") (htmlFile "integration" "--metadata pagetitle=\"Integrating With Conix\" --css ./static/latex.css")] (
 texts [''
 # How To Integrate Your Reference Documentation With Conix
 

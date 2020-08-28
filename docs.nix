@@ -45,7 +45,7 @@ conix: { lib = rec
   mkDocs = docsAttrSet:
       collectDocModules (builtins.removeAttrs docsAttrSet ["text" "drv"]);
 
-  referenceDocumentation = with conix.lib; using [(markdownFile "docs") (htmlFile "docs" "--metadata title=docs")] (texts [
+  referenceDocumentation = with conix.lib; using [(markdownFile "docs") (htmlFile "docs" "--metadata pagetitle=docs --css ./static/latex.css")] (texts [
       ''
       # Reference Documentation - ${conix.lib.version.text}
 
