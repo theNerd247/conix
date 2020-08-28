@@ -101,8 +101,9 @@ intermingling of the data, templates, and filesystem output.
      digraph {
  
        Data -> Template [dir="both"]
-       Template -> "Rendered File(s)" [dir="both"]
-       "Rendered File(s)" -> Data [dir="both"]
+       Template -> "File System Data" [dir="both"]
+       "File System Data" -> Data [dir="both"]
+       "File System Data" -> "Rendered File(s)"
      }
      '';
  
@@ -111,7 +112,7 @@ intermingling of the data, templates, and filesystem output.
      dot -Tsvg -o $out ${graphvizCode} 
      '';
    in
-    { drvs = [ diagraph ]; text = "\n![Traditional Author Tools Data Flow](./conixPipeline.svg)\n"; }
+    { drvs = [ diagraph ]; text = "\n![Conix Data Flow](./conixPipeline.svg)\n"; }
  )
 )''
 
