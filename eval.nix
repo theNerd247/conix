@@ -71,7 +71,7 @@ in
 
           finalModule = self.lib.fix toplevel;
         in
-          builtins.removeAttrs finalModule ["lib" "pkgs" "text"];
+          builtins.removeAttrs finalModule ["lib" "pkgs"];
 
     docs.evalPages.docstr = ''
       Convenience functions for collecting multiple pages and evaluating
