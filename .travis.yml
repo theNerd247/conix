@@ -15,7 +15,6 @@ deploy:
     # Set in the settings page of your repository, as a secure variable
     token: $GITHUB_TOKEN  
 
-
  - provider: pages:git
    edge: true
    keep_history: false
