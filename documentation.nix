@@ -4,7 +4,7 @@
       c = dir "conix-docs" (
            docs.readme.drvs
         ++ [ (dir "docs" (
-          conixReferenceDocumentation.drvs
+          referenceDocumentation.drvs
           ++ docs.goals.drvs
           ++ docs.integration.drvs
         ))] 

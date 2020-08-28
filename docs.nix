@@ -45,7 +45,7 @@ conix: { lib = rec
   mkDocs = docsAttrSet:
       collectDocModules (builtins.removeAttrs docsAttrSet ["text" "drv"]);
 
-  conixReferenceDocumentation = with conix.lib; using [(markdownFile "docs") (htmlFile "docs" "--metadata title=docs")] (texts [
+  referenceDocumentation = with conix.lib; using [(markdownFile "docs") (htmlFile "docs" "--metadata title=docs")] (texts [
       ''
       # Reference Documentation - ${conix.lib.version.text}
 
@@ -56,16 +56,96 @@ conix: { lib = rec
 
       ### Modules
       
-      ${conix.lib.docs.modules.discussion}
+      Modules are the core of conix. Their type is defined as:
+     
+      ```haskell
+      type Module = ''(label "moduleType" "{ text :: String, drvs :: [Derivation], ... }")''
+      ```
+
+      `text`
+      : the final authored content that the module produces. If a module is used
+      to create say, a markdown file, then this is the contents of that file.
+      When two modules are merged (see `mergeModules`) there text values are
+      concatenated (left to right).
+
+      `drvs`
+      : this is the list of derivations that may be produced along side some
+      content. Normally modules would either contain only text or only
+      derivations alongside the user's data. Example derivations in this list
+      would be a list of files that the given texts produces (markdown, html,
+      etc.)
+
+      `...`
+      : These are user defined attribute key/values that store custom data
+      required to build the text value.
+     
+      An example module looks like:
+
+      ```nix ''(label "sampleModule" 
+      ''
+      (rec 
+      { drvs = [ ];
+        welcomeMessage = "I <3 F-algebras"; 
+        text = '''
+          # Hello World
+          ''${welcomeMessage}
+        ''';
+      })
+      '')''
+      ```
+
+      And here is that module evaluated:
+     
+      ''(runSnippet "sampleModuleBuild" "nix"
+      ''
+      (import <nixpkgs> { 
+        overlays = import (builtins.fetchGit
+          ${indent 4 conix.lib.git.text}
+        );
+      }).conix.eval 
+      ${conix.lib.referenceDocumentation.sampleModule}
+      ''
+      (fp: "${conix.lib.printNixVal (import fp)}")
+      )''
+
+      #### Why Is Drvs a List?
+
+      The `drvs` field is the free monoid over (aka: list of) derivations. I made
+      this decision out of pure laziness; defering what it means to merge
+      derivations until the user tells me so. Right now the library only provides
+      `dir` and `collect` for creating derivations that merge other derivations.
 
       ### Pages
 
-      ${conix.lib.docs.pages.discussion}
+      A Page is just a function from the final module to a portion of the final
+      module. Here's its type:
+
+        ```haskell
+        type Page = Module -> Module
+        ```
+      Here's an example:
+
+      ```nix
+      ''(label "samplePage" ''(conix: { sample = { text = "foo"; drvs = []; x = 3; }; })'')''
+      ```
+      And here is that page when built:
+      
+      ''(runSnippet "samplePageBuild" "nix"
+      ''
+      (import <nixpkgs> { 
+        overlays = import (builtins.fetchGit
+          ${indent 4 conix.lib.git.text}
+        );
+      }).conix.eval 
+      ${conix.lib.referenceDocumentation.samplePage}
+      ''
+      (fp: "${builtins.readFile (import fp)}")
+      )''
+
+      The eval function is used to convert a page into a list of pages.
 
       ### Infinite Recursion
       
-      ${conix.lib.docs.infiniteRecursion.discussion}
-
       ---
       Built using ${conix.lib.homePageLink} version ${conix.lib.version.text}
       ''
