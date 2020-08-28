@@ -15,9 +15,8 @@ the sentence they are writing.
 A common architecture for writing documents that contain dynamic data is 
 shown below:
 
-```
-Data -> Template -> Output
-```
+
+![Traditional Author Tools Data Flow](./templatePipeline.svg)
 
 Data is used to fill in place holders specified by a template. The filled-in
 template is then used to produce some document(s). For example, 
@@ -61,11 +60,14 @@ process.  Essentially, documentation can fail.
 
 Again, here's the data pipeline for templating languages:
 
-```
-Data -> Template -> Output
-```
 
-Conix solves the above problems:
+![Traditional Author Tools Data Flow](./templatePipeline.svg)
+
+Conix solves the above problems by allowing the user to have complete 
+intermingling of the data, templates, and filesystem output.
+
+
+![Traditional Author Tools Data Flow](./conixPipeline.svg)
 
 Here's an example[^2]. Say I'm writing down how many fried chicken and waffles[^1]
 that I need:

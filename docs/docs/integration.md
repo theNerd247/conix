@@ -43,7 +43,7 @@ And in your toplevel build:
     { 
       url = "https://github.com/theNerd247/conix.git";
       ref = "master";
-      rev = "a614d8faa69bb9ba2c6691a28cf72b3219ae1bbb";
+      rev = "4658b49989d573f6aa475001cc5405a4e2bd3b11";
     }
     
   );
