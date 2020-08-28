@@ -1,4 +1,4 @@
-# <a href="https://github.com/theNerd247/conix.git">conix</a> - 0.1.0 - ![](https://travis-ci.com/theNerd247/conix.svg?branch=master)
+# <a href="https://theNerd247.github.io/conix">conix</a> - 0.1.0 - ![](https://travis-ci.com/theNerd247/conix.svg?branch=master)
 
 **Notice: This project is a work in progress and the API will have major
 updates pushed to the master branch until the first major release.**
@@ -10,6 +10,13 @@ Eventually I'd like to use it to replace markdown and _maybe_ make it user
 friendly enough to replace word processors (for small things).
 
 As an example this readme file was written using conix.
+
+# Resources
+
+  * [Website](https://theNerd247.github.io/conix)
+  * [Reference Documentation](https://theNerd247.github.io/conix/docs.html)
+  * [Goals](https://theNerd247.github.io/conix/goals.html)
+  * [Integrating With Doc Generators](https://theNerd247.github.io/conix/integration.html)
 
 # A Taste of Conix
 
@@ -25,7 +32,7 @@ To try out conix:
     { 
       url = "https://github.com/theNerd247/conix.git";
       ref = "master";
-      rev = "e2cce2023846101b54b06c2faf21459bd2dacf6f";
+      rev = "ba78bc6f2c68885ea315c223a424f8a02a7ab4bf";
     }
     
   );
