@@ -4,7 +4,11 @@ conix: with conix.lib; { lib.docs.readme = using
   (htmlFile "index" "--metadata pagetitle=readme --css ./static/latex.css")
 ] 
 (texts [
-''# ${homePageLink} - ${version.text} - ${buildBadgeLink}
+''# ${homePageLink} 
+
+<div class="center">
+${buildBadgeLink} - ${version.text} - [GitHub Repo](${git.url})
+</div>
 
 ${if conix.lib.version.major < 1
 then ''
