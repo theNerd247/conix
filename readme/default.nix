@@ -21,6 +21,13 @@ friendly enough to replace word processors (for small things).
 
 As an example this readme file was written using conix.
 
+# Resources
+
+  * [Website](${homepageUrl})
+  * [Reference Documentation](${homepageUrl}/docs.html)
+  * [Goals](${homepageUrl}/goals.html)
+  * [Integrating With Doc Generators](${homepageUrl}/integration.html)
+
 # A Taste of Conix
 
 To try out conix:
