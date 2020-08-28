@@ -1,4 +1,4 @@
-conix: with conix.lib; { lib.docs.goals = using [(markdownFile "goals") (htmlFile "goals" "--metadata pagetitle=goals")] (
+conix: with conix.lib; { lib.docs.goals = using [(markdownFile "goals") (htmlFile "goals" "--metadata pagetitle=goals --css ../static/latex.css")] (
 texts [
 ''# Goals
 
@@ -65,15 +65,14 @@ the data structure consumed by the template language.
 * IO is not supported at all by templating languages. Writing documentation
 that enforces valid sample code is a matter of error-prone copy and paste by
 the author - instead of executing at least a type checker on the sample
-program. Why write:
+program. Why write something like:
 
-> For example `add7 (3)` produces `4`
+> The "`add7 (3)`" function produces produces "`4`"
 
-by hand? Automating this process attaches runtime errors to the documentation
-being written; if code samples fail to type-check/execute then the output of
-the document is not produced.
+by hand? Automating this process makes bad code and typos fail the build
+process.  Essentially, documentation can fail.
 
-## Conix
+## Conix And The Union of Data and Templates
 
 Again, here's the data pipeline for templating languages:
 
@@ -90,7 +89,8 @@ the example you are seeing here.
 
   ```markdown
   ''(t conix.lib.docs.goals.sampleBiscuits.output)'' 
-  ```
+
+  ``` 
 
 Notice the logic involved to produce the correct text:
 
@@ -119,7 +119,7 @@ Buttermilk Biscuits: '''(t (conix.sample.guestCount * ${str docs.goals.wafflesPe
 Conix allows the user to label different pieces of their content as NixValues and then later
 reference that data to create new content. This makes a separate data layer unnecessary.
 
-## Goal 2
+## Conix Is Output Agnostic
 
 > ''(t (builtins.elemAt conix.lib.docs.goals.list 1))''
 
@@ -130,20 +130,12 @@ The user describes the file structure of their output and conix takes
 care of the rest. Here's an example taken from the project readme:
 
 ```nix
-${extractLines 11 11 docs.readme.volunteerSample.code}
+${extractLines 10 10 docs.readme.volunteerSample.code}
 ```
 
-Here we've stated that the output should be a markdownFile. Conix
-takes care of creating that markdown file with the final derivation's text.
-
-We also have functions like `collect` and `dir`. Here are their reference 
-documentation snippets:
-
-''(prefixLines " >" (mkDocs {collect = docs.collect; dir = docs.dir; }).text)''
-
-
-Conix is not restricted to just markdown support. Currently, though, conix uses
-${conix.lib.docs.readme.pandocLink} to render the markdown content and html
-files. However conix is easily extensible to support other build types.
+Here we've stated that the output should be a markdownFile. Conix takes care of
+creating that markdown file with the final derivation's text.  However, we
+could easily change this so that the output could be an html or pdf instead.
+Thus we haven't lost the power of current markup languages like markdown.
 
 '']); }

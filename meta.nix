@@ -1,6 +1,6 @@
 conix: { lib = rec
   { 
-    homepageUrl = "https://github.com/theNerd247/conix.git";
+    homepageUrl = "https://theNerd247.github.io/conix";
     homePageLink = "<a href=\"${homepageUrl}\">conix</a>";
     buildBadgeLink = "![](https://travis-ci.com/theNerd247/conix.svg?branch=${conix.lib.git.ref})";
     version = rec  
