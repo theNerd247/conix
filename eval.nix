@@ -47,6 +47,7 @@ in
               (import ./drvs.nix)
               (import ./readme/default.nix)
               (import ./design/goals.nix)
+              (import ./integration.nix)
               (x: core)
               # This is the docs attribute set defined in this file
               (x: { lib.docs = docs; }) 
@@ -70,7 +71,7 @@ in
 
           finalModule = self.lib.fix toplevel;
         in
-          builtins.removeAttrs finalModule ["lib" "pkgs" "text"];
+          builtins.removeAttrs finalModule ["lib" "pkgs"];
 
     docs.evalPages.docstr = ''
       Convenience functions for collecting multiple pages and evaluating

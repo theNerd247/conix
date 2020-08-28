@@ -1,47 +1,5 @@
 pkgs: { lib = rec {
 
-  docs.modules.discussion = ''
-    Modules are the core of conix. Their type is defined as:
-   
-    ```haskell
-    Module = { text : String; drvs = [Derivation]; ... }
-    ```
-   
-    The rest of the attribute set defines the structure of the user's
-    content (including the derivations containing the rendered output).
-   
-    For example the final module describing a single markdown file might
-    look like:
-   
-    ```nix
-    { drvs = [<derivation>]; 
-      text = "Call me at: 555-123-456"; 
-      phone = "555-123-456"; 
-    }
-    ```
-
-    Here the user has the text for the markdown file; the derivation of the
-    built markdown file and some extra data containing the phone number.
-   
-    Modules are meant to allow the user to describe the textual structure of
-    their content and the structure of the rendered in the same data structure.
-
-    The empty module contains nothing. The core functions defined in this file
-    treat the missing text value as an empty string to save memory.
-
-    The `drvs` field is the free monoid over (aka: list of) derivations. This
-    is because the core of conix needs to defer choosing how to combine module
-    derivations and leave that up to the user. In the future we may need to
-    just keep only a single drv and restrict how the derivations are combined
-    through "collect" and "dir". However, for now we'll defer this decision.
-  '';
-
-  docs.pages.discussion = ''TODO'';
-
-  docs.infiniteRecursion.discussion = ''
-    TODO
-  '';  
-
   docs.emptyModule.type = "Module";
   emptyModule 
     = {};
@@ -194,4 +152,11 @@ pkgs: { lib = rec {
   docs.setText.type = "String -> Module -> Module";
   setText = text: module: module // { inherit text; };
 
+  docs.hidden.docstr = ''
+    Sets the text to an empty string for a module.
+
+    Use this if you only want to keep the drvs and data a module produces.
+    '';
+  docs.hidden.type = "Module -> Module";
+  hidden = module: module // { text = ""; };
 };}

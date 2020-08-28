@@ -1,4 +1,4 @@
-# <a href="https://github.com/theNerd247/conix.git">conix</a> - 0.1.0 - ![](https://travis-ci.com/theNerd247/conix.svg?branch=master)
+# <a href="https://github.com/theNerd247/conix.git">conix</a> - 0.1.0 - ![](https://travis-ci.com/theNerd247/conix.svg?branch=docs)
 
 **Notice: This project is a work in progress and the API will have major
 updates pushed to the master branch until the first major release.**
@@ -24,8 +24,8 @@ To try out conix:
   overlays = import (builtins.fetchGit
     { 
       url = "https://github.com/theNerd247/conix.git";
-      ref = "master";
-      rev = "1ab823819f5be9701bc377021ae0f7117f5a03ad";
+      ref = "docs";
+      rev = "3ccb04a06c6e3eace916d21fcc9cae1d9b49f298";
     }
     
   );

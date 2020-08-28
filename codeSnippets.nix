@@ -40,11 +40,12 @@ conix: { lib = rec
       '';
     docs.printNixVal.type = "a -> String";
     printNixVal = e:
-      if builtins.isAttrs e then printAttrs e
+      if (e ? type) && e.type == "derivation" then "<derivation>"
+      else if builtins.isAttrs e then printAttrs e
       else if builtins.isList e then printList e
       else if builtins.isNull e then "null"
       else if builtins.isFunction e then "<lambda>"
-      else builtins.toString e;
+      else "${conix.pkgs.lib.strings.escapeNixString e}";
 
     printAttrs = e:
       let
