@@ -45,7 +45,7 @@ conix: { lib = rec
       else if builtins.isList e then printList e
       else if builtins.isNull e then "null"
       else if builtins.isFunction e then "<lambda>"
-      else "\"${conix.pkgs.lib.strings.escapeNixString e}\"";
+      else "${conix.pkgs.lib.strings.escapeNixString e}";
 
     printAttrs = e:
       let
