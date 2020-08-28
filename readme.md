@@ -14,9 +14,9 @@ As an example this readme file was written using conix.
 # Resources
 
   * [Website](https://theNerd247.github.io/conix)
-  * [Reference Documentation](https://theNerd247.github.io/conix/docs.html)
-  * [Goals](https://theNerd247.github.io/conix/goals.html)
-  * [Integrating With Doc Generators](https://theNerd247.github.io/conix/integration.html)
+  * [Reference Documentation](https://theNerd247.github.io/conix/docs/docs.html)
+  * [Goals](https://theNerd247.github.io/conix/docs/goals.html)
+  * [Integrating With Doc Generators](https://theNerd247.github.io/conix/docs/integration.html)
 
 # A Taste of Conix
 
@@ -32,7 +32,7 @@ To try out conix:
     { 
       url = "https://github.com/theNerd247/conix.git";
       ref = "master";
-      rev = "ba78bc6f2c68885ea315c223a424f8a02a7ab4bf";
+      rev = "a614d8faa69bb9ba2c6691a28cf72b3219ae1bbb";
     }
     
   );
