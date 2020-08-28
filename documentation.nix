@@ -2,12 +2,17 @@
   (conix: { drv = with conix.lib;
     let
       c = dir "conix-docs" (
-           docs.readme.drvs
-        ++ [ (dir "docs" (
-          referenceDocumentation.drvs
-          ++ docs.goals.drvs
-          ++ docs.integration.drvs
-        ))] 
+      ( docs.readme.drvs
+        ++ 
+        [ 
+          (dir "docs"
+            ( referenceDocumentation.drvs
+              ++ docs.goals.drvs
+              ++ docs.integration.drvs
+            )
+          )
+          ./static
+        ] 
       );
     in
       { drvs = [ c ]; };
