@@ -67,7 +67,7 @@ Conix solves the above problems by allowing the user to have complete
 intermingling of the data, templates, and filesystem output.
 
 
-![Traditional Author Tools Data Flow](./conixPipeline.svg)
+![Conix Data Flow](./conixPipeline.svg)
 
 Here's an example[^2]. Say I'm writing down how many fried chicken and waffles[^1]
 that I need:
