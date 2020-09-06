@@ -32,10 +32,19 @@ rec
   # have labels attached to them. 
   #
   # collectLabelledPiecesAlg :: (Foldable f, f a ~ NixValue) => LabelledASTF f Labelled -> Labelled
-  # collectLabelledPiecesAlg CoFreef Nothing      labels  = fold (labels :: f Labels)
-  # collectLabelledPiecesAlg CoFreeF (Maybe path) labels  = nest path (fold labels) 
+  # collectLabelledPiecesAlg CoFreef Nothing     labels  = fold (labels :: f Labels)
+  # collectLabelledPiecesAlg CoFreeF (Just path) labels  = nest path (fold labels) 
   #
+  # Next step:  translate ^ into Nix code where:
+  # 
+  # ```
+  # CoFreeF Nothing     labels ~ { _type = ...; }
+  # CoFreeF (Just path) labels ~ { ${path} = { _type = ...; }}
+  # ```
   #
+  # `foldWithLabells :: (f a -> a) -> LabelledASTF f (a, Labelled) -> (a, Labelled)`
+  #
+  # ^^^ This might be a histomorphism or a zygomorphism (maybe para?) ....
 
   typed = _type: x: x // { _type; };
 
