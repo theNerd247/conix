@@ -81,8 +81,6 @@ type Pandoc a
   | Heading Natural a
   | HRule
   | Paragraph [a]
-  | Labeled LabeledDataPath a
-  | Hidden LabeledDataPath a
   deriving Functor
 
 type MarkupCodeF a = FreeF a PandocF
@@ -114,7 +112,9 @@ type RenderType
 
 type PureData = NixValue
 
-type LabelledData = Free NixValue (Map Name)
+type LabelledDataF a = FreeF a (Map Name)
+
+type LabelledData = Fix (LabelledDataF a)
 
 type LabeledDataPath = [Name]
 

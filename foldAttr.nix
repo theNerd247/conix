@@ -7,7 +7,7 @@ rec {
     values into final values also takes in the path from the top of the
     attribute set for that leaf value.
     '';
-  docs.foldAttrsIxCond.type = "((AttrSet e ) -> Bool) -> (a -> Path -> b) -> (AttrSet b -> b) -> AttrSet a -> Path -> b";
+  docs.foldAttrsIxCond.type = "((AttrSet e ) -> Bool) -> (a -> Path -> b) -> (AttrSet b -> b) -> AttrSet a -> b";
   foldAttrsIxCond = pred: onLeaf: mergeLeafs: set:
     foldAttrsCond 
       pred 
