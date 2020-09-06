@@ -2,6 +2,26 @@ pkgs:
 
 rec 
 { 
+  # Labelled ASTS:
+  # ==============
+  #
+  # GOALS: 
+  #
+  #  * Allow the user to save evaluated pieces of the AST in a datastructure
+  #  * Allow the user to save pure values in a datastructure
+  #  * Allow users to extract values from the final datastructure
+  #  * Allow users to nest 
+  #
+  #  For example:
+  # 
+  #  ```
+  #  t = { x = table headers data; } 
+  #  
+  #  collectData t = { x = { headers = [ ... ]; rows = [ ... ]; }; }
+  #
+  #  render t = "h1 | h2 | ... \n --- | --- | ... \n c01 | c02 | ... \n ..."
+  #  ```
+  #
   # Monadic values are assumed to have a _type attribute.
   # Pure values will ommit this.
   #
