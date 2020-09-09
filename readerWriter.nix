@@ -1,4 +1,4 @@
-pkgs: types:
+types:
 
 rec
 {
@@ -14,15 +14,8 @@ rec
   docs.pure.type = "a -> RWF a";
   pure = x: ask (_: x);
 
-  docs.readerWriter.fmap = "(a -> b) -> RWF a -> RWF b";
-  fmap = f: types.match
+  fmapMatch = f: 
     { "tell"  = {_entry, _next}: tell { inherit _entry; _next = f _next; };
       "ask"   = g: ask (x: f (g x));
-    };
-
-  docs.readerWriter.collectData.type = "RWF (AttrSet -> AttrSet) -> (AttrSet -> AttrSet)";
-  collectData = types.match
-    { "ask"  = f: x: f x x;
-      "tell" = {_entry, _next}: x: pkgs.lib.attrsets.recursiveUpdate (_next x) _entry;
     };
 }

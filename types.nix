@@ -7,9 +7,9 @@ rec
   docs.pure.type = "a -> Pure a";
   pure = typed "pure";
 
-  docs.fmapFree.type = "((a -> b) -> f a -> f b) -> (a -> b) -> Either (Pure a) (f a) -> Either (Pure a) (f b)";
-  fmapFree = fmap: f: x:
-    if x ? _type && x._type == "pure" then x else fmap f x;
+  docs.fmapFree.type = "FMapMatch -> Either (Pure a) (f a) -> Either (Pure a) (f b)";
+  fmapFree = fmapMatch: f: x:
+    if x ? _type && x._type == "pure" then x else matchWith fmapMatch f x;
 
   docs.composeFmap.type = "((a -> b) -> g a -> g b) -> ((a -> b) -> f a -> f b) -> (a -> b) -> g (f a) -> g (f b)";
   composeFmap = fmapG: fmapF: f: fmapG (fmapF f);
@@ -25,6 +25,8 @@ rec
       v = x._val or noType;
     in
       f v;
+
+  matchWith = mkMatch: x: match (mkMatch x);
 
   docs.cata.type = "((a -> b) -> f a -> f b) -> (f a -> a) -> Fix f -> a";
   cata = fmap: alg: let c = x: alg (fmap c x); in c;
