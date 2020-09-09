@@ -1,14 +1,9 @@
 let
   pkgs = import <nixpkgs> {};
   types = (import ./types.nix) pkgs;
-  rw = (import ./readerWriter.nix) types;
+  rw = (import ./readerWriter.nix) pkgs types;
 
-  eval = types.cata (types.fmapFree rw.fmap) (types.match
-    { "tell" = {_entry, _next}: pkgs.lib.attrsets.recursiveUpdate _next _entry;
-      "ask"  = runGet: runGet { x = 2; };
-      "pure" = _: {};
-    }
-  );
+  eval = types.cata (types.fmapFree rw.fmap) (types.match 
 
   run = expected: result: { inherit result; passes = result == expected; };
 
