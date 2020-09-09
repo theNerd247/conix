@@ -149,6 +149,10 @@ instance Monoid Page
 get :: LabeledDataPath -> FileHierarchy -> a
 set :: LabeledDataPath -> a -> FileHierarchy -> FileHierarchy
 
+(Monoid s) => StateF s a        (In Nix)
+  = Get (s -> a) ==========> s -> a (in Nix)
+  | Set s a      ==========> { x = a }
+
 evalMarkdown :: Alg MarkupCodeF a r -> MarkupCode a -> r
 
 evalFileHierarchy :: Alg FileHierarchyF a d -> FileHierarchy a -> d

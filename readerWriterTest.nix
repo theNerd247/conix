@@ -4,7 +4,7 @@ let
   rw = (import ./readerWriter.nix) types;
 
   eval = types.cata (types.fmapFree rw.fmap) (types.match
-    { "tell" = {tell, _next}: pkgs.lib.attrsets.recursiveUpdate _next tell;
+    { "tell" = {_entry, _next}: pkgs.lib.attrsets.recursiveUpdate _next _entry;
       "ask"  = runGet: runGet { x = 2; };
       "pure" = _: {};
     }
@@ -15,5 +15,5 @@ let
 in 
   { 
     askTell = with rw; run { x = 2; } 
-      (eval (ask ({x}: tell { tell = { inherit x; }; _next = types.pure null; })));
+      (eval (ask ({x}: tell { _entry = { inherit x; }; _next = types.pure null; })));
   }

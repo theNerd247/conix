@@ -2,7 +2,7 @@
 
 rec
 {
-  docs.set.type = " { tell :: AttrSet; _next :: a } -> StateF a }";
+  docs.set.type = " { _entry :: AttrSet; _next :: a } -> StateF a }";
   tell = typed "tell";
 
   docs.get.type = "(AttrSet -> a) -> StateF a";
@@ -15,7 +15,7 @@ rec
   pure = x: ask (_: x);
 
   fmap = f: match
-    { "tell"  = x: tell { inherit (x) tell; _next = (f x._next); };
+    { "tell"  = x: tell { inherit (x) _entry; _next = (f x._next); };
       "ask"   = g: ask (x: f (g x));
     };
 }

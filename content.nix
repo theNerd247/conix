@@ -1,4 +1,4 @@
-{typed, match}: rw:
+types:
 
 rec
 { 
@@ -7,27 +7,14 @@ rec
   # (like a copy of the Pandoc AST).
 
   docs.content.text.type = "Text -> ContentF a";
-  text = typed "text";
+  text = types.typed "text";
 
   docs.text.fmap.type = "(a -> b) -> ContentF a -> ContentF b";
-  fmap = f: match
+  fmap = f: types.match
     { "text"    = t: text t;
     };
 
   pure = _: text "";
-
-  # Fix (G . F) ~ G (Fix (F . G))
-  # 
-  # => (G . F) ((G . F) (...))
-  #
-  # => G (F (G (F (...)))) 
-  #
-  # => G ((F . G) ((F . G) (...)))
-  # 
-  # => G (Fix (F . G))
-  #
-  # Therefor the outer functor determines the final evaluated value
-  # of the fold.
 
   #TODO: write 
   # pure :: a -> StateF a
