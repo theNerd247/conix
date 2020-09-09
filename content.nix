@@ -1,24 +1,36 @@
-types:
+pkgs: types: RW: M:
 
 rec
-{ 
-  # Note: for now we'll use the final encoding of documents. However,
-  # In the future it might be useful to use the inital encoding
-  # (like a copy of the Pandoc AST).
+{  
+  docs.contentWriter.markup.type = "MarkupF a -> ContentF a";
+  markup = types.typed "markup";
 
-  docs.content.text.type = "Text -> ContentF a";
-  text = types.typed "text";
+  docs.contents.readerWriter.type = "RWF a -> ContentF a";
+  readerWriter = types.typed "readerWriter";
 
-  docs.text.fmap.type = "(a -> b) -> ContentF a -> ContentF b";
+  docs.contentWriter.fmap.type = "(a -> b) -> ContentF a -> ContentF b";
   fmap = f: types.match
-    { "text"    = t: text t;
+    { "markup"       = x: markup (M.fmap f x);
+      "readerWriter" = x: readerWriter (RW.fmap f x);
     };
 
-  pure = _: text "";
-
-  #TODO: write 
-  # pure :: a -> StateF a
-  # eval :: StateF (ContentF (AttrSet -> AttrSet) -> AttrSet -> AttrSet
-  # sequence :: [m a] -> m a
-
+  docs.contentWriter.eval.type = ''
+    ({ data :: a, text :: b } ~ t)
+    => (RWF a -> a) 
+    -> (MarkupF b -> b) 
+    -> a
+    -> b
+    -> FreeF b ContentF t -> t
+  '';
+  eval = rwAlg: markupAlg: initData: initText: types.match
+    { "pure"   = _: __: { data = initData; text = initText; };
+      "markup" = x: 
+        { data = initData; 
+          text = markupAlg (M.fmap ({text, ...}: text) x); 
+        } 
+      "readerWriter" = x: 
+        { data = rwAlg (RW.fmap ({data, ...}: data) x); 
+          text = initText; 
+        };
+    };
 }
