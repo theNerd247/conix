@@ -11,6 +11,8 @@ rec
   fmapFree = fmapMatch: f: x:
     if x ? _type && x._type == "pure" then x else matchWith fmapMatch f x;
 
+  fap = typed "ap";
+
   docs.composeFmap.type = "((a -> b) -> g a -> g b) -> ((a -> b) -> f a -> f b) -> (a -> b) -> g (f a) -> g (f b)";
   composeFmap = fmapG: fmapF: f: fmapG (fmapF f);
 

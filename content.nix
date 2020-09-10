@@ -4,17 +4,6 @@ rec
 {  
   fmapMatch = f: (RW.fmapMatch f) // (M.fmapMatch f);
 
-  # 
-  # x :: a -> Fix F
-  # cata :: Fix F -> a
-  # 
-  # eval :: (a -> Fix F) -> a -> a
-  #
-  #
-  # Fix f -> (a -> a)
-  #
-  #
-
   docs.contentWriter.eval.type = ''
     (AttrSet -> { data :: AttrSet, text :: String } ~ t)
     => FreeF b ContentF t -> t
