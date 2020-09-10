@@ -24,6 +24,9 @@ rec
   # join :: (a -> (a -> b)) -> a -> b
   join = f: x: f x x;
 
+  docs.content.nill = "ContentF ()";
+  nill = types.pure null;
+
   docs.content.eval.type = ''
     (AttrSet -> { data :: AttrSet, text :: String } ~ t)
     => FreeF b ContentF t -> t

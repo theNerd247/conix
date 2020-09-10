@@ -4,9 +4,9 @@ rec
   types = (import ./types.nix) pkgs;
   RW = (import ./readerWriter.nix) types;
   M = (import ./markup.nix) types;
-  CW = (import ./content.nix) pkgs types RW M;
+  C = (import ./content.nix) pkgs types RW M;
 
-  eval = types.cata (types.fmapFree CW.fmapMatch) CW.eval;
+  eval = types.cata (types.fmapFree C.fmapMatch) C.eval;
 
   run = passed: result: { inherit result; passes = passed result; };
 
@@ -25,6 +25,13 @@ rec
   s = RW.tell { _entry = { x = "foo"; }; _next = RW.ask(x: M.text ("x = ${x.data.x}")); };
 
   t = RW.ask(x: RW.tell { _entry = { x = "foo"; }; _next = M.text "x = ${x.data.x}"; } );
+
+  u = RW.tell { _entry = { x = "foo"; }; _next = M.doc
+    [ (RW.ask (y: M.text "This is a document ${builtins.toString y.data.y}"))
+      (RW.ask (x: M.text "\n with ${x.data.x} content"))
+      (RW.tell { _entry = { y = 7; }; _next = C.nill; })
+    ];
+  };
 
   fullEval = x:
       run
