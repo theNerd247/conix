@@ -2,20 +2,20 @@ pkgs:
 
 rec 
 { 
+  docs.typed.type = "String -> a -> { _type :: String, _val :: a }";
   typed = _type: _val: { inherit _type _val; };
 
   docs.pure.type = "a -> Pure a";
   pure = typed "pure";
 
-  docs.fmapFree.type = "FMapMatch -> Either (Pure a) (f a) -> Either (Pure a) (f b)";
+  docs.fmapFree.type = "((b -> c) -> Map String (f b -> f c)) -> (b -> c) -> Either (Pure a) (f b) -> Either (Pure a) (f c)";
   fmapFree = fmapMatch: f: x:
     if x ? _type && x._type == "pure" then x else matchWith fmapMatch f x;
-
-  fap = typed "ap";
 
   docs.composeFmap.type = "((a -> b) -> g a -> g b) -> ((a -> b) -> f a -> f b) -> (a -> b) -> g (f a) -> g (f b)";
   composeFmap = fmapG: fmapF: f: fmapG (fmapF f);
 
+  docs.match.type = "Map String (a -> b) -> { _type :: String, _val :: a} -> b";
   match = fs: x:
     let
       types = builtins.concatStringsSep ", " (builtins.attrNames fs);
@@ -28,6 +28,7 @@ rec
     in
       f v;
 
+  docs.matchWith.type = "(a -> Map String (b -> c)) -> a -> b -> c";
   matchWith = mkMatch: x: match (mkMatch x);
 
   docs.cata.type = "((a -> b) -> f a -> f b) -> (f a -> a) -> Fix f -> a";

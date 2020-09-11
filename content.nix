@@ -25,24 +25,41 @@ rec
   # ContentF = RWF + MarkupF
   fmapMatch = f: (RW.fmapMatch f) // (M.fmapMatch f);
 
-  mempty = _: { data = {}; text = ""; };
+  rwMMonoid = _monoid: rec 
+    {
+      mempty = _: { data = {}; text = _monoid.mempty; };
 
-  memptyWithText = text: _: { data = {}; inherit text; };
-  memptyWithData = data: _: { inherit data; text = ""; };
+      memptyWithData = data: _: { inherit data; text = _monoid.mempty; };
 
-  mappend = f: g: x:
-    let
-      r1 = f x;
-      r2 = g x;
-    in
-      { data = pkgs.lib.attrsets.recursiveUpdate r1.data r2.data;
-        text = r1.text + r2.text;
-      };
+      mappend = f: g: x:
+        let
+          r1 = f x;
+          r2 = g x;
+        in
+          { data = pkgs.lib.attrsets.recursiveUpdate r1.data r2.data;
+            text = _monoid.mappend r1.text r2.text;
+          };
 
-  mconcat = builtins.foldl' mappend mempty;
+      mconcat = builtins.foldl' _monoid.mappend _monoid.mempty;
 
-  # join :: (a -> (a -> b)) -> a -> b
-  join = f: x: f x x;
+      foldMap = f: builtins.foldl' (m: x: _monoid.mappend m (f x)) _monoid.mempty;
+    };
+
+  rwM = rec {
+    join = f: x: f x x;
+
+    memptyWithText = text: _: { data = {}; inherit text; };
+
+    fmap = f: g: x: 
+      let
+        r = g x;
+      in
+        { inherit (r) data; text = f r.text; };
+
+    sequence = (rwMMonoid { mappend = a: b: a ++ b; mempty = []; }).foldMap (x: [x]);
+  };
+
+  rwText = rwMMonoid { mappend = a: b: a + b; mempty = ""; };
 
   docs.content.nill = "ContentF ()";
   nill = types.pure null;
@@ -53,13 +70,13 @@ rec
   '';
   eval = types.match
     { 
-      "pure" = _: mempty;
-      "text" = memptyWithText;
-      "doc"  = mconcat;
-      "ask"  = join;
+      "pure" = _: rwText.mempty;
+      "text" = rwM.memptyWithText;
+      "doc"  = rwText.mconcat;
+      "ask"  = rwM.join;
       # NOTE: if we used the Freer encoding then this could be simplified
       # to memptyWithData and the interpretation of bind would take care
       # of the mappend
-      "tell" = {_entry, _next}: mappend _next (memptyWithData _entry);
+      "tell" = {_entry, _next}: rwText.mappend _next (rwText.memptyWithData _entry);
     };
 }

@@ -1,50 +1,52 @@
-conix: { lib = rec
-  { 
-    docs.collect.docstr = ''
-      Copy contents of paths to a single directory. If a path is a directory 
-      its contents are copied and not the directory itself.
+pkgs:
 
-      For example, given:
+rec
+{ 
+  docs.collect.docstr = ''
+    Copy contents of paths to a single directory. If a path is a directory 
+    its contents are copied and not the directory itself.
 
-      ```
-      A
-       |- a.txt
+    For example, given:
 
-      B
-       |- c.txt
-      ```
+    ```
+    A
+     |- a.txt
 
-      `dir "C" [ A B]` will produce:
+    B
+     |- c.txt
+    ```
 
-      ```
-      C
-       |- a.txt
-       |- b.txt
-      ```
+    `dir "C" [ A B]` will produce:
 
-      NOTE: the later directories in the list could overwrite contents from
-      other directories. If you wish to copy directories as is use. `dir`
-      '';
-    docs.collect.type = "Name -> [ Derivation | Path ] -> Derivation";
-    collect = copyJoin false;
+    ```
+    C
+     |- a.txt
+     |- b.txt
+    ```
 
-    docs.dir.docstr = ''
-      Like `collect` but preserves toplevel directories when copying
+    NOTE: the later directories in the list could overwrite contents from
+    other directories. If you wish to copy directories as is use. `dir`
     '';
-    docs.dir.type = "Name -> [ (FilePath | Derivation) ] -> Derivation";
-    dir = copyJoin true;
+  docs.collect.type = "Name -> [ Derivation | Path ] -> Derivation";
+  collect = copyJoin false;
 
-    copyJoin = preserveTopLevelDirs: name: paths:
-      conix.pkgs.runCommand name { passAsFile = [ "paths" ]; inherit paths; }
-        ''
-        mkdir -p $out
-        for i in $(cat $pathsPath); do
-          if [[ -d $i ]]; then
-            cp -r $i/${if preserveTopLevelDirs then "" else "*"} $out/${if preserveTopLevelDirs then "$(stripHash $i)" else ""}
-          else
-            cp $i $out/$(stripHash $i)
-          fi
-        done
-        '';
-  };
-}
+  docs.dir.docstr = ''
+    Like `collect` but preserves toplevel directories when copying
+  '';
+  docs.dir.type = "Name -> [ (FilePath | Derivation) ] -> Derivation";
+  dir = copyJoin true;
+
+  docs.copyJoin.type = "Name -> [ Derivation ] -> Derivation";
+  copyJoin = preserveTopLevelDirs: name: paths:
+    pkgs.runCommand name { passAsFile = [ "paths" ]; inherit paths; }
+      ''
+      mkdir -p $out
+      for i in $(cat $pathsPath); do
+        if [[ -d $i ]]; then
+          cp -r $i/${if preserveTopLevelDirs then "" else "*"} $out/${if preserveTopLevelDirs then "$(stripHash $i)" else ""}
+        else
+          cp $i $out/$(stripHash $i)
+        fi
+      done
+      '';
+};
