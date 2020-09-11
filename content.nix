@@ -2,6 +2,26 @@ pkgs: types: RW: M:
 
 rec
 {  
+  docs.content.discussion = ''
+    TheF ContentF functor encodes constructing a document (markdown, latex,
+    etc.) while simutaneously constructing an auxillary data structure. It
+    is the sum of the RWF and MarkupF functors.
+
+    The RWF functor encodes adding information to the data context and reading
+    from it. Simply put, it is a functor encoding a Reader and Writer monad
+    stack.
+
+    The MarkupF functor is just like the core type of Pandoc; it encodes the
+    structure of documents that are renderable. Currently MarkupF uses final
+    encoding for text documents. However, the plan is to transition into using
+    an initial encoding to give API authors more flexibility in interpreting
+    Content ASTs.
+
+    `Content` is the recursive type of ContentF; the fixed point of ContentF.
+    Authors will use an API that under the hood constructs values of type
+    Content. `eval` will then construct the text of that document.
+  '';
+
   # ContentF = RWF + MarkupF
   fmapMatch = f: (RW.fmapMatch f) // (M.fmapMatch f);
 
