@@ -74,6 +74,7 @@
     code span.va { color: #19177c; } /* Variable */
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <link rel="stylesheet" href="../static/latex.css" />
   <!--[if lt IE 9]>
@@ -92,7 +93,7 @@
 </blockquote>
 <p>A common architecture for writing documents that contain dynamic data is shown below:</p>
 <figure>
-<img src="./templatePipeline.svg" alt="" /><figcaption>Traditional Author Tools Data Flow</figcaption>
+<img src="./templatePipeline.svg" alt="Traditional Author Tools Data Flow" /><figcaption aria-hidden="true">Traditional Author Tools Data Flow</figcaption>
 </figure>
 <p>Data is used to fill in place holders specified by a template. The filled-in template is then used to produce some document(s). For example,</p>
 <ol type="1">
@@ -114,11 +115,11 @@
 <h2 id="conix-and-the-union-of-data-and-templates">Conix And The Union of Data and Templates</h2>
 <p>Again, here’s the data pipeline for templating languages:</p>
 <figure>
-<img src="./templatePipeline.svg" alt="" /><figcaption>Traditional Author Tools Data Flow</figcaption>
+<img src="./templatePipeline.svg" alt="Traditional Author Tools Data Flow" /><figcaption aria-hidden="true">Traditional Author Tools Data Flow</figcaption>
 </figure>
 <p>Conix solves the above problems by allowing the user to have complete intermingling of the data, templates, and filesystem output.</p>
 <figure>
-<img src="./conixPipeline.svg" alt="" /><figcaption>Conix Data Flow</figcaption>
+<img src="./conixPipeline.svg" alt="Conix Data Flow" /><figcaption aria-hidden="true">Conix Data Flow</figcaption>
 </figure>
 <p>Here’s an example<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. Say I’m writing down how many fried chicken and waffles<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> that I need:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a></span>
