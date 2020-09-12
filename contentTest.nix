@@ -5,22 +5,11 @@ rec
   RW = (import ./readerWriter.nix) types;
   M = (import ./markup.nix) types;
   C = (import ./content.nix) pkgs types RW M;
+  CJ = (import ./copyJoin.nix) pkgs;
+  FS = (import ./fs.nix) pkgs types C CJ;
 
-  eval = types.cata (types.fmapFree C.fmapMatch) C.eval;
-
-  run = passed: result: { inherit result; passes = passed result; };
-
-  a = x: RW.tell { _entry = { inherit x; }; _next = types.pure null; };
-
-  b = RW.ask ({x}: a x);
-
-  askTell = run (r: (r { x = 2; }).data == { x = 2; }) (eval t);
-
-  newText = run (r: (r {}).text == "foo") (eval (M.text "foo")); 
-
-  c = RW.ask ({x}: M.text x);
-
-  askText = run (r: r.text == "foo") (eval c);
+  fullEval = eval: x: pkgs.lib.fix (eval x);
+  dataEval = eval: x: (fullEval eval x).data;
 
   s = RW.tell { _entry = { x = "foo"; }; _next = RW.ask(x: M.text ("x = ${x.data.x}")); };
 
@@ -33,8 +22,28 @@ rec
     ];
   };
 
-  fullEval = x:
-      run
-      ({data, text}: data == { x = "foo"; } && text == "x = foo")
-      (pkgs.lib.fix (eval x));
+  v = FS.local ./docs.md;
+
+  v_ = fullEval FS.eval v;
+
+  w = FS.file 
+    {
+      _fileName = "foo"; 
+      _renderType = FS.markdown; 
+      _content = M.text "bob"; 
+    }; 
+
+  w_ = fullEval FS.eval w;
+
+  y = FS.file
+    { _fileName = "bar";
+      _renderType = FS.markdown;
+      _content = u;
+    };
+
+  y_ = fullEval FS.eval y;
+
+  z = FS.dir { _dirName = "z"; _next = [ v w y ]; };
+
+  z_ = fullEval FS.eval z;
 }

@@ -27,9 +27,9 @@ rec
 
   rwMMonoid = _monoid: rec 
     {
-      mempty = _: { data = {}; text = _monoid.mempty; };
+      mempty = _: { data = {}; res = _monoid.mempty; };
 
-      memptyWithData = data: _: { inherit data; text = _monoid.mempty; };
+      memptyWithData = data: _: { inherit data; res = _monoid.mempty; };
 
       mappend = f: g: x:
         let
@@ -37,26 +37,28 @@ rec
           r2 = g x;
         in
           { data = pkgs.lib.attrsets.recursiveUpdate r1.data r2.data;
-            text = _monoid.mappend r1.text r2.text;
+            res = _monoid.mappend r1.res r2.res;
           };
 
-      mconcat = builtins.foldl' _monoid.mappend _monoid.mempty;
+      mconcat = builtins.foldl' mappend mempty;
 
-      foldMap = f: builtins.foldl' (m: x: _monoid.mappend m (f x)) _monoid.mempty;
+      # (Monoid b) => (a -> b) -> [m a] -> m b
+      foldMap = f: builtins.foldl' (m: x: mappend m (rwM.fmap f x)) mempty;
     };
 
   rwM = rec {
     join = f: x: f x x;
 
-    memptyWithText = text: _: { data = {}; inherit text; };
+    memptyWithText = res: _: { data = {}; inherit res; };
 
     fmap = f: g: x: 
       let
         r = g x;
       in
-        { inherit (r) data; text = f r.text; };
+        { inherit (r) data; res = f r.res; };
 
-    sequence = (rwMMonoid { mappend = a: b: a ++ b; mempty = []; }).foldMap (x: [x]);
+    sequence = 
+      (rwMMonoid { mappend = a: b: a ++ b; mempty = []; }).foldMap (x: [x]);
   };
 
   rwText = rwMMonoid { mappend = a: b: a + b; mempty = ""; };
@@ -64,11 +66,11 @@ rec
   docs.content.nill = "ContentF ()";
   nill = types.pure null;
 
-  docs.content.eval.type = ''
-    (AttrSet -> { data :: AttrSet, text :: String } ~ t)
+  docs.content.evalAlg.type = ''
+    (AttrSet -> { data :: AttrSet, res :: String } ~ t)
     => FreeF b ContentF t -> t
   '';
-  eval = types.match
+  evalAlg = types.match
     { 
       "pure" = _: rwText.mempty;
       "text" = rwM.memptyWithText;
@@ -79,4 +81,6 @@ rec
       # of the mappend
       "tell" = {_entry, _next}: rwText.mappend _next (rwText.memptyWithData _entry);
     };
+
+  eval = types.cata (types.fmapFree fmapMatch) evalAlg;
 }

@@ -12,15 +12,12 @@ rec
   fmapFree = fmapMatch: f: x:
     if x ? _type && x._type == "pure" then x else matchWith fmapMatch f x;
 
-  docs.composeFmap.type = "((a -> b) -> g a -> g b) -> ((a -> b) -> f a -> f b) -> (a -> b) -> g (f a) -> g (f b)";
-  composeFmap = fmapG: fmapF: f: fmapG (fmapF f);
-
   docs.match.type = "Map String (a -> b) -> { _type :: String, _val :: a} -> b";
   match = fs: x:
     let
       types = builtins.concatStringsSep ", " (builtins.attrNames fs);
       badType = throw "Invalid type in pattern match. Must be one of:\n Expected  ${types}\n Received ${x._type or "no _type"}";
-      noType = throw "Value must have _type and _val attribute. One of: \n  ${types}";
+      noType = throw "Value must have _type and _val attribute. _type can be one of these strings: \n  ${types}";
 
       k = x._type or noType;
       f = fs.${k} or badType;
