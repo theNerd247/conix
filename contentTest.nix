@@ -22,17 +22,15 @@ rec
       _content = [(C.text "bob")]; 
     }; 
 
-  # w_ = fullEval C.eval w;
+  y = C.file
+    { _renderType = C.markdown { _fileName = "bar"; };
+      _content = [u];
+    };
 
-  # y = C.file
-  #   { _fileName = "bar";
-  #     _renderType = C.markdown;
-  #     _content = u;
-  #   };
-
-  # y_ = fullEval C.eval y;
-
-  # z = C.dir { _dirName = "z"; _next = [ v w y ]; };
+  z = C.file 
+    { _renderType = C.dir { _fileName = "baz"; }; 
+      _content = [ w y ]; 
+    };
 
   # z_ = fullEval C.eval z;
 
