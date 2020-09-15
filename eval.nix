@@ -1,89 +1,109 @@
-self: super:
+pkgs: 
 
 let
-  core = (import ./conix.nix) self;
+  T = import ./types.nix;
+  C = import ./content.nix;
+  CJ = import ./copyJoin.nix pkgs;
+  R = import ./reader.nix;
 in
 
-{ conix = rec
-  { 
-    docs.build.docstr = ''
-      Builds a page that expects the toplevel module to contain an attribute called `drv`.
-      Drv typically should be a derivation containing the toplevel render of the content
-    '';
-    docs.build.todo = [ 
-      ''
-      The current implementation of build needs to take in a separate set of
-      pages that are the actual content from the user. And then a single module
-      that defines how to build the top derivation. If done, this may need to
-      remove the clunky user interface for needing to define a toplevel
-      attribute set with a single name and then turn around and give builders
-      (like `markdownFile`) a name - this is redundant.
-      ''
-    ];
-    docs.build.type 
-      = "Page -> Derivation";
-    build
-      = page: (eval page).drv;
+rec
+{
+  docs.fs.mkFile.type = "RenderType -> ResF [Derivation] -> ResF Derivation";
+  evalRenderType = T.match
+    { 
+      "noFile" = _: res.fmap (_: drvMonoid.mempty);
+      "markdown" = mkFileDir mkFile;
 
-    docs.buildPages.docstr = ''
-      Merges the pages into one and then calls `build`.
-    '';
-    docs.buildPages.type = "[ Page ] -> Derivation";
-    buildPages = pages: build (core.lib.foldPages pages);
+      # TODO: split this up into the inital encoding. Right now it's 
+      # in final encoding so it's difficult on how to handle rendering for more specific cases
+      # That is, if we're rendering a pdf then we don't need to keep the drvs because they'll
+      # be embedded into the pdf. But if we're rending html then they should be kept within
+      # the output directory.
+      "pandoc" = mkFileDir (d: x: mkPandoc d (mkFile d x));
+      "dir" = x: res.fmap (mkDir x);
+    };
 
-    docs.eval.docstr 
-      = "This is the evaluator for a page and returns the final module.";
-    docs.eval.type 
-      = "Page -> Module";
-    eval 
-      = page: 
+  mkFileDir = f: d: x:
+    res.fmap (ds: mkDir d ([(f d x.text)] ++ ds)) x;
+
+  # RenderData -> [Derivation] -> Derivation
+  mkDir = {_fileName,...}: CJ.collect _fileName; 
+
+  # RenderData -> String -> Derivation
+  mkFile = {_fileName,...}: pkgs.writeText "${_fileName}.md";
+
+  # RenderData -> Derivation -> Derivation
+  mkPandoc = {_pandocArgs, _buildInputs, _pandocType, _fileName}: textFileDrv:
+    pkgs.runCommand "${_fileName}.${_pandocType}" { buildInputs = [ pkgs.pandoc ] ++ _buildInputs; }
+      ''
+        ${pkgs.pandoc}/bin/pandoc -s -o $out ${_pandocArgs} ${textFileDrv}
+      '';
+
+  # data ResF a = ResF { text :: String, data :: AttrSet, drv :: a}
+  res =
+    rec
+    {
+      # String -> ResF Derivation
+      onlyText = text: { inherit text; drv = drvMonoid.mempty; data = {}; };
+
+      # AttrSet -> ResF Derivation
+      onlyData = data: { text = ""; drv = drvMonoid.mempty; inherit data; };
+
+      # a -> ResF a
+      pure = drv: { text = ""; inherit drv; data = {}; };
+
+      fmap = f: x: { inherit (x) text data; drv = f x.drv; };
+
+      # (Monoid m) => instance Monoid (ResF m)
+      monoid = {mempty, mappend}:
+        {
+          mempty = { text = ""; drv = mempty; data = {}; };
+          mappend = a: b:
+            {
+              text = a.text + b.text;
+              drv = mappend a.drv b.drv;
+              data = pkgs.lib.attrsets.recursiveUpdate a.data b.data;
+            };
+        };
+    };
+
+  drvMonoid = { mempty = {}; mappend = a: _: a; };
+  listMonoid = { mempty = []; mappend = a: b: a ++ b; };
+
+  #TODO: refactor the R evaluator from content.eval and make it more generic.
+  docs.fs.evalAlg.type = ''
+    ContentF (AttrSet -> ResF Derivation) -> (AttrSet -> ResF Derivation)
+  '';
+  evalAlg = 
+    let
+      rm = res.monoid drvMonoid;
+      lm = res.monoid listMonoid;
+    in
+    T.match
+    { 
+      "end" = _: _: rm.mempty;
+      "text" = text: _: res.onlyText text;
+      "ask" = f: x: f x x;
+      "tell" = {_entry, _next}: x: rm.mappend (_next x) (res.onlyData _entry);
+      "local" = _sourcePath: _: res.pure _sourcePath;
+      "file" = {_content, _renderType}:
         let
-          toplevel = core.lib.foldPages
-            [ 
-              (x: { pkgs = self; })
-              (import ./meta.nix)
-              (import ./table.nix)
-              (import ./markdown.nix)
-              (import ./codeSnippets.nix)
-              (import ./textBlock.nix)
-              (import ./builder/markdown.nix)
-              (import ./builder/pandoc.nix)
-              (import ./docs.nix)
-              (import ./copyJoin.nix)
-              (import ./foldAttr.nix)
-              (import ./readme/default.nix)
-              (import ./design/goals.nix)
-              (x: core)
-              # This is the docs attribute set defined in this file
-              (x: { lib.docs = docs; }) 
-              (c: rec { lib.git = 
-                let 
-                  git = import ./git.nix; 
-                  text =
-                  ''
-                  { 
-                    url = "${git.url}";
-                    ref = "${git.ref}";
-                    rev = "${git.rev}";
-                  }
-                  '';
-                in
-                  git // { inherit text; };
-                }
-              )
-              page
-            ];
+          foldMap = ((import ./monoid.nix) (R.monoid lm)).foldMap;
 
-          finalModule = self.lib.fix toplevel;
+          # R r (ResF a) -> R r (ResF [a])
+          toResList = R.fmap (res.fmap (x: if x == {} then [] else [x]));
         in
-          builtins.removeAttrs finalModule ["lib" "pkgs" "text"];
+          R.fmap (evalRenderType _renderType) (foldMap toResList _content);
+    };
 
-    docs.evalPages.docstr = ''
-      Convenience functions for collecting multiple pages and evaluating
-      them all at once.
-    '';
-    docs.evalPages.type = "[ Page ] -> Module";
-    evalPages
-      = pages: eval (core.lib.foldPages pages);
-  };
+  docs.eval.eval.type = "Fix ContentF -> ResF Derivation";
+  eval = expr: 
+    let
+      mkRes = T.cata C.fmap evalAlg expr;
+    in
+      pkgs.lib.fix (a: mkRes a.data);
+
+  docs.eval.run.type = "Fix ContentF -> Derivation";
+  run = expr: (eval expr).drv;
 }

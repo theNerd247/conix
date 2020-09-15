@@ -36,7 +36,7 @@ rec
   docs.dir.type = "Name -> [ (FilePath | Derivation) ] -> Derivation";
   dir = copyJoin true;
 
-  docs.copyJoin.type = "Name -> [ Derivation ] -> Derivation";
+  docs.copyJoin.type = "Bool -> Name -> [ Derivation ] -> Derivation";
   copyJoin = preserveTopLevelDirs: name: paths:
     pkgs.runCommand name { passAsFile = [ "paths" ]; inherit paths; }
       ''

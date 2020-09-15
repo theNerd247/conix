@@ -1,16 +1,22 @@
-types:
+let
+  T = import ./types.nix;
+in
 
 rec
 {
 
-  docs.label.tell.type = " { _entry :: AttrSet; _next :: a } -> RWF a";
-  tell = types.typed "tell";
+  # LabelF a
+  # = Tell AttrSet
+  # | Ask (AttrSet -> a)
 
-  docs.label.ask.type = "(AttrSet -> a) -> RWF a";
+  docs.label.tell.type = " { _entry :: AttrSet; _next :: a } -> LabelF a";
+  tell = T.typed "tell";
+
+  docs.label.ask.type = "(AttrSet -> a) -> LabelF a";
   ask = f: 
     if ! builtins.isFunction f 
     then throw "Invalid type: argument to get must be a function"
-    else types.typed "ask" f;
+    else T.typed "ask" f;
 
   fmapMatch = f: 
     { "tell"  = {_entry, _next}: tell { inherit _entry; _next = f _next; };
