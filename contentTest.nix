@@ -5,6 +5,18 @@ rec
   C = import ./content.nix;
   E = import ./eval.nix pkgs;
 
+  CUI = 
+    rec
+    {
+      # Content = Fix ContentF
+      markdownFile = _fileName: mkContent: C.ask (x: C.file 
+        { _renderType = C.markdown {inherit _fileName; }; 
+          _content = mkContent x;
+        });
+
+      set = _entry: C.tell { inherit _entry; _next = C.end; };
+    };
+
   s = C.tell { _entry = { x = "foo"; }; _next = C.ask(x: C.text ("x = ${x.x}")); };
 
   t = C.ask(x: C.tell { _entry = { x = "foo"; }; _next = C.text "x = ${x.x}"; } );
@@ -32,9 +44,9 @@ rec
       _content = [ w y ]; 
     };
 
-  # z_ = fullEval C.eval z;
+  a = CUI.markdownFile "bob" (x: [
+    (C.text "ello ${x.x}")
+    (CUI.set { x = "mate"; })
+  ]);
 
-  # a = C.file 
-  #   { _fileName = "baz";
-  #   }
 }
