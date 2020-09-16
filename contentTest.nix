@@ -15,6 +15,9 @@ rec
         });
 
       set = _entry: C.tell { inherit _entry; _next = C.end; };
+
+      # a' -> Content
+      liftText = x: if x ? _type then x else C.text x; 
     };
 
   s = C.tell { _entry = { x = "foo"; }; _next = C.ask(x: C.text ("x = ${x.x}")); };
@@ -45,7 +48,7 @@ rec
     };
 
   a = CUI.markdownFile "bob" (x: [
-    (C.text "ello ${x.x}")
+    (CUI.liftText "ello ${x.x}")
     (CUI.set { x = "mate"; })
   ]);
 

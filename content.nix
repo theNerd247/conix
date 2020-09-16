@@ -17,7 +17,11 @@ L // M // F //
      L.fmapMatch f 
   // M.fmapMatch f 
   // F.fmapMatch f
-  // { "end" = _: end; };
+  // 
+  { 
+    "end" = _: end; 
+    "liftText" = x: if x ? _type then f
+  };
 
   fmap = T.matchWith fmapMatch;
 })
