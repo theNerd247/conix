@@ -10,10 +10,10 @@ rec
   # | Dir DirName [a]
 
   # TODO: rename this to something more universal
-  docs.fs.file.type = "{  _renderType :: RenderType, _content :: [a] } -> FSF a";
+  docs.fs.file.type = "{  _renderType :: RenderType } -> FSF";
   file = T.typed "file";
 
-  docs.fs.local.type = "FilePath -> FSF a";
+  docs.fs.local.type = "FilePath -> FSF";
   local = T.typed "local";
 
   docs.fs.dir.type = "{ _fileName :: DirName } -> RenderType";
@@ -28,8 +28,4 @@ rec
   docs.fs.noFile.type = "RenderType";
   noFile = T.typed "noFile" null;
 
-  fmapMatch = f:
-    { "local" = x: local x;
-      "file" = x: file { inherit (x) _renderType; _content = builtins.map f x._content; };
-    };
 }

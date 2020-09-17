@@ -1,27 +1,34 @@
 let
-  T = import ./types.nix;
   L = import ./label.nix;
   F = import ./fs.nix;
   M = import ./markup.nix;
+  Fr = import ./free.nix;
 in
 
-L // M // F //
+# type ContentF = Freer (L + F + M)
 
-(rec
-{
-  # ContentF a 
-  end = T.typed "end" null;
+# Re-export constructors to build the toplevel api
+{ 
+  # Label re-exports
+  tell = L.tell;
+  ask  = L.ask;
 
-  # ContentF = LabelF + MarkupF + FSF
-  fmapMatch = f:
-     L.fmapMatch f 
-  // M.fmapMatch f 
-  // F.fmapMatch f
-  // 
-  { 
-    "end" = _: end; 
-    "liftText" = x: if x ? _type then f
-  };
+  # FS re-exports
+  file = F.file;
+  local = F.local;
+  dir = F.dir;
+  markdown = F.markdown;
+  pandoc = F.pandoc;
+  noFile = F.noFile;
 
-  fmap = T.matchWith fmapMatch;
-})
+  # Markup re-exports
+  text = M.text;
+
+  # convenience constructors
+  docs.content.end.type = "ContentF ()";
+  end = Fr.pure null;
+
+  # Freer re-exports
+  fmap = Fr.fmap;
+  sequence = Fr.sequence;
+}

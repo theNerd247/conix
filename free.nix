@@ -5,6 +5,9 @@ in
 rec
 {
 
+  # NOTE: pure also is type Freer f a <==> b ~ Freer f a
+  # because Nix is untyped we don't worry about writing type wrappers
+  # like haskell's newtype
   docs.free.pure.type = "a -> FreerF f a b";
   pure = T.typed "pure";
 
