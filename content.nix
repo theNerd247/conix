@@ -31,4 +31,15 @@ in
   # Freer re-exports
   fmap = Fr.fmap;
   sequence = Fr.sequence;
+
+  # convenience functions
+  docs.content.using.type = "(AttrSet -> [ContentF a]) -> ContentF ()";
+  using = Fr.bind ask (x: Fr.sequence_ (mkContents x));
+
+  docs.content.doc.type = "FileName -> RenderType -> (AttrSet -> [ContentF a]) -> ContentF ()";
+  doc = _fileName: _renderType: mkContents:
+    Fr.sequence_
+      [ (FS.file { inherit _fileName _renderType; })
+        (using mkContents)
+      ];
 }

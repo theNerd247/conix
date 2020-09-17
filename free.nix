@@ -40,4 +40,14 @@ rec
 
   docs.free.bind.type = "Free f a -> (a -> Free f b) -> Free f b";
   bind = x: f: T.cata fmapFreeF (bindAlg f) x;
+
+  docs.free.traverse_.type = "(x -> Freer f a) -> [x] -> Freer f ()";
+  traverse_ = f: 
+    let 
+      cons = x: xs: [x] ++ [xs];
+    in
+      builtins.foldl' (fnill: x: bind (f x) (_: fnill)) (pure null);
+
+  docs.free.sequence_.type = "[Freer f a] -> Freer f [a]";
+  sequence_ = traverse_ (x: x);
 }
