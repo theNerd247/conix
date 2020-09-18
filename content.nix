@@ -5,41 +5,55 @@ let
   Fr = import ./free.nix;
 in
 
-# type ContentF = Freer (L + F + M)
-
 # Re-export constructors to build the toplevel api
+rec
 { 
-  # Label re-exports
-  tell = L.tell;
-  ask  = L.ask;
+  # Main API
+  local    = _local;
+  dir      = _dir;
+  markdown = _markdown;
+  pandoc   = _pandoc;
+  text     = _text;
 
-  # FS re-exports
-  file = F.file;
-  local = F.local;
-  dir = F.dir;
-  markdown = F.markdown;
-  pandoc = F.pandoc;
-  noFile = F.noFile;
+  docs.content.file.type = "RenderType -> [Content] -> Content";
+  file = _renderType: content: 
+    _file { inherit _renderType; _next = _merge content};
 
-  # Markup re-exports
-  text = M.text;
+  docs.content.label.type = "AttrSet -> Content -> Content";
+  label = _data: _next: _tell { inherit _data _next; }
 
-  # convenience constructors
-  docs.content.end.type = "ContentF ()";
-  end = Fr.pure null;
+  # Internals
+  #
+  # TODO: if this grows large move to its own module
+  # right now I'm lazy....
 
-  # Freer re-exports
-  fmap = Fr.fmap;
-  sequence = Fr.sequence;
+  docs.content._merge.type = "[a] -> ContentF a";
+  _merge = T.typed "merge";
 
-  # convenience functions
-  docs.content.using.type = "(AttrSet -> [ContentF a]) -> ContentF ()";
-  using = Fr.bind ask (x: Fr.sequence_ (mkContents x));
+  # Markup Constructors
+  docs.content._tell.type = "{ _data :: AttrSet, _next :: a} -> ContentF a";
+  _tell = T.typed "tell";
 
-  docs.content.doc.type = "FileName -> RenderType -> (AttrSet -> [ContentF a]) -> ContentF ()";
-  doc = _fileName: _renderType: mkContents:
-    Fr.sequence_
-      [ (FS.file { inherit _fileName _renderType; })
-        (using mkContents)
-      ];
+  # NOTE: for now we'll use the final encoding of documents. However,
+  # In the future it might be useful to use the inital encoding
+  # (like a copy of the Pandoc AST).
+  docs.content.text.type = "String -> ContentF a";
+  _text = T.typed "text";
+
+  # File System Constructors
+  docs.content.file.type = "{_renderType :: RenderType, _next :: a} -> ContentF a";
+  _file = T.typed "file";
+
+  docs.content.local.type = "FilePath -> ContentF a";
+  _local = T.typed "local";
+
+  # Render Type Constructors
+  docs.content.dir.type = "{ _fileName :: DirName } -> RenderType";
+  _dir = T.typed "dir";
+
+  docs.content.pandoc.type = "{ _fileName :: FileName, _pandocType :: String, _pandocArgs :: String, _buildInputs :: [Derivation] } -> RenderType";
+  _pandoc = T.typed "pandoc";
+
+  docs.content.markdown.type = "{_fileName :: FileName} -> RenderType";
+  _markdown = T.typed "markdown";
 }
