@@ -202,7 +202,7 @@ fsmAlg :: (Monoid r) => FreeF (FSMF r) a (Res r) -> Res r
 fsmAlg (PureF _)              = mempty
 fsmAlg (FreeF (Text s)      ) = onlyText s
 fsmAlg (FreeF (File r n x)  ) = addFile r n x
-fsmAlg (FreeF (Tell r x)    ) = onlyData r
+fsmAlg (FreeF (Tell r x)    ) = onlyData r <> x
 fsmAlg (FreeF (Merge xs)    ) = mconcat xs
 
 -- printFSM :: (Show r, Show a) => FreeF (FSMF r) a String -> String
@@ -214,11 +214,8 @@ fsmAlg (FreeF (Merge xs)    ) = mconcat xs
 evalFSM :: (Monoid r) => FSM r a -> Res r
 evalFSM = freeCata fsmAlg
 
-evalRW :: (Monoid r) => (r -> FSM r a) -> r -> Res r
-evalRW = fmap evalFSM
-
 runRW :: (Monoid r) => (r -> FSM r a) -> Res r
-runRW r = let f = evalRW r in fix $ f . _data
+runRW f = fix $ evalFSM . f . _data
 
 fix :: (a -> a) -> a
 fix f = f (fix f)

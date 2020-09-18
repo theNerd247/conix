@@ -68,7 +68,6 @@ rec
   evalAlg = 
     let
       rm = res.monoid drvMonoid;
-      lm = res.monoid listMonoid;
     in
     T.match
       { 
