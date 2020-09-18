@@ -12,19 +12,27 @@ import Control.Monad.Fix (mfix)
 import Control.Monad (join)
 import Data.Monoid (Sum(..))
 import Data.String (IsString(..))
+import Data.List (intersperse)
 
 main :: IO ()
 main = pure (runRW test) >>= putStrLn . show
 
-test :: Reader [(String, Int)] ()
+test :: (r ~ [(String, Int)]) => Reader r (FSM r a)
 test = do 
   x <- ask
-  tell [("foo", 3)]
-  tell [("bar", f x)]
-  ask >>= text . show . length
-  tell [("baz", 6)]
-  g x
-  testFile
+  let 
+    testdir = file "dir" "foo" $
+      [ file "md" "bob" $ 
+          [ tell [("foo", 3)] >> text "bob"
+          , tell [("bar", f x)] >> text "\njoe"
+          , text $ "\nblack - " <> (show . snd . (!! 0) $ x)
+          , g x
+          ]
+      , file "md" "joe" $ 
+          [ text "joey"
+          ]
+      ]
+  pure $ testdir
   where
     p x = fst (x !! 0)
     f x = case p x of
@@ -32,24 +40,42 @@ test = do
       _     -> 8
 
     g !x = case x of
-      []     -> text "It's foo"
-      (x:xs) -> tell [("glob", snd x)]
+      (_:x:xs) -> text "\nIt's foo"
+      (x:xs)   -> tell [("glob", snd x)] >> text ""
+      _        -> text ""
 
-    testFile = do
-      x <- ask
-      file "md" "txt"
-      text "bob"
-      text $ "marley: " <> (show $ length x)
+data FreeF f a b
+  = PureF a
+  | FreeF (f b)
+  deriving Functor
+
+newtype Free f a = Free { unFree :: Fix (FreeF f a) }
+
+instance (Functor f) => Functor (Free f) where
+  fmap f = freeCata $ freeAlg (pure . f)
+
+instance (Functor f) => Applicative (Free f) where
+  pure = Free . Fix . PureF
+  ff <*> fx = freeCata (freeAlg (<$>fx)) ff
+
+instance (Functor f) => Monad (Free f) where
+  return = pure
+  x >>= f = freeCata (freeAlg f) x
+
+liftFree :: (Functor f) => f a -> Free f a
+liftFree = Free . Fix . FreeF . fmap (unFree . pure)
+
+freeCata x = cata x . unFree
+
+newtype Fix f = Fix { unFix :: f (Fix f) }
 
 data FreerF f a b
-  = PureF a
+  = PurerF a
   | forall x. FreerF (f x) (x -> b)
 
 instance Functor (FreerF f a) where
-  fmap _ (PureF a)     = PureF a
+  fmap _ (PurerF a)     = PurerF a
   fmap f (FreerF fx g) = FreerF fx (f . g)
-
-newtype Fix f = Fix { unFix :: f (Fix f) }
 
 newtype Freer f a = Freer { unFreer :: Fix (FreerF f a) }
 
@@ -66,28 +92,28 @@ instance Functor (Freer f) where
   fmap f = freerCata (bindAlg $ pure . f)
 
 instance Applicative (Freer f) where
-  pure = Freer . Fix . PureF
+  pure = Freer . Fix . PurerF
   f <*> x = freerCata (bindAlg (<$>x)) f
 
 instance Monad (Freer f) where
   return = pure
   x >>= f = freerCata (bindAlg f) x
 
-data ConixM r = ConixM
+data Res r = Res
   { _text  :: String
   , _data  :: r
   , _files :: [String]
   } deriving (Show)
 
-instance (Semigroup r) => Semigroup (ConixM r) where
-  a <> b = ConixM
+instance (Semigroup r) => Semigroup (Res r) where
+  a <> b = Res
     { _text = (_text a) <> (_text b)
     , _data = (_data a) <> (_data b) 
     , _files = (_files a) <> (_files b)
     }
 
-instance (Monoid r) => Monoid (ConixM r) where
-  mempty = ConixM
+instance (Monoid r) => Monoid (Res r) where
+  mempty = Res
     { _text = mempty
     , _data = mempty
     , _files = mempty
@@ -99,77 +125,83 @@ newtype RenderType = RenderType { unRenderType :: String }
 newtype FileName = FileName { unFileName :: String }
   deriving (Show, IsString)
 
-onlyText :: (Monoid r) => String -> ConixM r
-onlyText t = ConixM { _text = t, _data = mempty, _files = mempty}
+onlyText :: (Monoid r) => String -> Res r
+onlyText t = Res { _text = t, _data = mempty, _files = mempty}
 
-onlyData :: r -> ConixM r
-onlyData d = ConixM { _text = mempty, _data = d, _files = mempty}
+onlyData :: r -> Res r
+onlyData d = Res { _text = mempty, _data = d, _files = mempty}
 
-addFile :: RenderType -> FileName -> ConixM r -> ConixM r
-addFile (RenderType t) (FileName n) c = 
-  c { _files = (_files c) <> [newFile t n (_text c)] }
-  where
-    newFile typ name txt = name <> "." <> typ <> ": " <> txt 
+addFile :: RenderType -> FileName -> Res r -> Res r
+addFile (RenderType "dir") n = _files >>= setFiles . (:[]) . mkDir n
+addFile (RenderType typ) (FileName name) = do
+  txt <- _text
+  addLocal $ FileName $ "[" <> name <> "." <> typ <> ": " <> txt <> "]"
+
+mkDir :: FileName -> [String] -> String
+mkDir (FileName n) fs = "<" <> n <> ": " <> (mconcat $ intersperse "," fs) <> ">"
+
+addLocal :: FileName -> Res r -> Res r
+addLocal (FileName f) = _files >>= setFiles . (<> [f])
+
+setFiles :: [String] -> Res r -> Res r
+setFiles fs c = c { _files = fs }
+
+data FSMF r a
+  = File RenderType FileName [a]
+  | Text String
+  | Tell r
+  deriving Functor
+
+type FSM r = Free (FSMF r)
 
 data RW r a where
-  Tell  :: r -> RW r ()
-  Ask   :: RW r r
-  Text  :: String -> RW r ()
-  File  :: RenderType -> FileName -> RW r ()
+  Ask :: RW r r
 
-type Reader r = Freer (RW r) 
-
-tell :: r -> Reader r ()
-tell = lift . Tell
+type Reader r = Freer (RW r)
 
 ask :: Reader r r
 ask = lift Ask
 
-text :: String -> Reader r ()
-text = lift . Text
+tell :: r -> FSM r a 
+tell = liftFree . Tell
 
-file :: RenderType -> FileName -> Reader r ()
-file r = lift . File r
+text :: String -> FSM r a
+text = liftFree . Text
+
+file :: RenderType -> FileName -> [FSM r a] -> FSM r a
+file r n = Free . Fix . FreeF . File r n . fmap unFree
+
+-- dir :: FileName -> Reader r ()
+-- dir = file "dir"
+-- 
+-- local :: FileName -> Reader r ()
+-- local = lift . Local
 
 bindAlg :: (a -> Freer f b) -> FreerF f a (Freer f b) -> Freer f b
-bindAlg f (PureF a)     = f a
+bindAlg f (PurerF a)     = f a
 bindAlg _ (FreerF fx g) = Freer $ Fix $ FreerF fx (unFreer . g)
 
--- (Pure a) >>= f    = f a
--- (Freer x g) >>= f = Freer x ((>>=f) . g)
+freeAlg :: (Functor f) => (a -> Free f b) -> FreeF f a (Free f b) -> Free f b
+freeAlg f (PureF a)  = f a
+freeAlg _ (FreeF fx) = Free . Fix . FreeF $ fmap unFree $ fx
 
--- ask >>= (tell . f)
--- Freer Ask (\r -> Freer (Tell $ f r) pure)
--- fix $ \x -> (alg . fmap c . (\r -> Freer (Tell $ f r) pure)) x x
--- fix $ \x -> (alg . fmap c $ Freer (Tell $ f x) pure) x
--- fix $ \x -> (alg $ Freer (Tell $ f x) (alg . fmap c . pure)) x
--- fix $ \x -> (\x' -> (<>f x) <$> (alg . fmap c . pure) () x') x
--- fix $ \x -> (\x' -> (<>f x) <$> (\_ -> pure mempty) x') x
--- fix $ \x -> (\x' -> (<>f x) <$> (pure mempty)) x
--- fix $ \x -> (<>f x) <$> (pure mempty)
---
--- runRW $ ask >>= f
--- runRW $ Freer Ask f 
--- fix $ \x -> (alg . fmap c $ f x) x
---
--- x -> m
---
---
--- Freer (Place x) f
---
--- \x -> (f x) <$> (alg . fmap c . f) x
+fsmAlg :: (Monoid r) => FreeF (FSMF r) a (Res r) -> Res r
+fsmAlg (PureF _)             = mempty
+fsmAlg (FreeF (Text s)     ) = onlyText s
+fsmAlg (FreeF (File r n xs)) = addFile r n $ mconcat xs 
+fsmAlg (FreeF (Tell r)   )   = onlyData r
 
-evalRWAlg :: (Monoid r) => FreerF (RW r) a (r -> ConixM r) -> r -> ConixM r
-evalRWAlg (PureF _)             = \_ -> mempty
-evalRWAlg (FreerF Ask g)        = \x -> g x x
-evalRWAlg (FreerF (Tell r) g)   = \x -> onlyData r <> g () x
-evalRWAlg (FreerF (Text s) g)   = \x -> onlyText s <>  g () x
-evalRWAlg (FreerF (File t n) g) = \x -> addFile t n $ g () x
+evalRWAlg :: (Monoid r) => FreerF (RW r) (FSM r a) (r -> Res r) -> r -> Res r
+evalRWAlg (PurerF x)             = pure $ cata fsmAlg $ unFree x
+evalRWAlg (FreerF Ask g)        = join g
+-- evalRWAlg (FreerF (Text s) g)   = (pure $ onlyText s) <> g ()
+-- evalRWAlg (FreerF (File t n) g) = addFile t n <$> g ()
+-- evalRWAlg (FreerF (Local f) g)  = addLocal f <$> g ()
 
-evalRW :: (Monoid r) => Reader r a -> r -> ConixM r
+evalRW :: (Monoid r) => Reader r (FSM r a) -> r -> Res r
 evalRW = freerCata evalRWAlg
 
-runRW :: (Monoid r) => Reader r a -> ConixM r
+runRW :: (Monoid r) => Reader r (FSM r a) -> Res r
 runRW r = let f = evalRW r in fix $ f . _data
 
 fix :: (a -> a) -> a
