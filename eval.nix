@@ -5,33 +5,27 @@ let
   C = import ./content.nix;
   CJ = import ./copyJoin.nix pkgs;
   R = import ./reader.nix;
+  M = import ./monoid.nix;
 in
 
 rec
 {
-  docs.fs.mkFile.type = "RenderType -> ResF [Derivation] -> ResF Derivation";
+  docs.fs.mdFile.type = "RenderType -> ResF Derivation -> ResF Derivation";
   evalRenderType = T.match
     { 
-      "noFile" = _: res.fmap (_: drvMonoid.mempty);
-      "markdown" = mkFileDir mkFile;
+      "markdown" = r: x: mdFile r x._text;
 
       # TODO: split this up into the inital encoding. Right now it's 
       # in final encoding so it's difficult on how to handle rendering for more specific cases
       # That is, if we're rendering a pdf then we don't need to keep the drvs because they'll
       # be embedded into the pdf. But if we're rending html then they should be kept within
       # the output directory.
-      "pandoc" = mkFileDir (d: x: mkPandoc d (mkFile d x));
-      "dir" = x: res.fmap (mkDir x);
+      "pandoc" = r: res.fmap (x: mkPandoc d (mdFile d x._text));
+      "dir" = {_fileName}: res.fmap (CJ.collect _fileName);
     };
 
-  mkFileDir = f: d: x:
-    res.fmap (ds: mkDir d ([(f d x.text)] ++ ds)) x;
-
-  # RenderData -> [Derivation] -> Derivation
-  mkDir = {_fileName,...}: CJ.collect _fileName; 
-
   # RenderData -> String -> Derivation
-  mkFile = {_fileName,...}: pkgs.writeText "${_fileName}.md";
+  mdFile = {_fileName,...}: pkgs.writeText "${_fileName}.md";
 
   # RenderData -> Derivation -> Derivation
   mkPandoc = {_pandocArgs, _buildInputs, _pandocType, _fileName}: textFileDrv:
@@ -68,41 +62,29 @@ rec
         };
     };
 
-  drvMonoid = { mempty = {}; mappend = a: _: a; };
-  listMonoid = { mempty = []; mappend = a: b: a ++ b; };
+  drvMonoid = { mempty = {}; mappend = a: b: CJ.collect a.name; };
 
-  #TODO: refactor the R evaluator from content.eval and make it more generic.
-  docs.fs.evalAlg.type = ''
-    ContentF (AttrSet -> ResF Derivation) -> (AttrSet -> ResF Derivation)
-  '';
+  docs.fs.evalAlg.type = "ContentF (ResF Derivation) -> ResF Derivation";
   evalAlg = 
     let
       rm = res.monoid drvMonoid;
       lm = res.monoid listMonoid;
     in
     T.match
-    { 
-      "end" = _: _: rm.mempty;
-      "text" = text: _: res.onlyText text;
-      "ask" = f: x: f x x;
-      "tell" = {_entry, _next}: x: rm.mappend (_next x) (res.onlyData _entry);
-      "local" = _sourcePath: _: res.pure _sourcePath;
-      "file" = {_content, _renderType}:
-        let
-          foldMap = ((import ./monoid.nix) (R.monoid lm)).foldMap;
+      { 
+        "tell"  = {_data, _next}: rm.mappend (res.onlyData _entry) _next;
+        "text"  = text: res.onlyText text;
+        "local" = _sourcePath: res.pure _sourcePath;
+        "file"  = {_content, _renderType}: evalRenderType _renderType _content;
+        "merge" = (M rm).mconcat;
+      }; 
 
-          # R r (ResF a) -> R r (ResF [a])
-          toResList = R.fmap (res.fmap (x: if x == {} then [] else [x]));
-        in
-          R.fmap (evalRenderType _renderType) (foldMap toResList _content);
-    };
-
-  docs.eval.eval.type = "Fix ContentF -> ResF Derivation";
-  eval = expr: 
+  docs.eval.eval.type = "(AttrSet -> Content) -> ResF Derivation";
+  eval = mkExpr: 
     let
-      mkRes = T.cata C.fmap evalAlg expr;
+      mkRes = T.cata C.fmap evalAlg;
     in
-      pkgs.lib.fix (a: mkRes a.data);
+      pkgs.lib.fix (a: mkRes (mkExpr a.data));
 
   docs.eval.run.type = "Fix ContentF -> Derivation";
   run = expr: (eval expr).drv;
