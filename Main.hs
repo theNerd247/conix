@@ -4,6 +4,8 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 module Main where
 
@@ -15,24 +17,22 @@ import Data.String (IsString(..))
 import Data.List (intersperse)
 
 main :: IO ()
-main = pure (runRW test) >>= putStrLn . show
+main = pure (runRW $ test) >>= putStrLn . show
 
-test :: (r ~ [(String, Int)]) => Reader r (FSM r a)
-test = do 
-  x <- ask
-  let 
-    testdir = file "dir" "foo" $
-      [ file "md" "bob" $ 
-          [ tell [("foo", 3)] >> text "bob"
-          , tell [("bar", f x)] >> text "\njoe"
-          , text $ "\nblack - " <> (show . snd . (!! 0) $ x)
-          , g x
-          ]
-      , file "md" "joe" $ 
-          [ text "joey"
-          ]
+test :: (r ~ [(String, Int)]) => r -> FSM r ()
+test = \x -> dir "x" 
+  [ dir "da" 
+    [ file "md" "dafa" 
+      [ tell [("foo", 3)] "bob"
+      , tell [("bar", f x)] "\njoe"
+      , text $ "\nblack - " <> (show . snd . (!! 0) $ x)
+      , g x
       ]
-  pure $ testdir
+    , file "md" "dafb" ["joey"]
+    , dir "dada" $ [file "md" "jazz" []]
+    ]
+  , dir "db" [file "md" "dbfa" ["of all trades"]]
+  ]
   where
     p x = fst (x !! 0)
     f x = case p x of
@@ -40,9 +40,9 @@ test = do
       _     -> 8
 
     g !x = case x of
-      (_:x:xs) -> text "\nIt's foo"
-      (x:xs)   -> tell [("glob", snd x)] >> text ""
-      _        -> text ""
+      (_:(_, x):xs) -> tell [("glob", x)] $ pure ()
+      (x:xs)   -> "\nIt's foo"
+      _        -> ""
 
 data FreeF f a b
   = PureF a
@@ -65,6 +65,9 @@ instance (Functor f) => Monad (Free f) where
 liftFree :: (Functor f) => f a -> Free f a
 liftFree = Free . Fix . FreeF . fmap (unFree . pure)
 
+wrapFree :: (Functor f) => f (Free f a) -> Free f a
+wrapFree = Free . Fix . FreeF . fmap unFree
+
 freeCata x = cata x . unFree
 
 newtype Fix f = Fix { unFix :: f (Fix f) }
@@ -79,8 +82,11 @@ instance Functor (FreerF f a) where
 
 newtype Freer f a = Freer { unFreer :: Fix (FreerF f a) }
 
-lift :: f a -> Freer f a
-lift x = Freer $ Fix $ FreerF x (unFreer . pure)
+liftFreer :: f a -> Freer f a
+liftFreer x = Freer $ Fix $ FreerF x (unFreer . pure)
+
+wrapFreer :: f (Freer f a) -> Freer f a
+wrapFreer x = Freer . Fix $ FreerF x unFreer
 
 cata :: (Functor f) => (f a -> a) -> Fix f -> a
 cata alg = c where c = alg . fmap c . unFix
@@ -146,13 +152,23 @@ addLocal (FileName f) = _files >>= setFiles . (<> [f])
 setFiles :: [String] -> Res r -> Res r
 setFiles fs c = c { _files = fs }
 
-data FSMF r a
-  = File RenderType FileName [a]
-  | Text String
-  | Tell r
+data FSMF r a where
+  File  :: RenderType -> FileName -> a -> FSMF r a
+  Text  :: String -> FSMF r a
+  Tell  :: r -> a -> FSMF r a
+  Merge :: [a] -> FSMF r a
   deriving Functor
 
 type FSM r = Free (FSMF r)
+
+instance IsString (FSM r a) where
+  fromString = text
+
+instance Semigroup (FSM r a) where
+  a <> b = wrapFree $ Merge [a, b]
+
+instance Monoid (FSM r a) where
+  mempty = liftFree $ Merge []
 
 data RW r a where
   Ask :: RW r r
@@ -160,22 +176,19 @@ data RW r a where
 type Reader r = Freer (RW r)
 
 ask :: Reader r r
-ask = lift Ask
+ask = liftFreer Ask
 
-tell :: r -> FSM r a 
-tell = liftFree . Tell
+tell :: r -> FSM r a -> FSM r a
+tell r = wrapFree . Tell r
 
 text :: String -> FSM r a
 text = liftFree . Text
 
 file :: RenderType -> FileName -> [FSM r a] -> FSM r a
-file r n = Free . Fix . FreeF . File r n . fmap unFree
+file r n = wrapFree . File r n . mconcat
 
--- dir :: FileName -> Reader r ()
--- dir = file "dir"
--- 
--- local :: FileName -> Reader r ()
--- local = lift . Local
+dir :: FileName -> [FSM r a] -> FSM r a
+dir = file "dir"
 
 bindAlg :: (a -> Freer f b) -> FreerF f a (Freer f b) -> Freer f b
 bindAlg f (PurerF a)     = f a
@@ -183,25 +196,28 @@ bindAlg _ (FreerF fx g) = Freer $ Fix $ FreerF fx (unFreer . g)
 
 freeAlg :: (Functor f) => (a -> Free f b) -> FreeF f a (Free f b) -> Free f b
 freeAlg f (PureF a)  = f a
-freeAlg _ (FreeF fx) = Free . Fix . FreeF $ fmap unFree $ fx
+freeAlg _ (FreeF fx) = wrapFree fx
 
 fsmAlg :: (Monoid r) => FreeF (FSMF r) a (Res r) -> Res r
-fsmAlg (PureF _)             = mempty
-fsmAlg (FreeF (Text s)     ) = onlyText s
-fsmAlg (FreeF (File r n xs)) = addFile r n $ mconcat xs 
-fsmAlg (FreeF (Tell r)   )   = onlyData r
+fsmAlg (PureF _)              = mempty
+fsmAlg (FreeF (Text s)      ) = onlyText s
+fsmAlg (FreeF (File r n x)  ) = addFile r n x
+fsmAlg (FreeF (Tell r x)    ) = onlyData r
+fsmAlg (FreeF (Merge xs)    ) = mconcat xs
 
-evalRWAlg :: (Monoid r) => FreerF (RW r) (FSM r a) (r -> Res r) -> r -> Res r
-evalRWAlg (PurerF x)             = pure $ cata fsmAlg $ unFree x
-evalRWAlg (FreerF Ask g)        = join g
--- evalRWAlg (FreerF (Text s) g)   = (pure $ onlyText s) <> g ()
--- evalRWAlg (FreerF (File t n) g) = addFile t n <$> g ()
--- evalRWAlg (FreerF (Local f) g)  = addLocal f <$> g ()
+-- printFSM :: (Show r, Show a) => FreeF (FSMF r) a String -> String
+-- printFSM (PureF x)              = "PureF " <> (show x)
+-- printFSM (FreeF (Text s)     g) = "FreeF (Text " <> s <> ")\n(" <> g () <> ")"
+-- printFSM (FreeF (File r n x) g) = "FreeF (File " <> show r <> " " <> show n <> ")\n(" <> g x <> ")"
+-- printFSM (FreeF (Tell r x)   g) = "FreeF (Tell " <> show r <> "\n(" <> g x <> ")"
 
-evalRW :: (Monoid r) => Reader r (FSM r a) -> r -> Res r
-evalRW = freerCata evalRWAlg
+evalFSM :: (Monoid r) => FSM r a -> Res r
+evalFSM = freeCata fsmAlg
 
-runRW :: (Monoid r) => Reader r (FSM r a) -> Res r
+evalRW :: (Monoid r) => (r -> FSM r a) -> r -> Res r
+evalRW = fmap evalFSM
+
+runRW :: (Monoid r) => (r -> FSM r a) -> Res r
 runRW r = let f = evalRW r in fix $ f . _data
 
 fix :: (a -> a) -> a
