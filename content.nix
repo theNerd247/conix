@@ -1,8 +1,5 @@
 let
-  L = import ./label.nix;
-  F = import ./fs.nix;
-  M = import ./markup.nix;
-  Fr = import ./free.nix;
+  T = import ./types.nix;
 in
 
 # Re-export constructors to build the toplevel api
@@ -17,10 +14,10 @@ rec
 
   docs.content.file.type = "RenderType -> [Content] -> Content";
   file = _renderType: content: 
-    _file { inherit _renderType; _next = _merge content};
+    _file { inherit _renderType; _next = _merge content; };
 
   docs.content.label.type = "AttrSet -> Content -> Content";
-  label = _data: _next: _tell { inherit _data _next; }
+  label = _data: _next: _tell { inherit _data _next; };
 
   # Internals
   #
@@ -41,19 +38,19 @@ rec
   _text = T.typed "text";
 
   # File System Constructors
-  docs.content.file.type = "{_renderType :: RenderType, _next :: a} -> ContentF a";
+  docs.content._file.type = "{_renderType :: RenderType, _next :: a} -> ContentF a";
   _file = T.typed "file";
 
-  docs.content.local.type = "FilePath -> ContentF a";
+  docs.content._local.type = "FilePath -> ContentF a";
   _local = T.typed "local";
 
   # Render Type Constructors
-  docs.content.dir.type = "{ _fileName :: DirName } -> RenderType";
+  docs.content._dir.type = "{ _fileName :: DirName } -> RenderType";
   _dir = T.typed "dir";
 
-  docs.content.pandoc.type = "{ _fileName :: FileName, _pandocType :: String, _pandocArgs :: String, _buildInputs :: [Derivation] } -> RenderType";
+  docs.content._pandoc.type = "{ _fileName :: FileName, _pandocType :: String, _pandocArgs :: String, _buildInputs :: [Derivation] } -> RenderType";
   _pandoc = T.typed "pandoc";
 
-  docs.content.markdown.type = "{_fileName :: FileName} -> RenderType";
+  docs.content._markdown.type = "{_fileName :: FileName} -> RenderType";
   _markdown = T.typed "markdown";
 }
