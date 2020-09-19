@@ -20,7 +20,7 @@ rec
       # That is, if we're rendering a pdf then we don't need to keep the drvs because they'll
       # be embedded into the pdf. But if we're rending html then they should be kept within
       # the output directory.
-      "pandoc" = r: res.fmap (x: mkPandoc d (mdFile d x._text));
+      "pandoc" = r: res.fmap (x: mkPandoc r (mdFile r x._text));
       "dir" = {_fileName}: res.fmap (CJ.collect _fileName);
     };
 
@@ -62,7 +62,14 @@ rec
         };
     };
 
-  drvMonoid = { mempty = {}; mappend = a: b: CJ.collect a.name; };
+  drvMonoid = 
+    rec
+    { mempty = {}; 
+      mappend = a: b: 
+        if a == mempty then b 
+        else if b == mempty then mempty
+        else CJ.collect a.name [a b]; 
+    };
 
   docs.fs.evalAlg.type = "ContentF (ResF Derivation) -> ResF Derivation";
   evalAlg = 
@@ -71,7 +78,7 @@ rec
     in
     T.match
       { 
-        "tell"  = {_data, _next}: rm.mappend (res.onlyData _entry) _next;
+        "tell"  = {_data, _next}: rm.mappend (res.onlyData _data) _next;
         "text"  = text: res.onlyText text;
         "local" = _sourcePath: res.pure _sourcePath;
         "file"  = {_content, _renderType}: evalRenderType _renderType _content;

@@ -17,7 +17,7 @@ rec
     _file { inherit _renderType; _next = _merge content; };
 
   docs.content.label.type = "AttrSet -> Content -> Content";
-  label = _data: _next: _tell { inherit _data _next; };
+  tell = _data: _next: _tell { inherit _data _next; };
 
   # Internals
   #
@@ -53,4 +53,15 @@ rec
 
   docs.content._markdown.type = "{_fileName :: FileName} -> RenderType";
   _markdown = T.typed "markdown";
+
+  fmapMatch = f:
+    { 
+      "tell"  = {_data, _next}: builtins.trace (f _next) ( _tell { inherit _data; _next = f _next; });
+      "text"  = x: _text x;
+      "local" = x: _local x;
+      "file"  = {_renderType, _content}: _file { inherit _renderType; _content = f _content; };
+      "merge" = xs: _merge (builtins.map f xs);
+    };
+
+  fmap = T.matchWith fmapMatch;
 }

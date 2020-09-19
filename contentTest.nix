@@ -14,20 +14,20 @@ rec
           _content = mkContent x;
         });
 
-      set = _entry: C.tell { inherit _entry; _next = C.end; };
+      set = _data: C.tell { inherit _data; _next = C.end; };
 
       # a' -> Content
       liftText = x: if x ? _type then x else C.text x; 
     };
 
-  s = C.tell { _entry = { x = "foo"; }; _next = C.ask(x: C.text ("x = ${x.x}")); };
+  s = C.tell { x = "foo"; } (C.text "x = ");
 
-  t = C.ask(x: C.tell { _entry = { x = "foo"; }; _next = C.text "x = ${x.x}"; } );
+  t = C.ask(x: C.tell { _data = { x = "foo"; }; _next = C.text "x = ${x.x}"; } );
 
-  u = C.tell { _entry = { x = "foo"; }; _next = C.file { _renderType = C.noFile; _content =
+  u = C.tell { _data = { x = "foo"; }; _next = C.file { _renderType = C.noFile; _content =
     [ (C.ask (y: C.text "This is a document ${builtins.toString y.y}"))
       (C.ask (x: C.text "\n with ${x.x} content"))
-      (C.tell { _entry = { y = 7; }; _next = C.end; })
+      (C.tell { _data = { y = 7; }; _next = C.end; })
     ];
   }; };
 
