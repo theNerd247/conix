@@ -7,17 +7,29 @@ rec
 { 
   # Main API
   local    = _local;
-  dir      = _dir;
-  markdown = _markdown;
-  pandoc   = _pandoc;
   text     = _text;
 
+  liftText = t: 
+    if builtins.isString t then text t 
+    else if builtins.isAttrs t && ! t ? _type then _tell { _data = t; _next = text ""; }
+    else t;
+
+  renderTypeFileName = x: x._val._fileName;
+
+  dir = _dirName: _next: fmap liftText (_dir { inherit _dirName _next; });
+
   docs.content.file.type = "RenderType -> [Content] -> Content";
-  file = _renderType: content: 
-    _file { inherit _renderType; _next = _merge content; };
+  file = _renderType: _next: 
+    _file { inherit _renderType; _next = dir (renderTypeFileName _renderType) _next; };
 
   docs.content.label.type = "AttrSet -> Content -> Content";
-  tell = _data: _next: _tell { inherit _data _next; };
+  tell = _data: _next: fmap liftText (_tell { inherit _data _next; });
+
+  markdown = _fileName:
+    file (_markdown { inherit _fileName; });
+
+  pandoc = _fileName: _pandocType: _pandocArgs: 
+    file (_pandoc { inherit _fileName _pandocType _pandocArgs; });
 
   # Internals
   #
@@ -25,7 +37,7 @@ rec
   # right now I'm lazy....
 
   docs.content._merge.type = "[a] -> ContentF a";
-  _merge = T.typed "merge";
+  _dir = T.typed "dir";
 
   # Markup Constructors
   docs.content._tell.type = "{ _data :: AttrSet, _next :: a} -> ContentF a";
@@ -45,9 +57,6 @@ rec
   _local = T.typed "local";
 
   # Render Type Constructors
-  docs.content._dir.type = "{ _fileName :: DirName } -> RenderType";
-  _dir = T.typed "dir";
-
   docs.content._pandoc.type = "{ _fileName :: FileName, _pandocType :: String, _pandocArgs :: String, _buildInputs :: [Derivation] } -> RenderType";
   _pandoc = T.typed "pandoc";
 
@@ -56,11 +65,11 @@ rec
 
   fmapMatch = f:
     { 
-      "tell"  = {_data, _next}: builtins.trace (f _next) ( _tell { inherit _data; _next = f _next; });
+      "tell"  = {_data, _next}: _tell { inherit _data; _next = f _next; };
       "text"  = x: _text x;
       "local" = x: _local x;
-      "file"  = {_renderType, _content}: _file { inherit _renderType; _content = f _content; };
-      "merge" = xs: _merge (builtins.map f xs);
+      "file"  = {_renderType, _next}: _file { inherit _renderType; _next = f _next; };
+      "dir"   = {_dirName, _next}: _dir { inherit _dirName; _next = builtins.map f _next; };
     };
 
   fmap = T.matchWith fmapMatch;

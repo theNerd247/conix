@@ -37,7 +37,11 @@ rec
   dir = copyJoin true;
 
   docs.copyJoin.type = "Bool -> Name -> [ Derivation ] -> Derivation";
-  copyJoin = preserveTopLevelDirs: name: paths:
+  copyJoin = preserveTopLevelDirs: name: _paths:
+    let
+      paths = builtins.filter (x: x != {}) _paths;
+    in
+    if paths == [] then {} else
     pkgs.runCommand name { passAsFile = [ "paths" ]; inherit paths; }
       ''
       mkdir -p $out

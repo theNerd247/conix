@@ -5,51 +5,28 @@ rec
   C = import ./content.nix;
   E = import ./eval.nix pkgs;
 
-  CUI = 
-    rec
-    {
-      # Content = Fix ContentF
-      markdownFile = _fileName: mkContent: C.ask (x: C.file 
-        { _renderType = C.markdown {inherit _fileName; }; 
-          _content = mkContent x;
-        });
+  s = x: C.tell { x = "foo"; } (C.text "x = ${x.x}");
 
-      set = _data: C.tell { inherit _data; _next = C.end; };
+  u = x: C.tell { x = "foo"; } (C.dir "test"
+    [ (C.text "This is a document ${builtins.toString x.y}")
+      (C.text "\n with ${x.x} content")
+      (C.tell { y = 7; } (C.text ""))
+    ]);
 
-      # a' -> Content
-      liftText = x: if x ? _type then x else C.text x; 
-    };
+  w = _: C.markdown "foo"
+     [(C.text "bob")]; 
 
-  s = C.tell { x = "foo"; } (C.text "x = ");
+  y = x: C.markdown "bar" [(u x)];
 
-  t = C.ask(x: C.tell { _data = { x = "foo"; }; _next = C.text "x = ${x.x}"; } );
+  z = x: C.markdown "baz" [ (w x) (y x) ]; 
 
-  u = C.tell { _data = { x = "foo"; }; _next = C.file { _renderType = C.noFile; _content =
-    [ (C.ask (y: C.text "This is a document ${builtins.toString y.y}"))
-      (C.ask (x: C.text "\n with ${x.x} content"))
-      (C.tell { _data = { y = 7; }; _next = C.end; })
+  z_ = E.run z;
+
+  a = x: 
+    C.dir "foo"
+    [ (C.tell { x = "mate"; } " adf ")
+      (C.text " asdf ${x.x} ")
+      "foo"
+      { y = 7; }
     ];
-  }; };
-
-  w = C.file 
-    {
-      _renderType = C.markdown {_fileName = "foo"; }; 
-      _content = [(C.text "bob")]; 
-    }; 
-
-  y = C.file
-    { _renderType = C.markdown { _fileName = "bar"; };
-      _content = [u];
-    };
-
-  z = C.file 
-    { _renderType = C.dir { _fileName = "baz"; }; 
-      _content = [ w y ]; 
-    };
-
-  a = CUI.markdownFile "bob" (x: [
-    (CUI.liftText "ello ${x.x}")
-    (CUI.set { x = "mate"; })
-  ]);
-
 }

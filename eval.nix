@@ -10,18 +10,17 @@ in
 
 rec
 {
-  docs.fs.mdFile.type = "RenderType -> ResF Derivation -> ResF Derivation";
+  docs.fs.mdFile.type = "RenderType -> Text -> Derivation";
   evalRenderType = T.match
     { 
-      "markdown" = r: x: mdFile r x._text;
+      "markdown" = mdFile; 
 
       # TODO: split this up into the inital encoding. Right now it's 
       # in final encoding so it's difficult on how to handle rendering for more specific cases
       # That is, if we're rendering a pdf then we don't need to keep the drvs because they'll
       # be embedded into the pdf. But if we're rending html then they should be kept within
       # the output directory.
-      "pandoc" = r: res.fmap (x: mkPandoc r (mdFile r x._text));
-      "dir" = {_fileName}: res.fmap (CJ.collect _fileName);
+      "pandoc" = r: t: mkPandoc r (mdFile r t);
     };
 
   # RenderData -> String -> Derivation
@@ -39,10 +38,13 @@ rec
     rec
     {
       # String -> ResF Derivation
-      onlyText = text: { inherit text; drv = drvMonoid.mempty; data = {}; };
+      onlyText = text: { inherit text; drv = {}; data = {}; };
+
+      mergeData = pkgs.lib.attrsets.recursiveUpdate; 
 
       # AttrSet -> ResF Derivation
-      onlyData = data: { text = ""; drv = drvMonoid.mempty; inherit data; };
+      addData = _data: x: 
+        { inherit (x) text drv; data = mergeData x.data _data; };
 
       # a -> ResF a
       pure = drv: { text = ""; inherit drv; data = {}; };
@@ -50,39 +52,30 @@ rec
       fmap = f: x: { inherit (x) text data; drv = f x.drv; };
 
       # (Monoid m) => instance Monoid (ResF m)
-      monoid = {mempty, mappend}:
+      monoid = drvDirName:
         {
-          mempty = { text = ""; drv = mempty; data = {}; };
+          mempty = { text = ""; drv = {}; data = {}; };
           mappend = a: b:
             {
               text = a.text + b.text;
-              drv = mappend a.drv b.drv;
-              data = pkgs.lib.attrsets.recursiveUpdate a.data b.data;
+              drv = CJ.collect drvDirName [a.drv b.drv]; 
+              data = mergeData a.data b.data;
             };
         };
     };
 
-  drvMonoid = 
-    rec
-    { mempty = {}; 
-      mappend = a: b: 
-        if a == mempty then b 
-        else if b == mempty then mempty
-        else CJ.collect a.name [a b]; 
-    };
+  mkDir = name: (M (res.monoid name)).mconcat;
 
   docs.fs.evalAlg.type = "ContentF (ResF Derivation) -> ResF Derivation";
   evalAlg = 
-    let
-      rm = res.monoid drvMonoid;
-    in
     T.match
       { 
-        "tell"  = {_data, _next}: rm.mappend (res.onlyData _data) _next;
+        "tell"  = {_data, _next}: res.addData _data _next;
         "text"  = text: res.onlyText text;
         "local" = _sourcePath: res.pure _sourcePath;
-        "file"  = {_content, _renderType}: evalRenderType _renderType _content;
-        "merge" = (M rm).mconcat;
+        "file"  = {_renderType, _next}: 
+          mkDir (C.renderTypeFileName _renderType) [(res.pure (evalRenderType _renderType _next.text)) _next];
+        "dir" = {_dirName, _next}: mkDir _dirName _next;
       }; 
 
   docs.eval.eval.type = "(AttrSet -> Content) -> ResF Derivation";
