@@ -16,14 +16,17 @@ rec
 
   renderTypeFileName = x: x._val._fileName;
 
-  dir = _dirName: _next: fmap liftText (_dir { inherit _dirName _next; });
+  dir = _dirName: _next: _dir { inherit _dirName _next; };
 
   docs.content.file.type = "RenderType -> [Content] -> Content";
   file = _renderType: _next: 
     _file { inherit _renderType; _next = dir (renderTypeFileName _renderType) _next; };
 
-  docs.content.label.type = "AttrSet -> Content -> Content";
-  tell = _data: _next: fmap liftText (_tell { inherit _data _next; });
+  docs.content.tell.type = "AttrSet -> Content -> Content";
+  tell = _data: _next: _tell { inherit _data _next; };
+
+  docs.content.set.type = "AttrSet -> Content";
+  set = _data: tell _data (text "");
 
   markdown = _fileName:
     file (_markdown { inherit _fileName; });

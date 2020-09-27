@@ -4,6 +4,7 @@ rec
   T = import ./types.nix;
   C = import ./content.nix;
   E = import ./eval.nix pkgs;
+  M = import ./monoid.nix;
 
   s = x: C.tell { x = "foo"; } (C.text "x = ${x.x}");
 
@@ -28,5 +29,27 @@ rec
       (C.text " asdf ${x.x} ")
       "foo"
       { y = 7; }
+    ];
+
+    r = let
+      y = (x: 
+        let
+          a = { data = {}; text = if builtins.isString x.b then "foo ${x.b}" else "not foo"; };
+          b = { data = pkgs.lib.attrsets.recursiveUpdate a.data { b = "bar"; }; inherit (a) text; };
+        in
+        (M (E.res.monoid "foo")).mconcat
+        [  
+        ]
+      );
+    in
+      pkgs.lib.fix (a: y a.data);
+
+  b = x:
+    C.dir "foo"
+    [ (C.set { b = "bar"; })
+      (C.text (if builtins.isString x.b then "foo ${x.b}" else "not foo"))
+      # x = { text = if builtins.isString x.b then "foo ${x.b}" else "not foo"; data = {}; }
+      # { inherit (x) text; data = mergeData x.data {}; }
+
     ];
 }
