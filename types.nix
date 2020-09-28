@@ -10,9 +10,9 @@ rec
       badType = throw "Invalid type in pattern match. Must be one of:\n Expected  ${types}\n Received ${x._type or "no _type"}";
       noType = throw "Value must have _type and _val attribute. _type can be one of these strings: \n  ${types}";
 
-      k = x._type or noType;
+      k = x._type or "*";
       f = fs.${k} or badType;
-      v = x._val or noType;
+      v = x._val or x;
     in
       f v;
 

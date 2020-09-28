@@ -68,6 +68,7 @@ rec
 
   fmapMatch = f:
     { 
+      "*"     = x: x;
       "tell"  = {_data, _next}: _tell { inherit _data; _next = f _next; };
       "text"  = x: _text x;
       "local" = x: _local x;

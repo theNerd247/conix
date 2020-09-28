@@ -34,22 +34,30 @@ rec
     r = let
       y = (x: 
         let
-          a = { data = {}; text = if builtins.isString x.b then "foo ${x.b}" else "not foo"; };
-          b = { data = pkgs.lib.attrsets.recursiveUpdate a.data { b = "bar"; }; inherit (a) text; };
+
+          #a = { data = { r = if builtins.isString x.b then null else 2; }; text = if builtins.isString x.b then "foo ${x.b}" else "not foo"; };
+          a = if builtins.isString x.b then { text = "foo ${x.b}"; data = {}; } else { data = {}; text = "not foo"; };
+          b = { data = pkgs.lib.attrsets.recursiveUpdate {} { b = "bar"; }; text = ""; };
         in
-        (M (E.res.monoid "foo")).mconcat
-        [  
-        ]
+          { data = pkgs.lib.attrsets.recursiveUpdate b.data a.data;
+            text = a.text + b.text;
+          }
       );
     in
       pkgs.lib.fix (a: y a.data);
 
   b = x:
     C.dir "foo"
-    [ (C.set { b = "bar"; })
-      (C.text (if builtins.isString x.b then "foo ${x.b}" else "not foo"))
-      # x = { text = if builtins.isString x.b then "foo ${x.b}" else "not foo"; data = {}; }
-      # { inherit (x) text; data = mergeData x.data {}; }
+    [
+      { b = "bar"; }
+      "foo ${x.b}"
+      { x = x.b; }
+      ''
+      asdf
 
+      asdf ''(C.text x.b)''
+      ''
     ];
+
+  c = x: C.set { b = "bar"; };
 }

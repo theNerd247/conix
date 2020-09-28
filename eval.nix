@@ -40,6 +40,8 @@ rec
       # String -> ResF Derivation
       onlyText = text: { inherit text; drv = {}; data = {}; };
 
+      onlyData = data: { inherit data; drv = {}; text = ""; };
+
       mergeData = pkgs.lib.attrsets.recursiveUpdate; 
 
       # AttrSet -> ResF Derivation
@@ -70,6 +72,10 @@ rec
   evalAlg = 
     T.match
       { 
+        "*"     = x: 
+          if builtins.isString x then res.onlyText x else
+          if builtins.isAttrs x then res.onlyData x else
+          (res.monoid "").mempty;
         "tell"  = {_data, _next}: res.addData _data _next;
         "text"  = text: res.onlyText text;
         "local" = _sourcePath: res.pure _sourcePath;
