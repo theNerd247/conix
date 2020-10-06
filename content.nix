@@ -1,34 +1,53 @@
+pkgs:
+
 let
   T = import ./types.nix;
+  F = import ./foldAttr.nix pkgs;
 in
 
 # Re-export constructors to build the toplevel api
 rec
 { 
   # Main API
-  local    = _local;
-  text     = _text;
+  local = _local;
+  text  = _text;
+  using = _using;
+  merge = _merge;
 
   t = text;
 
-  liftText = t: 
-    if builtins.isString t then text t 
-    else if builtins.isAttrs t && ! t ? _type then _tell { _data = t; _next = text ""; }
-    else t;
+  # "Parses" nix values into Content values
+  # using mutual recursion
+  # a -> Content
+  liftNixValue = t: fmap liftNixValue (
+         if T.isTyped t           then t 
+    else if builtins.isAttrs t    then tell t (collectTexts t)
+    else if builtins.isFunction t then using t
+    else if builtins.isList t     then merge t
+    else text t
+  );
 
   renderTypeFileName = x: x._val._fileName;
 
-  dir = _dirName: _next: _dir { inherit _dirName _next; };
+  collectTexts = F.foldAttrsCond
+    T.isTyped
+    liftNixValue
+    (vals: merge (builtins.attrValues vals));
 
-  docs.content.file.type = "RenderType -> [Content] -> Content";
-  file = _renderType: _next: 
-    _file { inherit _renderType; _next = dir (renderTypeFileName _renderType) _next; };
+  docs.content.file.type = "RenderType -> Content -> Content";
+  file = _renderType: _next: _file 
+    { inherit _renderType; 
+      inherit _next; 
+    };
 
   docs.content.tell.type = "AttrSet -> Content -> Content";
   tell = _data: _next: _tell { inherit _data _next; };
 
   docs.content.set.type = "AttrSet -> Content";
-  set = _data: tell _data (text "");
+  set = _data: _tell { inherit _data; _next = text ""; };
+
+  dir = _fileName: 
+    file (_dir { inherit _fileName; });
 
   markdown = _fileName:
     file (_markdown { inherit _fileName; });
@@ -37,16 +56,13 @@ rec
     file (_pandoc { inherit _fileName _pandocType _pandocArgs; });
 
   # Internals
-  #
-  # TODO: if this grows large move to its own module
-  # right now I'm lazy....
-
-  docs.content._merge.type = "[a] -> ContentF a";
-  _dir = T.typed "dir";
 
   # Markup Constructors
   docs.content._tell.type = "{ _data :: AttrSet, _next :: a} -> ContentF a";
   _tell = T.typed "tell";
+
+  docs.content._using.type = "(AttrSet -> a) -> ContentF a";
+  _using = T.typed "using";
 
   # NOTE: for now we'll use the final encoding of documents. However,
   # In the future it might be useful to use the inital encoding
@@ -68,14 +84,21 @@ rec
   docs.content._markdown.type = "{_fileName :: FileName} -> RenderType";
   _markdown = T.typed "markdown";
 
+  docs.content._dir.type = "DirName -> RenderType";
+  _dir = T.typed "dir";
+
+  docs.content._merge.type = "[a] -> ContentF a";
+  _merge = T.typed "merge";
+
   fmapMatch = f:
     { 
-      "*"     = x: x;
       "tell"  = {_data, _next}: _tell { inherit _data; _next = f _next; };
       "text"  = x: _text x;
       "local" = x: _local x;
-      "file"  = {_renderType, _next}: _file { inherit _renderType; _next = f _next; };
-      "dir"   = {_dirName, _next}: _dir { inherit _dirName; _next = builtins.map f _next; };
+      "file"  = {_renderType, _next}: 
+        _file { inherit _renderType; _next = f _next; };
+      "merge" = xs: _merge (builtins.map f xs);
+      "using" = g: _using (x: f (g x));
     };
 
   fmap = T.matchWith fmapMatch;

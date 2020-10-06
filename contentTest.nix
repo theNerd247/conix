@@ -2,59 +2,37 @@ rec
 {
   pkgs = import <nixpkgs> {};
   T = import ./types.nix;
-  C = import ./content.nix;
+  C = import ./content.nix pkgs;
   E = import ./eval.nix pkgs;
   M = import ./monoid.nix;
 
-  s = x: C.tell { x = "foo"; } (C.text "x = ${x.x}");
+  s = x: with x;  ["x = "{ x = "foo"; }];
 
-  u = x: C.tell { x = "foo"; } (C.dir "test"
-    [ (C.text "This is a document ${builtins.toString x.y}")
-      (C.text "\n with ${x.x} content")
-      (C.tell { y = 7; } (C.text ""))
-    ]);
+  u = x: with x; dir "test"
+    [ ''This is a document ''{ y = 7; }''
 
-  w = _: C.markdown "foo"
-     [(C.text "bob")]; 
+      with ''(t data.x)" content"
+      (set { x = "foo"; })
+    ];
 
-  y = x: C.markdown "bar" [(u x)];
+  w = _: C.markdown "foo" "bob"; 
 
-  z = x: C.markdown "baz" [ (w x) (y x) ]; 
+  y = x: C.markdown "bar" u;
+
+  z = x: C.markdown "baz" [ w y ]; 
 
   z_ = E.run z;
 
-  a = x: 
-    C.dir "foo"
-    [ (C.tell { x = "mate"; } " adf ")
-      (C.text " asdf ${x.x} ")
-      "foo"
-      { y = 7; }
+  a = x: with x;
+    [ '' asdf ''{ x = "mate"; }
+      (set { y = 7; })
     ];
 
-    r = let
-      y = (x: 
-        let
+  b = x: with x;
+    [ a ''
 
-          #a = { data = { r = if builtins.isString x.b then null else 2; }; text = if builtins.isString x.b then "foo ${x.b}" else "not foo"; };
-          a = if builtins.isString x.b then { text = "foo ${x.b}"; data = {}; } else { data = {}; text = "not foo"; };
-          b = { data = pkgs.lib.attrsets.recursiveUpdate {} { b = "bar"; }; text = ""; };
-        in
-          { data = pkgs.lib.attrsets.recursiveUpdate b.data a.data;
-            text = a.text + b.text;
-          }
-      );
-    in
-      pkgs.lib.fix (a: y a.data);
+      y = ''(t data.y)''
 
-  b = x: with C;
-    C.dir "foo"
-    [
-      { b = "bar"; }
-      { x = x.b; }
-      ''
-      asdf
-
-      asdf ''(t x.b)''
-      ''
+      b = ''{ b = "bar"; }
     ];
 }
