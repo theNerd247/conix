@@ -46,18 +46,15 @@ rec
     in
       pkgs.lib.fix (a: y a.data);
 
-  b = x:
+  b = x: with C;
     C.dir "foo"
     [
       { b = "bar"; }
-      "foo ${x.b}"
       { x = x.b; }
       ''
       asdf
 
-      asdf ''(C.text x.b)''
+      asdf ''(t x.b)''
       ''
     ];
-
-  c = x: C.set { b = "bar"; };
 }

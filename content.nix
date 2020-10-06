@@ -9,6 +9,8 @@ rec
   local    = _local;
   text     = _text;
 
+  t = text;
+
   liftText = t: 
     if builtins.isString t then text t 
     else if builtins.isAttrs t && ! t ? _type then _tell { _data = t; _next = text ""; }
