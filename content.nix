@@ -36,8 +36,8 @@ rec
     (vals: merge (builtins.attrValues vals));
 
   docs.content.file.type = "RenderType -> Content -> Content";
-  file = _renderType: _next: _file 
-    { inherit _renderType; 
+  file = _mkFile: _next: _file 
+    { inherit _mkFile; 
       inherit _next; 
     };
 
@@ -47,14 +47,19 @@ rec
   docs.content.set.type = "AttrSet -> Content";
   set = _data: _tell { inherit _data; _next = text ""; };
 
-  dir = _fileName: 
-    file (_dir { inherit _fileName; });
+  dir = _dirName: _next: 
+    _dir { inherit _dirName _next; };
 
-  markdown = _fileName:
-    file (_markdown { inherit _fileName; });
+  markdown = _fileName: 
+    file (builtins.toFile "${_fileName}.md");
 
   pandoc = _pandocType: _pandocArgs: _buildInputs: _fileName:
-    file (_pandoc { inherit _fileName _pandocType _pandocArgs _buildInputs; });
+    file
+      (txt: pkgs.runCommand "${_fileName}.${_pandocType}" { buildInputs = [ pkgs.pandoc ] ++ _buildInputs; }
+        ''
+          ${pkgs.pandoc}/bin/pandoc -s -o $out ${_pandocArgs} ${builtins.toFile "${_fileName}.md" txt}
+        ''
+      );
 
   html = pandoc "html" "" [];
 
@@ -82,24 +87,14 @@ rec
   _text = T.typed "text";
 
   # File System Constructors
-  docs.content._file.type = "{_renderType :: RenderType, _next :: a} -> ContentF a";
+  docs.content._file.type = "{_fileName :: FileName, _next :: a} -> ContentF a";
   _file = T.typed "file";
+
+  docs.content._dir.type = "{ _dirName :: DirName, _next :: a} -> ContentF a";
+  _dir = T.typed "dir";
 
   docs.content._local.type = "FilePath -> ContentF a";
   _local = T.typed "local";
-
-  # Render Type Constructors
-  docs.content._pandoc.type = "{ _fileName :: FileName, _pandocType :: String, _pandocArgs :: String, _buildInputs :: [Derivation] } -> RenderType";
-  _pandoc = T.typed "pandoc";
-
-  docs.content._markdown.type = "{_fileName :: FileName} -> RenderType";
-  _markdown = T.typed "markdown";
-
-  docs.content._html.type = "{_fileName :: FileName, _cssFiles :: [ Derivation ], _jsFiles :: [ Derivation ] }";
-  _html = T.typed "html";
-
-  docs.content._dir.type = "DirName -> RenderType";
-  _dir = T.typed "dir";
 
   docs.content._merge.type = "[a] -> ContentF a";
   _merge = T.typed "merge";
@@ -109,8 +104,10 @@ rec
       "tell"  = {_data, _next}: _tell { inherit _data; _next = f _next; };
       "text"  = x: _text x;
       "local" = x: _local x;
-      "file"  = {_renderType, _next}: 
-        _file { inherit _renderType; _next = f _next; };
+      "file"  = {_mkFile, _next}: 
+        _file { inherit _mkFile; _next = f _next; };
+      "dir" = {_dirName, _next}:
+        _dir { inherit _dirName; _next = f _next; };
       "merge" = xs: _merge (builtins.map f xs);
       "using" = g: _using (x: f (g x));
     };

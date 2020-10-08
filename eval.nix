@@ -10,36 +10,6 @@ in
 
 rec
 {
-  docs.fs.mdFile.type = "RenderType -> ResF Derivation -> ResF Derivation";
-  evalRenderType = T.match
-    { 
-      "markdown" = r: res.fmapWith (x: res.mergeDrv x.drv (mdFile r x));
-
-      # TODO: split this up into the inital encoding. Right now it's 
-      # in final encoding so it's difficult on how to handle rendering for more specific cases
-      # That is, if we're rendering a pdf then we don't need to keep the drvs because they'll
-      # be embedded into the pdf. But if we're rending html then they should be kept within
-      # the output directory.
-      "pandoc" = r: res.fmapWith (x: res.mergeDrv x.drv (mkPandoc r x));
-
-      "dir" = r: res.fmap (mkDir r);
-    };
-
-  # RenderData -> String -> Derivation
-  mdFile = {_fileName,...}: {text,...}: 
-    pkgs.writeText "${_fileName}.md" text;
-
-  # RenderData -> Derivation -> Derivation
-  mkPandoc = r@{_pandocArgs, _buildInputs, _pandocType, _fileName}: t:
-    pkgs.runCommand "${_fileName}.${_pandocType}" { buildInputs = [ pkgs.pandoc ] ++ _buildInputs; }
-      ''
-        ${pkgs.pandoc}/bin/pandoc -s -o $out ${_pandocArgs} ${mdFile r t}
-      '';
-
-  # RenderData -> Derivation -> Derivation
-  mkDir = {_fileName, ...}: drv:
-    CJ.dir _fileName [drv];
-
   # data ResF a = AttrSet -> ResF { text :: String, data :: AttrSet, drv :: a}
   res =
     rec
@@ -110,9 +80,11 @@ rec
         "tell"  = {_data, _next}: res.addData _data _next;
         "text"  = text: res.onlyText (builtins.toString text);
         "local" = _sourcePath: res.pure _sourcePath;
-        "file"  = {_renderType, _next}:
-          evalRenderType _renderType _next;
+        "file"  = {_mkFile, _next}:
+          res.fmapWith (x: res.mergeDrv x.drv (_mkFile x.text)) _next;
         "merge" = xs: (M (res.monoid)).mconcat xs;
+        "dir" = {_dirName, _next}: 
+          res.fmap (drv: CJ.dir _dirName [drv]) _next;
         "using" = r: x: r x x;
       }; 
 
