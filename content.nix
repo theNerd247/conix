@@ -61,12 +61,7 @@ rec
   meta = data: [ "---\n" ] ++ data ++ [ "\n---\n" ];
 
   css = localPath: 
-    [ (local localPath) "css: ${localPath}" ];
-
-    # 
-    # evaluate static resources to generate their file contents
-    # for each resource generate extra contents to append to
-    # 
+    [ (local localPath) "css: ./${builtins.baseNameOf localPath}" ];
 
   # Internals
 

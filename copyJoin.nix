@@ -22,12 +22,12 @@ rec
       for i in $(cat $pathsPath); do
         if [[ -d $i ]]; then
           if [[ -n "$(ls -A $i)" ]]; then
-            cp -r $i/* $target/
+            cp -u -r $i/* $target/
           else
             echo "skipping copying of empty dir $i"
           fi
         else
-          cp $i $target/$(stripHash $i)
+          cp -u $i $target/$(stripHash $i)
         fi
       done
       '';

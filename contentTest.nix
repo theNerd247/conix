@@ -40,22 +40,20 @@ rec
 
   p_ = E.run h;
 
-  h = x: with x; html "foo"
-    [ (meta 
-        [ (css ./foo.css)
-        ]
-      )
-      "contents here" 
-    ];
+  h = x: with x; dir "jack" [
+    (mkHtml "foo" ["contents here: "(t data.x)])
+    (mkHtml "bar" [ 
+      { x = 3; } 
+      ''...or here
+
+      ''
+       (mkHtml "baz" "a nested file")
+    ]) 
+  ]; 
+
+  mkHtml = name: contents: x: with x;
+    html name ([ (meta [ (css ./foo.css) ]) contents]);
 
   h_ = E.run h;
     
-
-  b = x: with x;
-    [ a ''
-
-      y = ''(t data.y)''
-
-      b = ''{ b = "bar"; }
-    ];
 }
