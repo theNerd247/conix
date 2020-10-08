@@ -33,10 +33,23 @@ rec
   # Expexcted
   z_ = E.run z;
 
-  a = x: with x;
+  p = x: with x; pandoc "testPdf" "pdf" "" [ pkgs.texlive.combined.scheme-small ]
     [ '' asdf ''{ x = "mate"; }
       (set { y = 7; })
     ];
+
+  p_ = E.run h;
+
+  h = x: with x; html "foo"
+    [ (meta 
+        [ (css ./foo.css)
+        ]
+      )
+      "contents here" 
+    ];
+
+  h_ = E.run h;
+    
 
   b = x: with x;
     [ a ''

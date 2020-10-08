@@ -30,10 +30,10 @@ rec
     pkgs.writeText "${_fileName}.md" text;
 
   # RenderData -> Derivation -> Derivation
-  mkPandoc = r@{_pandocArgs, _buildInputs, _pandocType, _fileName}: {text,...}:
+  mkPandoc = r@{_pandocArgs, _buildInputs, _pandocType, _fileName}: t:
     pkgs.runCommand "${_fileName}.${_pandocType}" { buildInputs = [ pkgs.pandoc ] ++ _buildInputs; }
       ''
-        ${pkgs.pandoc}/bin/pandoc -s -o $out ${_pandocArgs} ${mdFile r text}
+        ${pkgs.pandoc}/bin/pandoc -s -o $out ${_pandocArgs} ${mdFile r t}
       '';
 
   # RenderData -> Derivation -> Derivation
@@ -77,10 +77,13 @@ rec
 
 
       mergeDrv = a: b:
-        if a ? name then
-          CJ.collect a.name [a b] 
-        else
-          b;
+        let
+          name = a.name or b.name or (builtins.baseNameOf a);
+        in
+             if a == {} && b == {} then {}
+        else if a == {}            then b 
+        else if b == {}            then a 
+        else CJ.collect name [a b];
 
       # (Monoid m) => instance Monoid (ResF m)
       monoid =
