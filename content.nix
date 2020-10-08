@@ -71,6 +71,32 @@ rec
   img = caption: localPath:
     [ (local localPath) "![${caption}](./${builtins.baseNameOf localPath})" ];
 
+  code = lang: content:
+    [ "```" lang "\n" content "\n```" ];
+
+  runCode = lang: runner: content:
+    [ (code lang content) (runner content) ];
+
+  runNixSnippet = name: runCode "nix" 
+    (t: [ "\n" (code "" "${builtins.readFile (import (builtins.toFile name t))}")] );
+
+  table = headers: rows:
+    [ (intersperse " | " headers) 
+      "\n"
+      (builtins.concatStringsSep " | " (builtins.map (_: "---") headers))
+      "\n"
+      (intersperse "\n" (builtins.map (intersperse " | ") rows))
+    ];
+
+  intersperse = s:
+    builtins.foldl' 
+      ({skip, as}: a:
+        { skip = false;
+          as = if skip then as ++ [a] else as ++ [s a];
+        }
+      )
+      {skip=true; as = [];};
+
   # Internals
 
   # Markup Constructors
