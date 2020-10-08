@@ -41,7 +41,9 @@ rec
   p_ = E.run h;
 
   h = x: with x; dir "jack" [
-    (mkHtml "foo" ["contents here: "(t data.x)])
+    (mkHtml "foo" [
+      ''contents here: ''(t data.x)
+    ])
     (mkHtml "bar" [ 
       { x = 3; } 
       ''...or here

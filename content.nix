@@ -63,6 +63,9 @@ rec
   css = localPath: 
     [ (local localPath) "css: ./${builtins.baseNameOf localPath}" ];
 
+  img = caption: localPath:
+    [ (local localPath) "![${caption}](./${builtins.baseNameOf localPath})" ];
+
   # Internals
 
   # Markup Constructors
