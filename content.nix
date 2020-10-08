@@ -21,6 +21,7 @@ rec
   # a -> Content
   liftNixValue = t: fmap liftNixValue (
          if T.isTyped t           then t 
+    else if builtins.isPath t     then local t
     else if builtins.isAttrs t    then tell t (collectTexts t)
     else if builtins.isFunction t then using t
     else if builtins.isList t     then merge t
@@ -52,8 +53,20 @@ rec
   markdown = _fileName:
     file (_markdown { inherit _fileName; });
 
-  pandoc = _fileName: _pandocType: _pandocArgs: 
-    file (_pandoc { inherit _fileName _pandocType _pandocArgs; });
+  pandoc = _pandocType: _pandocArgs: _buildInputs: _fileName:
+    file (_pandoc { inherit _fileName _pandocType _pandocArgs _buildInputs; });
+
+  html = pandoc "html" "" [];
+
+  meta = data: [ "---\n" ] ++ data ++ [ "\n---\n" ];
+
+  css = localPath: 
+    [ (local localPath) "css: ${localPath}" ];
+
+    # 
+    # evaluate static resources to generate their file contents
+    # for each resource generate extra contents to append to
+    # 
 
   # Internals
 
@@ -83,6 +96,9 @@ rec
 
   docs.content._markdown.type = "{_fileName :: FileName} -> RenderType";
   _markdown = T.typed "markdown";
+
+  docs.content._html.type = "{_fileName :: FileName, _cssFiles :: [ Derivation ], _jsFiles :: [ Derivation ] }";
+  _html = T.typed "html";
 
   docs.content._dir.type = "DirName -> RenderType";
   _dir = T.typed "dir";
