@@ -3,6 +3,7 @@ pkgs:
 let
   T = import ./types.nix;
   F = import ./foldAttr.nix pkgs;
+  P = import ./printNixValue.nix pkgs;
 in
 
 # Re-export constructors to build the toplevel api
@@ -78,7 +79,7 @@ rec
     [ (code lang content) (runner content) ];
 
   runNixSnippet = name: runCode "nix" 
-    (t: [ "\n" (code "" "${builtins.readFile (import (builtins.toFile name t))}")] );
+    (t: [ "\n" (code "" "${P.printNixVal (import (builtins.toFile name t))}")] );
 
   table = headers: rows:
     [ (intersperse " | " headers) 
