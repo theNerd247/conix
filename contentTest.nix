@@ -66,6 +66,12 @@ rec
          a -> c
          b -> c
         }
+      '')''
+
+
+      ''
+      (runNixSnippet "foo" ''
+        1 + 2
       '')
     ])
   ]; 

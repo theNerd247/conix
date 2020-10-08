@@ -4,7 +4,6 @@ let
   T = import ./types.nix;
   C = import ./content.nix pkgs;
   CJ = import ./copyJoin.nix pkgs;
-  R = import ./reader.nix;
   M = import ./monoid.nix;
 in
 

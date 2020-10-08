@@ -1,23 +1,6 @@
-let
+pkgs:
 
-  printAttrs = e:
-    let
-      printElem = name: value:
-        "${name} = ${ printNixVal value };";
-
-      printElems = 
-        builtins.concatStringsSep " "
-          (conix.pkgs.lib.attrsets.mapAttrsToList printElem e);
-    in
-      "{ ${printElems} }";
-
-  printList = e:
-    let
-      printElems = builtins.concatStringsSep " "
-        (builtins.map printNixVal e);
-    in
-      "[ ${printElems} ]";
-in
+rec
 {
   docs.printNixVal.docstr = ''
     Pretty print a pure nix-value. 
@@ -31,5 +14,23 @@ in
     else if builtins.isNull e then "null"
     else if builtins.isFunction e then "<lambda>"
     else builtins.toString e;
+
+  printAttrs = e:
+    let
+      printElem = name: value:
+        "${name} = ${ printNixVal value };";
+
+      printElems = 
+        builtins.concatStringsSep " "
+          (pkgs.lib.attrsets.mapAttrsToList printElem e);
+    in
+      "{ ${printElems} }";
+
+  printList = e:
+    let
+      printElems = builtins.concatStringsSep " "
+        (builtins.map printNixVal e);
+    in
+      "[ ${printElems} ]";
 
 }
