@@ -1,10 +1,6 @@
 rec
 {
-  pkgs = import <nixpkgs> {};
-  T = import ./types.nix;
-  C = import ./content.nix pkgs;
-  E = import ./eval.nix pkgs;
-  M = import ./monoid.nix;
+  pkgs = import <nixpkgs> { overlays = import ./default.nix; };
 
   s = x: with x;  ["x = "{ x = "foo"; }];
 
@@ -16,7 +12,7 @@ rec
       (set { x = "foo"; })
     ];
 
-  u_ = E.run u;
+  u_ = pkgs.conix.run u;
 
   # foo.md
   w = x: with x; markdown "foo" "bob"; 
@@ -24,21 +20,21 @@ rec
   # bar.md + test/
   y = x: with x; markdown "bar" u;
 
-  y_ = E.run y;
+  y_ = pkgs.conix.run y;
 
   # baz * (bar.md + test/ + foo.md)
   z = x: with x; dir "baz" 
     [ w y ]; 
 
   # Expexcted
-  z_ = E.run z;
+  z_ = pkgs.conix.run z;
 
   p = x: with x; pandoc "testPdf" "pdf" "" [ pkgs.texlive.combined.scheme-small ]
     [ '' asdf ''{ x = "mate"; }
       (set { y = 7; })
     ];
 
-  p_ = E.run h;
+  p_ = pkgs.conix.run h;
 
   h = x: with x; dir "jack" [
     (html "bar" [ 
@@ -83,6 +79,6 @@ rec
     ])
   ]; 
 
-  h_ = E.run h;
+  h_ = pkgs.conix.run h;
     
 }
