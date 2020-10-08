@@ -46,6 +46,13 @@ rec
       ''...or here
 
       ''
+      (markdown "list" [ "  " (indent 2 (list 
+        [ "foo"
+          "bar"
+          "baz"
+        ])
+      )])
+
       (html "baz" "a nested file")''
 
 

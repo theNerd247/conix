@@ -5,6 +5,7 @@ let
   C = import ./content.nix pkgs;
   CJ = import ./copyJoin.nix pkgs;
   M = import ./monoid.nix;
+  S = import ./textBlock.nix pkgs;
 in
 
 rec
@@ -19,6 +20,12 @@ rec
 
       onlyData = data: _:
         { inherit data; drv = {}; text = ""; };
+
+      overText = f: g: x:
+        let
+          r = g x;
+        in
+          { inherit (r) drv data; text = f r.text; };
 
       mergeData = pkgs.lib.attrsets.recursiveUpdate; 
 
@@ -78,6 +85,8 @@ rec
         # Evaluate anything that isn't { _type ... } ...
         "tell"  = {_data, _next}: res.addData _data _next;
         "text"  = text: res.onlyText (builtins.toString text);
+        "indent" = {_nSpaces, _next}: 
+          res.overText (S.indent _nSpaces) _next;
         "local" = _sourcePath: res.pure _sourcePath;
         "file"  = {_mkFile, _next}:
           res.fmapWith (x: res.mergeDrv x.drv (_mkFile x.text)) _next;

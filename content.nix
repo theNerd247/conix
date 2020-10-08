@@ -48,6 +48,9 @@ rec
   docs.content.set.type = "AttrSet -> Content";
   set = _data: _tell { inherit _data; _next = text ""; };
 
+  indent = _nSpaces: _next:
+    _indent { inherit _nSpaces _next; };
+
   dir = _dirName: _next: 
     _dir { inherit _dirName _next; };
 
@@ -141,6 +144,10 @@ rec
   docs.content._merge.type = "[a] -> ContentF a";
   _merge = T.typed "merge";
 
+
+  docs.content._indent.type = "{ _nSpaces :: Natural, _next :: a } -> ContentF a";
+  _indent = T.typed "indent";
+
   fmapMatch = f:
     { 
       "tell"  = {_data, _next}: _tell { inherit _data; _next = f _next; };
@@ -150,6 +157,8 @@ rec
         _file { inherit _mkFile; _next = f _next; };
       "dir" = {_dirName, _next}:
         _dir { inherit _dirName; _next = f _next; };
+      "indent" = {_nSpaces, _next}:
+        _indent { inherit _nSpaces; _next = f _next; };
       "merge" = xs: _merge (builtins.map f xs);
       "using" = g: _using (x: f (g x));
     };
