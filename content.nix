@@ -97,6 +97,18 @@ rec
       )
       {skip=true; as = [];};
 
+  dotgraph = name: dotCode:
+    let
+      graphvizCode = builtins.toFile "${name}.dot" dotCode;
+    in
+      img (
+        pkgs.runCommandLocal
+          "${name}.svg" 
+          { buildInputs = [ pkgs.graphviz ]; }
+          "dot -T${imgType} -o $out ${graphvizCode}"
+      );
+      
+
   # Internals
 
   # Markup Constructors
