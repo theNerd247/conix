@@ -101,13 +101,14 @@ rec
     let
       graphvizCode = builtins.toFile "${name}.dot" dotCode;
     in
-      img (
-        pkgs.runCommandLocal
-          "${name}.svg" 
-          { buildInputs = [ pkgs.graphviz ]; }
-          "dot -T${imgType} -o $out ${graphvizCode}"
-      );
-      
+      [ (local (
+          pkgs.runCommandLocal
+            "${name}.svg" 
+            { buildInputs = [ pkgs.graphviz ]; }
+            "dot -Tsvg -o $out ${graphvizCode}"
+        ))
+        "![](./${name}.svg)"
+      ];
 
   # Internals
 

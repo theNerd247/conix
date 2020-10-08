@@ -41,20 +41,34 @@ rec
   p_ = E.run h;
 
   h = x: with x; dir "jack" [
-    (mkHtml "foo" [
-      ''contents here: ''(t data.x)
-    ])
-    (mkHtml "bar" [ 
+    (html "bar" [ 
       { x = 3; } 
       ''...or here
 
       ''
-       (mkHtml "baz" "a nested file")
-    ]) 
-  ]; 
+      (html "baz" "a nested file")''
 
-  mkHtml = name: contents: x: with x;
-    html name ([ (meta [ (css ./foo.css) ]) contents]);
+
+      ''
+      (table 
+        [ "foo" "bar" "baz" ]
+        [[ 2 3 2] 
+         [ (t data.x) 2 3]
+        ]
+      )''
+
+
+      ''
+      (dotgraph "foo" ''
+        digraph {
+         L -> a
+         L -> b
+         a -> c
+         b -> c
+        }
+      '')
+    ])
+  ]; 
 
   h_ = E.run h;
     
