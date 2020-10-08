@@ -8,6 +8,7 @@ rec
 
   s = x: with x;  ["x = "{ x = "foo"; }];
 
+  # test/
   u = x: with x; dir "test"
     [ ''This is a document ''{ y = 7; }''
 
@@ -15,12 +16,21 @@ rec
       (set { x = "foo"; })
     ];
 
-  w = _: C.markdown "foo" "bob"; 
+  u_ = E.run u;
 
-  y = x: C.markdown "bar" u;
+  # foo.md
+  w = x: with x; markdown "foo" "bob"; 
 
-  z = x: C.markdown "baz" [ w y ]; 
+  # bar.md + test/
+  y = x: with x; markdown "bar" u;
 
+  y_ = E.run y;
+
+  # baz * (bar.md + test/ + foo.md)
+  z = x: with x; dir "baz" 
+    [ w y ]; 
+
+  # Expexcted
   z_ = E.run z;
 
   a = x: with x;

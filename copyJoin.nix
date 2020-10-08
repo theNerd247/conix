@@ -2,54 +2,32 @@ pkgs:
 
 rec
 { 
-  docs.collect.docstr = ''
-    Copy contents of paths to a single directory. If a path is a directory 
-    its contents are copied and not the directory itself.
+  docs.collect.type = "Name -> [Derivation] -> Derivation";
+  collect = copyJoin "";
 
-    For example, given:
+  docs.dir.type = "Name -> [Derivation] -> Derivation";
+  dir = name: copyJoin name name;
 
-    ```
-    A
-     |- a.txt
-
-    B
-     |- c.txt
-    ```
-
-    `dir "C" [ A B]` will produce:
-
-    ```
-    C
-     |- a.txt
-     |- b.txt
-    ```
-
-    NOTE: the later directories in the list could overwrite contents from
-    other directories. If you wish to copy directories as is use. `dir`
-    '';
-  docs.collect.type = "Name -> [ Derivation | Path ] -> Derivation";
-  collect = copyJoin false;
-
-  docs.dir.docstr = ''
-    Like `collect` but preserves toplevel directories when copying
-  '';
-  docs.dir.type = "Name -> [ (FilePath | Derivation) ] -> Derivation";
-  dir = copyJoin true;
-
-  docs.copyJoin.type = "Bool -> Name -> [ Derivation ] -> Derivation";
-  copyJoin = preserveTopLevelDirs: name: _paths:
+  docs.copyJoin.type = "FilePath -> Name -> [ Derivation ] -> Derivation";
+  copyJoin = target: name: _paths:
     let
       paths = builtins.filter (x: x != {}) _paths;
     in
-    if paths == [] then {} else
     pkgs.runCommand name { passAsFile = [ "paths" ]; inherit paths; }
       ''
-      mkdir -p $out
+      target=$out/${target}
+
+      mkdir -p $target
+
       for i in $(cat $pathsPath); do
         if [[ -d $i ]]; then
-          cp -r $i/${if preserveTopLevelDirs then "" else "*"} $out/${if preserveTopLevelDirs then "$(stripHash $i)" else ""}
+          if [[ -n "$(ls -A $i)" ]]; then
+            cp -r $i/* $target/
+          else
+            echo "skipping copying of empty dir $i"
+          fi
         else
-          cp $i $out/$(stripHash $i)
+          cp $i $target/$(stripHash $i)
         fi
       done
       '';

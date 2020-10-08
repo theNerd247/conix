@@ -13,14 +13,14 @@ rec
   docs.fs.mdFile.type = "RenderType -> ResF Derivation -> ResF Derivation";
   evalRenderType = T.match
     { 
-      "markdown" = r: res.fmapWith (mdFile r);
+      "markdown" = r: res.fmapWith (x: res.mergeDrv x.drv (mdFile r x));
 
       # TODO: split this up into the inital encoding. Right now it's 
       # in final encoding so it's difficult on how to handle rendering for more specific cases
       # That is, if we're rendering a pdf then we don't need to keep the drvs because they'll
       # be embedded into the pdf. But if we're rending html then they should be kept within
       # the output directory.
-      "pandoc" = r: res.fmapWith (mkPandoc r);
+      "pandoc" = r: res.fmapWith (x: res.mergeDrv x.drv (mkPandoc r x));
 
       "dir" = r: res.fmap (mkDir r);
     };
