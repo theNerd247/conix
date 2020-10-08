@@ -72,6 +72,8 @@ rec
   img = caption: localPath:
     [ (local localPath) "![${caption}](./${builtins.baseNameOf localPath})" ];
 
+  list = builtins.map (content: [ "* " content "\n" ]); 
+
   code = lang: content:
     [ "```" lang "\n" content "\n```" ];
 
