@@ -108,10 +108,10 @@ module rec
  list = builtins.map (content: [ "* " content "\n" ]); 
 
  code = lang: content:
-   [ "```" data.lang "\n" data.content "\n```" ];
+   [ "```" lang "\n" content "\n```" ];
 
  runCode = lang: runner: content:
-   [ (data.code data.lang content) (runner content) ];
+   [ (data.code lang content) (runner content) ];
 
  runNixSnippet = name: runCode "nix" 
    (t: [ "\n" (data.code "" "${P.printNixVal (import (builtins.toFile name t))}")] );
