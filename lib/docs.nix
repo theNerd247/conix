@@ -7,17 +7,6 @@ in
 with C;
 {
 
-  # a.docs = { x = content; y = content; }
-  # 
-  # f = document "..." "..." (x: y: ...)
-  #
-  #
-  # CodeF a =
-  #   = Expr TypeString DocString <expr>
-  #   | Module (Map Name a)
-  #   | WithPackage (Pkgs -> a)
-  #   deriving (Functor)
-
   with (import ./modules.nix);
 
   module

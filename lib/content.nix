@@ -116,10 +116,10 @@ rec
         "![](./${name}.svg)"
       ];
 
-  document = type: docstr: 
+  document = name: type: docstr: 
     [
       (code "haskell" ''
-        ${p} :: ${type}
+        ${name} :: ${type}
       '')
       "\n"
       docstr
