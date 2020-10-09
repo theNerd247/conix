@@ -1,4 +1,4 @@
-(import <nixpkgs> { overlays = (import ./default.nix); }).conix.buildPages [
+(import <nixpkgs> { overlays = import ./default.nix; }).conix.run [
   (conix: { drv = with conix.lib;
     collect "conix-docs" 
       [ (buildBoth "docs" conixReferenceDocumentation (markdownFile "docs") (htmlFile "docs" ""))

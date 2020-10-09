@@ -2,10 +2,12 @@ pkgs:
 
 let
   T = import ./types.nix;
+  M = import ./monoid.nix;
+
   C = import ./content.nix pkgs;
   CJ = import ./copyJoin.nix pkgs;
-  M = import ./monoid.nix;
   S = import ./textBlock.nix pkgs;
+  F = import ./foldAttr.nix pkgs;
 in
 
 rec

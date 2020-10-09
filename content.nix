@@ -116,6 +116,16 @@ rec
         "![](./${name}.svg)"
       ];
 
+  document = type: docstr: 
+    [
+      (code "haskell" ''
+        ${p} :: ${type}
+      '')
+      "\n"
+      docstr
+      "\n\n"
+    ];
+
   # Internals
 
   # Markup Constructors
