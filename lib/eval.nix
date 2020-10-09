@@ -7,7 +7,6 @@ let
   C = import ./content.nix pkgs;
   CJ = import ./copyJoin.nix pkgs;
   S = import ./textBlock.nix pkgs;
-  F = import ./foldAttr.nix pkgs;
 in
 
 rec
@@ -98,14 +97,8 @@ rec
         "using" = r: x: r x x;
       }; 
 
-  docs.eval.eval.type = "Content -> { drv :: Derivation, text :: String, data :: AttrSet }";
-  eval = expr: 
-    let
-      lib = { inherit pkgs; } // C;
-      mkRes = C.liftNixValue expr;
-    in
-      pkgs.lib.fix (a: T.cata C.fmap evalAlg mkRes (lib // { inherit (a) data; }));
+  _eval = lib: expr: 
+      pkgs.lib.fix (a: T.cata C.fmap evalAlg (C.liftNixValue expr) (lib // { inherit (a) data; }));
 
-  docs.eval.run.type = "Content -> Derivation";
-  run = expr: (eval expr).drv;
+  _run = lib: expr: (_eval lib expr).drv;
 }
