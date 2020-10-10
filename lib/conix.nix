@@ -90,7 +90,7 @@ module rec
   markdown = expr
       "FileName -> Content -> Content" 
       "Create a markdown file from the given text" 
-      (_fileName: file.run (builtins.toFile "${_fileName}.md"))
+      (_fileName: file.run (x: pkgs.writeText "${_fileName}.md" x))
     ;
 
   pandoc = expr
@@ -100,7 +100,7 @@ module rec
        file.run
          (txt: pkgs.runCommand "${_fileName}.${_pandocType}" { buildInputs = [ pkgs.pandoc ] ++ _buildInputs; }
            ''
-             ${pkgs.pandoc}/bin/pandoc -s -o $out ${_pandocArgs} ${builtins.toFile "${_fileName}.md" txt}
+             ${pkgs.pandoc}/bin/pandoc -s -o $out ${_pandocArgs} ${pkgs.writeText "${_fileName}.md" txt}
            ''
          )
       )
@@ -155,7 +155,7 @@ module rec
   runNixSnippet = expr
       "SnippetName -> NixCode -> Content" 
       "Create a Nix code block, execute the code, and append the results as a second code block"
-      (name: runCode.run "nix" (t: [ "\n" (code.run "" "${P.printNixVal (import (builtins.toFile name t))}")] ))
+      (name: runCode.run "nix" (t: [ "\n" (code.run "" "${P.printNixVal (import (pkgs.writeText name t))}")] ))
     ;
 
   table = expr
@@ -189,7 +189,7 @@ module rec
       "Create an graph image from the given DOT code"
       (name: dotCode:
         let
-          graphvizCode = builtins.toFile "${name}.dot" dotCode;
+          graphvizCode = pkgs.writeText "${name}.dot" dotCode;
         in
           [ (local.run (
               pkgs.runCommandLocal
