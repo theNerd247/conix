@@ -98,7 +98,8 @@ rec
       }; 
 
   _eval = lib: expr: 
-      pkgs.lib.fix (a: T.cata C.fmap evalAlg (C.liftNixValue expr) (lib // { inherit (a) data; }));
+    pkgs.lib.fix (a: T.cata C.fmap evalAlg expr (lib // { inherit (a) data; }));
+    #pkgs.lib.fix (a: T.cata C.fmap evalAlg (C.liftNixValue expr) (lib // { inherit (a) data; }));
 
   _run = lib: expr: (_eval lib expr).drv;
 }

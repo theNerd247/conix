@@ -81,4 +81,12 @@ rec
 
   h_ = pkgs.conix.run h;
     
+  j = with pkgs.conix;
+    _merge
+    [ (exp (_merge [ (_text "a -> ") (data.code "jack") ]) 2)
+      (exp (_text "a -> b -> a") _text)
+    ];
+
+  exp = type: exp: with pkgs.conix;
+    _tell { _data = { run = exp; }; _next = type; };
 }

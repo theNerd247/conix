@@ -10,8 +10,6 @@ rec
 { 
   liftNixValue = mkHostLangParser attrsetToContent;
 
-  module = mkHostLangParser attrSetToModule;
-
   # Main API
   # "Parses" nix values into Content values
   # using mutual recursion
@@ -36,26 +34,27 @@ rec
 
   # Custom parser for generating documentation along side nix modules
   # (attribute sets  that define an API)
-  attrSetToModule = F.foldAttrsIxCond
-    T.isTyped
-    (x: path: with builtins; 
-      let
-        p = builtins.concatStringsSep "." path;
-      in
-      if builtins.isList x then 
-      _tell 
-        { _data = { ${p} = elemAt x 2; };
-          _next = 
-            [ "```haskell\n${p} :: " (liftNixValue (elemAt x 0)) 
+  module = 
+    F.foldAttrsIxCond
+    (T.isTyped)
+    (x: x.val or (_: x)) #_tell { _data = { ${builtins.concatStringsSep "." path} = x; }; _next = _text ""; })
+    (vals: _merge (builtins.attrValues vals));
+
+  expr = type: docstr: exp:
+    { _type = "expr";
+      run = exp;
+      val = path: 
+        let p = builtins.concatStringsSep "." path; in 
+        _tell 
+        { _data = { ${p} = exp; };
+          _next = _merge
+            [ "```haskell\n${p} :: " type
               "\n```\n" 
-              (liftNixValue (elemAt x 1)) 
+              docstr
               "\n\n" 
             ];
-        }
-      else 
-        _tell { _data = { ${p} = x; }; _next = _text ""; }
-    )
-    (vals: _merge (builtins.attrValues vals));
+        };
+    };
 
   # Internals
 
