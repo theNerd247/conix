@@ -14,6 +14,6 @@ in
   { 
     run = x: (eval x).drv;
     eval = x: internalLib._eval api (internalLib.liftNixValue x);
-    #docs = run (api.html "docs" conix.text);
+    docs = run (api.html "docs" conix.text);
   }
   // api
