@@ -10,12 +10,30 @@ in
 
 rec
 { 
+  docs.liftNixValue.docstr = x: with x; [''
+  Parses expressions written in the Nix host language
+  into the Conix eDSL. The follow conversions are performed:
+
+  ''(table
+    [ "Nix Expression" , "Conix Expression"]
+    [ ["<string>"      , "`text`"]
+    , ["<path>"        , "`local`"]
+    , ["<t:attrset>"   , "`[(tell t) (liftNixVal x | forall x in leaves of t)]`"]
+    , ["<func>"        , "`using`"]
+    , ["<list>"        , "`merge`"]
+    ]
+  )''
+
+
+  _Important_: This function is NOT lazy because it uses Nix's `typeOf` function
+  which forces WHNF evaluation. I'm still working on a workaround that doesn't
+  affect the users's syntax but with no current avail. I think the best long
+  term solution would to push an upstream change into Nix's evaluator to make
+  this function lazy.
+  ''];
+   
   liftNixValue = mkHostLangParser attrsetToContent;
 
-  # Main API
-  # "Parses" nix values into Content values
-  # using mutual recursion
-  # a -> Content
   mkHostLangParser = parseAttrSets: t: fmap liftNixValue (
          if T.isTyped t           then t 
     else if builtins.isPath t     then _local t
