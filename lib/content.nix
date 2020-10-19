@@ -1,3 +1,6 @@
+# This module defines the core functor defining the conix eDSL I aim to make
+# the constructors as orthoganal as possible and any convenience / user facing
+# constructors are defined in ./conix.nix.
 pkgs:
 
 let
@@ -5,7 +8,6 @@ let
   F = import ./foldAttr.nix pkgs;
 in
 
-# Re-export constructors to build the toplevel api
 rec
 { 
   liftNixValue = mkHostLangParser attrsetToContent;
@@ -30,30 +32,6 @@ rec
         liftNixValue
         (vals: _merge (builtins.attrValues vals)) 
         t;
-    };
-
-  # Custom parser for generating documentation along side nix modules
-  # (attribute sets  that define an API)
-  module = 
-    F.foldAttrsIxCond
-    (T.isTyped)
-    (x: x.val or (_: x)) #_tell { _data = { ${builtins.concatStringsSep "." path} = x; }; _next = _text ""; })
-    (vals: _merge (builtins.attrValues vals));
-
-  expr = type: docstr: exp:
-    { _type = "expr";
-      run = exp;
-      val = path: 
-        let p = builtins.concatStringsSep "." path; in 
-        _tell 
-        { _data = { ${p} = exp; };
-          _next = _merge
-            [ "```haskell\n${p} :: " type
-              "\n```\n" 
-              docstr
-              "\n\n" 
-            ];
-        };
     };
 
   # Internals
