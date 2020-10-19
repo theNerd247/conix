@@ -1,36 +1,41 @@
-pkgs:
+x: with x; module "" 
 
 rec
 {
-  docs.printNixVal.docstr = ''
+
+  printNixVal = expr 
+    "a -> String"
+    ''
     Pretty print a pure nix-value. 
 
-    NOTE: do not call this function on a derivation as it will segfault.
-    '';
-  docs.printNixVal.type = "a -> String";
-  printNixVal = e:
-    if builtins.isAttrs e then printAttrs e
-    else if builtins.isList e then printList e
-    else if builtins.isNull e then "null"
-    else if builtins.isFunction e then "<lambda>"
-    else builtins.toString e;
+    _NOTE_: do not call this function on a derivation as it will segfault.
+    ''
+    (let
+        printAttrs = e:
+          let
+            printElem = name: value:
+              "${name} = ${ printVal value };";
 
-  printAttrs = e:
-    let
-      printElem = name: value:
-        "${name} = ${ printNixVal value };";
+            printElems = 
+              builtins.concatStringsSep " "
+                (pkgs.lib.attrsets.mapAttrsToList printElem e);
+          in
+            "{ ${printElems} }";
 
-      printElems = 
-        builtins.concatStringsSep " "
-          (pkgs.lib.attrsets.mapAttrsToList printElem e);
-    in
-      "{ ${printElems} }";
+        printList = e:
+          let
+            printElems = builtins.concatStringsSep " "
+              (builtins.map printVal e);
+          in
+            "[ ${printElems} ]";
 
-  printList = e:
-    let
-      printElems = builtins.concatStringsSep " "
-        (builtins.map printNixVal e);
-    in
-      "[ ${printElems} ]";
-
+        printVal  = e:
+          if builtins.isAttrs e then printAttrs e
+          else if builtins.isList e then printList e
+          else if builtins.isNull e then "null"
+          else if builtins.isFunction e then "<lambda>"
+          else builtins.toString e;
+      in
+        printVal
+    );
 }
