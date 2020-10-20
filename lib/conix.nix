@@ -1,10 +1,8 @@
-conix: with conix;
+x: with x; module ''
+This module defines the user facing API for Conix.
+''
 
-let
-  P = import ./printNixValue.nix pkgs;
-in
-
-module rec
+rec
 { 
   # TODO: add documentation about using Nix host language
   # to construct Content
@@ -30,9 +28,9 @@ module rec
         Creates expressions from functions that depend on the final `data`.
         Use this as follows:
 
-        ''(code.run "nix" ''
+        ''(n (data.code "nix" ''
         conix: with conix; <content expression here>
-        '')''
+        ''))''
 
         Here `conix = { pkgs = ...; data = ...; ... }` where `data` is the
         final `data` and the rest of the `conix` attribute set is the conix
@@ -72,7 +70,7 @@ module rec
   set = expr
       "AttrSet -> Content"
       "Set a pure attribute set. This appends no new text to the content."
-      (_data: tell _data (text ""))
+      (_data: _tell { inherit _data; _next = _text ""; })
     ;
 
   indent = expr
@@ -90,14 +88,14 @@ module rec
   markdown = expr
       "FileName -> Content -> Content" 
       "Create a markdown file from the given text" 
-      (_fileName: file.run (x: pkgs.writeText "${_fileName}.md" x))
+      (_fileName: data.file (x: pkgs.writeText "${_fileName}.md" x))
     ;
 
   pandoc = expr
       "FileExtension -> PandocCmdArgs -> BuildInputs -> FileName -> Content -> Content"
       "Construct a file using pandoc"
       (_pandocType: _pandocArgs: _buildInputs: _fileName:
-       file.run
+       data.file
          (txt: pkgs.runCommand "${_fileName}.${_pandocType}" { buildInputs = [ pkgs.pandoc ] ++ _buildInputs; }
            ''
              ${pkgs.pandoc}/bin/pandoc -s -o $out ${_pandocArgs} ${pkgs.writeText "${_fileName}.md" txt}
@@ -109,7 +107,13 @@ module rec
   html = expr
       "FileName -> Content -> Content"
       "Construct an html file from the given content"
-      (_fileName: pandoc.run "html" "" [] _fileName)
+      (_fileName: data.pandoc "html" "" [] _fileName)
+    ;
+
+  pdf = expr
+    "FileName -> Content -> Content"
+      "Construct a PDF file from the given content"
+      (_fileName: data.pandoc "pdf" "" [pkgs.texlive.combined.scheme-small] _fileName)
     ;
 
   meta = expr
@@ -121,14 +125,14 @@ module rec
   css = expr
       "FilePath -> Content"
       "When used with `meta` add the local css file to this html file's includes"
-      (localPath: [ (local.run localPath) "css: ./${builtins.baseNameOf localPath}" ])
+      (localPath: [ (data.local localPath) "css: ./${builtins.baseNameOf localPath}" ])
     ;
 
   img = expr
       "FilePath -> Content"
       "Inserts an image in the given document and ensures that the imported image exits and is included in the final derivation"
       (caption: localPath:
-       [ (local.run localPath) "![${caption}](./${builtins.baseNameOf localPath})" ]
+       [ (data.local localPath) "![${caption}](./${builtins.baseNameOf localPath})" ]
       )
     ;
 
@@ -148,25 +152,25 @@ module rec
       "(Content -> Content) -> Language -> Code -> Content"
       "Create a code block and append the results of executing the passed runner"
       (lang: runner: content:
-       [ (code.run lang content) (runner content) ]
+       [ (data.code lang content) (runner content) ]
       )
     ;
 
   runNixSnippet = expr
       "SnippetName -> NixCode -> Content" 
       "Create a Nix code block, execute the code, and append the results as a second code block"
-      (name: runCode.run "nix" (t: [ "\n" (code.run "" "${P.printNixVal (import (pkgs.writeText name t))}")] ))
+      (name: data.runCode "nix" (t: [ "\n" (data.code "" "${P.printNixVal (import (pkgs.writeText name t))}")] ))
     ;
 
   table = expr
       "[Content] -> [[Content]] -> Content" 
       "Create a markdown table with the given headers and rows"
       (headers: rows:
-       [ (intersperse.run " | " headers) 
+       [ (data.intersperse " | " headers) 
          "\n"
          (builtins.concatStringsSep " | " (builtins.map (_: "---") headers))
          "\n"
-         (intersperse.run "\n" (builtins.map (intersperse.run " | ") rows))
+         (data.intersperse "\n" (builtins.map (data.intersperse " | ") rows))
       ])
     ;
 
@@ -191,7 +195,7 @@ module rec
         let
           graphvizCode = pkgs.writeText "${name}.dot" dotCode;
         in
-          [ (local.run (
+          [ (data.local (
               pkgs.runCommandLocal
                 "${name}.svg" 
                 { buildInputs = [ pkgs.graphviz ]; }
