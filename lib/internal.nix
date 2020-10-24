@@ -31,6 +31,36 @@ rec
     conix = import ./meta.nix;
   };
 
+
+  module = docstr: r:
+    [ docstr
+      (F.foldAttrsIxCond
+        T.isTyped
+        (x: x)
+        builtins.attrValues
+        r
+      )
+    ];
+
+  expr = type: docstr: _expr: p:
+    let
+      path = builtins.concatStringsSep "." p;
+    in
+      [ ''```haskell
+        ''path " :: " type ''
+
+
+        ```
+
+        ''
+        docstr ''
+
+        
+        ''
+
+        (_tell { ${path} = _expr; })
+      ];
+
   docs.liftNixValue.docstr = x: with x; [''
   Parses expressions written in the Nix host language
   into the Conix eDSL. The follow conversions are performed:

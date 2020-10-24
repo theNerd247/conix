@@ -7,7 +7,7 @@ let
 
 
   conix = internalLib._eval 
-    (import ./module.nix internalLib) 
+    internalLib
     (internalLib.liftNixValue (import ./conix.nix));
 
   userApi = conix.data // internalLib.userApi;
