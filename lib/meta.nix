@@ -1,6 +1,6 @@
 let
-  refDir = ./.git/refs/heads;
-  refFile = ./.git/HEAD;
+  refDir = ./../.git/refs/heads;
+  refFile = ./../.git/HEAD;
   ref = builtins.replaceStrings ["ref: refs/heads/" "\n"] ["" ""] (builtins.readFile refFile);
 
   # If the ref is 40 characters long then it's most likely a hash
@@ -17,21 +17,20 @@ let
       builtins.replaceStrings ["\n"] [""] 
         (builtins.readFile "${refDir}/${ref}");
 in
-{ conix =
-  { 
-    homepageUrl = "https://github.com/theNerd247/conix.git";
-    homePageLink = "<a href=\"${homepageUrl}\">conix</a>";
-    buildBadgeLink = "![](https://travis-ci.com/theNerd247/conix.svg?branch=${ref})";
-    git =
-      {
-        url = "https://github.com/theNerd247/conix.git"; 
-        inherit rev ref;
-      };
-    version = rec  
-      { text = "${builtins.toString major}.${builtins.toString minor}.${builtins.toString patch}";
-        major = 0; 
-        minor = 1; 
-        patch = 0; 
-      };
-  };
+rec
+{ 
+  homepageUrl = "https://github.com/theNerd247/conix.git";
+  homePageLink = "<a href=\"${homepageUrl}\">conix</a>";
+  buildBadgeLink = "![](https://travis-ci.com/theNerd247/conix.svg?branch=${ref})";
+  git =
+    {
+      url = "https://github.com/theNerd247/conix.git"; 
+      inherit rev ref;
+    };
+  version = rec  
+    { text = "${builtins.toString major}.${builtins.toString minor}.${builtins.toString patch}";
+      major = 0; 
+      minor = 2; 
+      patch = 0; 
+    };
 }

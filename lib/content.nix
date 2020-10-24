@@ -27,6 +27,8 @@ rec
     html = _fileName: pandoc "html" "" [] _fileName;
 
     pdf = _fileName: pandoc "pdf" "" [pkgs.texlive.combined.scheme-small] _fileName;
+
+    conix = import ./meta.nix;
   };
 
   docs.liftNixValue.docstr = x: with x; [''

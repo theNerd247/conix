@@ -1,9 +1,17 @@
-x: with x; userApi.html "docs" [
+x: with x; userApi.pdf "docs" (userApi.html "docs" [
 
-(import ./printNixValue.nix)
+''
+# Conix ''(userApi.conix.version.text)''
 
-(module ''
-This module defines the user facing API for Conix.
+Conix is a Nix EDSL for technical writing. It brings the Nix
+programming language alongside markdown and implements an
+intuitive build system.
+
+''
+
+(module 
+''
+## Conix API
 ''
 
 rec
@@ -192,4 +200,6 @@ rec
       )
     ;
   })
-]
+
+  (import ./printNixValue.nix)
+])
