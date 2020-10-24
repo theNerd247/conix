@@ -73,6 +73,21 @@ rec
       (_mkFile: _next: _file { inherit _mkFile; inherit _next; })
     ;
 
+  pandoc = expr
+    "OutputFileExtension -> PandocCmdArgs -> BuildInputs -> FileName -> Content -> Content"
+    "Use pandoc to construct a file from the given content"
+    pandoc;
+
+  html = expr
+    "FileName -> Content -> Content"
+    "Create an HTML file from the given content"
+    html;
+
+  pdf = expr
+    "FileName -> Content -> Content"
+    "Create a PDF file from the given content"
+    pdf;
+
   tell = expr
       "AttrSet -> Content -> Content"
       "Add data to the given content. Attribute paths are absolute and not relative. _TODO: add an example_"
