@@ -15,12 +15,12 @@ rec
   into the Conix eDSL. The follow conversions are performed:
 
   ''(table
-    [ "Nix Expression" , "Conix Expression"]
-    [ ["<string>"      , "`text`"]
-    , ["<path>"        , "`local`"]
-    , ["<t:attrset>"   , "`[(tell t) (liftNixVal x | forall x in leaves of t)]`"]
-    , ["<func>"        , "`using`"]
-    , ["<list>"        , "`merge`"]
+    [ "Nix Expression"   "Conix Expression"]
+    [ ["<string>"        "`text`"]
+      ["<path>"          "`local`"]
+      ["<t:attrset>"     "`[(tell t) (liftNixVal x | forall x in leaves of t)]`"]
+      ["<func>"          "`using`"]
+      ["<list>"          "`merge`"]
     ]
   )''
 
@@ -35,27 +35,28 @@ rec
   liftNixValue = mkHostLangParser attrsetToContent;
 
   mkHostLangParser = parseAttrSets: t: fmap liftNixValue (
-         if T.isTyped t           then t 
-    else if builtins.isPath t     then _local t
-    else if builtins.isAttrs t    then (parseAttrSets t)
-    else if builtins.isFunction t then _using t
-    else if builtins.isList t     then _merge t
-    else _text t
-  );
+           if T.isTyped t           then t 
+      else if builtins.isPath t     then _local t
+      else if builtins.isAttrs t    then (parseAttrSets t)
+      else if builtins.isFunction t then _using t
+      else if builtins.isList t     then _merge t
+      else _text t
+    );
 
-  attrsetToContent = t: _tell 
-    { _data = t; 
-      _next = F.foldAttrsCond
+  attrsetToContent = t: _merge 
+    [ (_tell t)
+      (F.foldAttrsCond
         T.isTyped
         liftNixValue
         (vals: _merge (builtins.attrValues vals)) 
-        t;
-    };
+        t
+      )
+    ];
 
   # Internals
 
   # Markup Constructors
-  docs.content._tell.type = "{ _data :: AttrSet, _next :: a} -> ContentF a";
+  docs.content._tell.type = "{ _data :: AttrSet }  -> ContentF a";
   _tell = T.typed "tell";
 
   docs.content._using.type = "(AttrSet -> a) -> ContentF a";
@@ -80,13 +81,12 @@ rec
   docs.content._merge.type = "[a] -> ContentF a";
   _merge = T.typed "merge";
 
-
   docs.content._indent.type = "{ _nSpaces :: Natural, _next :: a } -> ContentF a";
   _indent = T.typed "indent";
 
   fmapMatch = f:
     { 
-      "tell"  = {_data, _next}: _tell { inherit _data; _next = f _next; };
+      "tell"  = _data: _tell _data;
       "text"  = x: _text x;
       "local" = x: _local x;
       "file"  = {_mkFile, _next}: 
@@ -100,4 +100,4 @@ rec
     };
 
   fmap = T.matchWith fmapMatch;
-}
+} // T // F

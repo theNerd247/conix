@@ -36,6 +36,6 @@ rec
           else if builtins.isFunction e then "<lambda>"
           else builtins.toString e;
       in
-        printVal
+        (x: data.text (printVal x))
     );
 }

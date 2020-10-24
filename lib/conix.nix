@@ -1,4 +1,8 @@
-x: with x; module ''
+x: with x; [
+
+(import ./printNixValue.nix)
+
+(module ''
 This module defines the user facing API for Conix.
 ''
 
@@ -28,9 +32,9 @@ rec
         Creates expressions from functions that depend on the final `data`.
         Use this as follows:
 
-        ''(n (data.code "nix" ''
+        ```nix
         conix: with conix; <content expression here>
-        ''))''
+        ```
 
         Here `conix = { pkgs = ...; data = ...; ... }` where `data` is the
         final `data` and the rest of the `conix` attribute set is the conix
@@ -159,8 +163,15 @@ rec
   runNixSnippet = expr
       "SnippetName -> NixCode -> Content" 
       "Create a Nix code block, execute the code, and append the results as a second code block"
-      (name: data.runCode "nix" (t: [ "\n" (data.code "" "${P.printNixVal (import (pkgs.writeText name t))}")] ))
-    ;
+      (name: data.runCode "nix" 
+      (t: 
+        [ "\n" 
+          (data.code "" 
+            (data.printNixVal (import (pkgs.writeText name t)))
+          )
+        ] 
+      ))
+      ;
 
   table = expr
       "[Content] -> [[Content]] -> Content" 
@@ -205,4 +216,5 @@ rec
           ]
       )
     ;
-}
+  })
+]

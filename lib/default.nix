@@ -2,18 +2,19 @@ pkgs:
 
 let
   internalLib = (import ./content.nix pkgs)
-    // (import ./eval.nix pkgs);
+    // (import ./eval.nix pkgs)
+    // { inherit pkgs; };
+
 
   conix = internalLib._eval 
-    ({ inherit pkgs; } // internalLib) 
+    (import ./module.nix internalLib) 
     (internalLib.liftNixValue (import ./conix.nix));
 
-  api = conix.data // { inherit pkgs; };
+  userApi = conix.data;
 in
   rec
   { 
     run = x: (eval x).drv;
-    eval = x: internalLib._eval api (internalLib.liftNixValue x);
-    docs = run (api.html "docs" conix.text);
-  }
-  // api
+    eval = x: internalLib._eval userApi (internalLib.liftNixValue x);
+    #docs = run (api.html "docs" conix.text);
+  } // userApi

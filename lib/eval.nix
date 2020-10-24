@@ -84,7 +84,7 @@ rec
     T.match
       { 
         # Evaluate anything that isn't { _type ... } ...
-        "tell"  = {_data, _next}: res.addData _data _next;
+        "tell"  = _data: res.onlyData _data;
         "text"  = text: res.onlyText (builtins.toString text);
         "indent" = {_nSpaces, _next}: 
           res.overText (S.indent _nSpaces) _next;

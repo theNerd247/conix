@@ -2,6 +2,8 @@ rec
 {
   pkgs = import <nixpkgs> { overlays = import ./default.nix; };
 
+  conix = pkgs.conix;
+
   s = x: with x;  ["x = "{ x = "foo"; }];
 
   # test/
@@ -36,18 +38,22 @@ rec
 
   p_ = pkgs.conix.run h;
 
-  h = x: with x; dir "jack" [
-    (html "bar" [ 
-      { x = 3; } 
-      ''...or here
+  h = x: with x; dir "jack" (html "bar" [ 
+
+      { x = 3; }
 
       ''
-      (markdown "list" [ "  " (indent 2 (list 
-        [ "foo"
-          "bar"
-          "baz"
-        ])
-      )])
+      ...or here
+      ''
+
+      (markdown "mdListSample" [ "  " (indent 2 
+        (list 
+          [ "foo"
+            "bar"
+            "baz"
+          ]
+        ))
+      ])
 
       (html "baz" "a nested file")''
 
@@ -76,8 +82,7 @@ rec
       (runNixSnippet "foo" ''
         1 + 2
       '')
-    ])
-  ]; 
+    ]);
 
   h_ = pkgs.conix.run h;
     
