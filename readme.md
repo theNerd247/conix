@@ -1,3 +1,6 @@
+---
+css: ./latex.css
+---
 # Conix 0.2.0
 
 Conix is a Nix EDSL for technical writing. It brings the Nix
@@ -17,7 +20,6 @@ updates pushed to the master branch until the first major release.**
 Any ideas or help are welcome! Please submit a PR or open an issue as you see
 fit. I like to use the project board to organize my thoughts; check the todo
 column for tasks to work on. I will try and convert these to issues when I can.
-Please read the [./design.md](./design.md) document for the design of conix.
 
 # Related Works
 

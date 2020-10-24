@@ -2,6 +2,10 @@ x: with x; [
 
 (markdown "readme" (html "index" [
 
+(meta
+  (css ../static/latex.css)
+)
+
 ''
 # Conix ''(conix.version.text)''
 
@@ -45,6 +49,10 @@ Many thanks to:
 ]))
 
 (pdf "docs" (html "docs" [
+
+  (meta
+    (css ../static/latex.css)
+  )
 
 (module 
 ''
@@ -158,13 +166,13 @@ rec
   meta = expr
       "[Content] -> Content" 
       "Construct the meta data portion of a Pandoc sytle markdown file"
-      (_data: [ "---\n" ] ++ _data ++ [ "\n---\n" ])
+      x.meta
     ;
 
   css = expr
       "FilePath -> Content"
       "When used with `meta` add the local css file to this html file's includes"
-      (localPath: [ (data.local localPath) "css: ./${builtins.baseNameOf localPath}" ])
+      x.css
     ;
 
   img = expr

@@ -31,6 +31,13 @@ rec
       inherit _next;
     };
 
+  meta = _data: [ "---\n" ] ++ _data ++ [ "\n---\n" ];
+
+  css = localPath: 
+    [ (_local localPath) 
+      "css: ./${builtins.baseNameOf localPath}" 
+    ];
+
   conix = import ./meta.nix;
 
   module = docstr: r:
