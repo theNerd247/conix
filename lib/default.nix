@@ -1,7 +1,7 @@
 pkgs: 
 
 let
-  internalLib = (import ./content.nix pkgs)
+  internalLib = (import ./internal.nix pkgs)
     // (import ./eval.nix pkgs)
     // { inherit pkgs; };
 

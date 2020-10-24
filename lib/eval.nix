@@ -4,7 +4,7 @@ let
   T = import ./types.nix;
   M = import ./monoid.nix;
 
-  C = import ./content.nix pkgs;
+  C = import ./internal.nix pkgs;
   CJ = import ./copyJoin.nix pkgs;
   S = import ./textBlock.nix pkgs;
 in
