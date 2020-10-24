@@ -1,7 +1,7 @@
-x: with x; userApi.pdf "docs" (userApi.html "docs" [
+x: with x; pdf "docs" (html "docs" [
 
 ''
-# Conix ''(userApi.conix.version.text)''
+# Conix ''(conix.version.text)''
 
 Conix is a Nix EDSL for technical writing. It brings the Nix
 programming language alongside markdown and implements an

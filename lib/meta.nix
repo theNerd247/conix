@@ -20,8 +20,6 @@ in
 rec
 { 
   homepageUrl = "https://github.com/theNerd247/conix.git";
-  homePageLink = "<a href=\"${homepageUrl}\">conix</a>";
-  buildBadgeLink = "![](https://travis-ci.com/theNerd247/conix.svg?branch=${ref})";
   git =
     {
       url = "https://github.com/theNerd247/conix.git"; 

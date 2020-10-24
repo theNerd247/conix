@@ -10,7 +10,7 @@ let
     internalLib
     (internalLib.liftNixValue (import ./conix.nix));
 
-  userApi = conix.data // internalLib.userApi;
+  userApi = conix.data; 
 in
   rec
   { 
