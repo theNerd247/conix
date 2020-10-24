@@ -1,4 +1,6 @@
-x: with x; pdf "docs" (html "docs" [
+x: with x; [ 
+
+(html "index" [
 
 ''
 # Conix ''(conix.version.text)''
@@ -7,7 +9,12 @@ Conix is a Nix EDSL for technical writing. It brings the Nix
 programming language alongside markdown and implements an
 intuitive build system.
 
+* [API Reference Docs](./docs.html)
 ''
+
+])
+
+(pdf "docs" (html "docs" [
 
 (module 
 ''
@@ -76,17 +83,17 @@ rec
   pandoc = expr
     "OutputFileExtension -> PandocCmdArgs -> BuildInputs -> FileName -> Content -> Content"
     "Use pandoc to construct a file from the given content"
-    pandoc;
+    x.pandoc;
 
   html = expr
     "FileName -> Content -> Content"
     "Create an HTML file from the given content"
-    html;
+    x.html;
 
   pdf = expr
     "FileName -> Content -> Content"
     "Create a PDF file from the given content"
-    pdf;
+    x.pdf;
 
   tell = expr
       "AttrSet -> Content -> Content"
@@ -228,24 +235,24 @@ rec
         homepageUrl = expr
           "URLString"
           "The homepage URL of conix"
-          conix.homepageUrl;
+          x.conix.homepageUrl;
 
         git = 
         {
           url = expr
             "URLString"
             "The HTTP URL of the conix GIT repo"
-            conix.git.url;
+            x.conix.git.url;
 
           rev = expr
             "GitCommitHashString"
             "The GIT commit hash of conix repo currently used"
-            conix.git.rev;
+            x.conix.git.rev;
 
           ref = expr
             "GitBranchString"
             "The GIT branch of the conix repo currently being used"
-            conix.git.ref;
+            x.conix.git.ref;
         };
 
         version =
@@ -257,24 +264,26 @@ rec
 
             It is formatted as: `major.minor.patch`
             ''
-            conix.version.text;
+            x.conix.version.text;
 
           major = expr
             "Natural"
             "The major version of the conix repo being used"
-            conix.version.major;
+            x.conix.version.major;
 
           minor = expr
             "Natural"
             "The minor version of the conix repo being used"
-            conix.version.minor;
+            x.conix.version.minor;
 
           patch = expr
             "Natural"
             "The patch version of the conix repo being used"
-            conix.version.patch;
+            x.conix.version.patch;
         };
       };
     }
   )
-])
+]))
+
+]

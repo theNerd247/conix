@@ -54,7 +54,7 @@ rec
         
         ''
 
-        (_tell { ${path} = _expr; })
+        (_tell (pkgs.lib.attrsets.setAttrByPath p _expr))
       ];
 
   docs.liftNixValue.docstr = x: with x; [''
