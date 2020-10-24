@@ -26,6 +26,11 @@ rec
 
   pdf = _fileName: pandoc "pdf" "" [pkgs.texlive.combined.scheme-small] _fileName;
 
+  markdown = _fileName: _next: _file 
+    { _mkFile = pkgs.writeText "${_fileName}.md"; 
+      inherit _next;
+    };
+
   conix = import ./meta.nix;
 
   module = docstr: r:

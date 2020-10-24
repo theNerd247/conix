@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-docs=$(nix-build ./documentation.nix --show-trace)
-cp --no-preserve=mode $docs/*.md ./.
+docs=$(nix-build -E "(import <nixpkgs> { overlays = import ./.; }).conix.docs" --show-trace)
+cp --no-preserve=mode $docs/readme.md ./.
