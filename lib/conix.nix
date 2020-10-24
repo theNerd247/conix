@@ -217,4 +217,45 @@ rec
   })
 
   (import ./printNixValue.nix)
+
+  (module ''
+    ## Conix Meta Data API
+
+    Use the following functions to use meta data on the conix repo in your content
+    ''
+    { conix =
+      {
+        homepageUrl = expr
+          "URLString"
+          "The homepage URL of conix"
+          conix.homepageUrl;
+
+        git = 
+        {
+          url = expr
+            "URLString"
+            "The HTTP URL of the conix GIT repo"
+            conix.git.url;
+
+          rev = expr
+            "GitCommitHashString"
+            "The GIT commit hash of conix repo currently used"
+            conix.git.rev;
+
+          ref = expr
+            "GitBranchString"
+            "The GIT branch of the conix repo currently being used"
+            conix.git.ref;
+        };
+
+        version =
+        { 
+          text = expr
+            "SemanticVersionString"
+            "The semantic version of the conix repo being used"
+            conix.version.text;
+        };
+      };
+    }
+  )
 ])
