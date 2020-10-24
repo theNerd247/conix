@@ -10,6 +10,25 @@ in
 
 rec
 { 
+
+  # User API that ./conix.nix depends on
+  userApi = rec
+  {
+    pandoc = _pandocType: _pandocArgs: _buildInputs: _fileName: _next:
+      _file
+      { _mkFile = txt: 
+          pkgs.runCommand "${_fileName}.${_pandocType}" { buildInputs = [ pkgs.pandoc ] ++ _buildInputs; }
+          ''
+          ${pkgs.pandoc}/bin/pandoc -s -o $out ${_pandocArgs} ${pkgs.writeText "${_fileName}.md" txt}
+          '';
+        inherit _next;
+      };
+
+    html = _fileName: pandoc "html" "" [] _fileName;
+
+    pdf = _fileName: pandoc "pdf" "" [pkgs.texlive.combined.scheme-small] _fileName;
+  };
+
   docs.liftNixValue.docstr = x: with x; [''
   Parses expressions written in the Nix host language
   into the Conix eDSL. The follow conversions are performed:

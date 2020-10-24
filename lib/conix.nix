@@ -1,4 +1,4 @@
-x: with x; [
+x: with x; userApi.html "docs" [
 
 (import ./printNixValue.nix)
 
@@ -93,31 +93,6 @@ rec
       "FileName -> Content -> Content" 
       "Create a markdown file from the given text" 
       (_fileName: data.file (x: pkgs.writeText "${_fileName}.md" x))
-    ;
-
-  pandoc = expr
-      "FileExtension -> PandocCmdArgs -> BuildInputs -> FileName -> Content -> Content"
-      "Construct a file using pandoc"
-      (_pandocType: _pandocArgs: _buildInputs: _fileName:
-       data.file
-         (txt: pkgs.runCommand "${_fileName}.${_pandocType}" { buildInputs = [ pkgs.pandoc ] ++ _buildInputs; }
-           ''
-             ${pkgs.pandoc}/bin/pandoc -s -o $out ${_pandocArgs} ${pkgs.writeText "${_fileName}.md" txt}
-           ''
-         )
-      )
-    ;
-
-  html = expr
-      "FileName -> Content -> Content"
-      "Construct an html file from the given content"
-      (_fileName: data.pandoc "html" "" [] _fileName)
-    ;
-
-  pdf = expr
-    "FileName -> Content -> Content"
-      "Construct a PDF file from the given content"
-      (_fileName: data.pandoc "pdf" "" [pkgs.texlive.combined.scheme-small] _fileName)
     ;
 
   meta = expr

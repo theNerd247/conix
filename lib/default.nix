@@ -10,11 +10,11 @@ let
     (import ./module.nix internalLib) 
     (internalLib.liftNixValue (import ./conix.nix));
 
-  userApi = conix.data;
+  userApi = conix.data // internalLib.userApi;
 in
   rec
   { 
     run = x: (eval x).drv;
     eval = x: internalLib._eval userApi (internalLib.liftNixValue x);
-    #docs = run (api.html "docs" conix.text);
+    docs = conix.drv;
   } // userApi
