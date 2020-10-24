@@ -252,8 +252,27 @@ rec
         { 
           text = expr
             "SemanticVersionString"
-            "The semantic version of the conix repo being used"
+            ''
+            The semantic version of the conix repo being used.
+
+            It is formatted as: `major.minor.patch`
+            ''
             conix.version.text;
+
+          major = expr
+            "Natural"
+            "The major version of the conix repo being used"
+            conix.version.major;
+
+          minor = expr
+            "Natural"
+            "The minor version of the conix repo being used"
+            conix.version.minor;
+
+          patch = expr
+            "Natural"
+            "The patch version of the conix repo being used"
+            conix.version.patch;
         };
       };
     }
