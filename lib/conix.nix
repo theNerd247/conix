@@ -80,15 +80,17 @@ rec
 
   ref = expr 
     "Content -> Content"
-    ''Prevent infinite recursion when using a value from the data store as content.
+    [''
+    Prevent infinite recursion when using a value from the data store as
+    content.
 
     For example: 
 
-    ```nix
+    ''(x.ref (data.code "nix" ''
     [ { x = 3; }
       data.x
     ]
-    ```
+    ''))''
 
     Will break with an `infinite recursion` error. To resolve this do:
 
@@ -104,15 +106,14 @@ rec
       (r data.x)
     ]
     ```
-    ''
+    '']
     x.ref
   ;
 
-    ''
-    x.ref
-  ;
-
-  r = ref;
+  r = expr
+    (x.ref data._docs.ref.type)
+    "See `ref`"
+    x.ref;
 
   using = expr
       "(AttrSet -> Content) -> Content"

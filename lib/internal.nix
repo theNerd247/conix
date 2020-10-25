@@ -69,6 +69,7 @@ rec
         ''
 
         (_tell (pkgs.lib.attrsets.setAttrByPath p _expr))
+        (_tell (pkgs.lib.attrsets.setAttrByPath (["_docs"] ++ p) { inherit type docstr; }))
       ];
 
   docs.liftNixValue.docstr = x: with x; [''
