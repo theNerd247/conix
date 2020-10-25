@@ -40,6 +40,8 @@ rec
 
   conix = import ./meta.nix;
 
+  ref = _ref;
+
   module = docstr: r:
     [ docstr
       (F.foldAttrsIxCond
@@ -115,33 +117,36 @@ rec
   # Internals
 
   # Markup Constructors
-  docs.content._tell.type = "{ _data :: AttrSet }  -> ContentF a";
+  docs._tell.type = "{ _data :: AttrSet }  -> ContentF a";
   _tell = T.typed "tell";
 
-  docs.content._using.type = "(AttrSet -> a) -> ContentF a";
+  docs._using.type = "(AttrSet -> a) -> ContentF a";
   _using = T.typed "using";
 
   # NOTE: for now we'll use the final encoding of documents. However,
   # In the future it might be useful to use the inital encoding
   # (like a copy of the Pandoc AST).
-  docs.content.text.type = "String -> ContentF a";
+  docs.text.type = "String -> ContentF a";
   _text = T.typed "text";
 
   # File System Constructors
-  docs.content._file.type = "{_fileName :: FileName, _next :: a} -> ContentF a";
+  docs._file.type = "{_fileName :: FileName, _next :: a} -> ContentF a";
   _file = T.typed "file";
 
-  docs.content._dir.type = "{ _dirName :: DirName, _next :: a} -> ContentF a";
+  docs._dir.type = "{ _dirName :: DirName, _next :: a} -> ContentF a";
   _dir = T.typed "dir";
 
-  docs.content._local.type = "FilePath -> ContentF a";
+  docs._local.type = "FilePath -> ContentF a";
   _local = T.typed "local";
 
-  docs.content._merge.type = "[a] -> ContentF a";
+  docs._merge.type = "[a] -> ContentF a";
   _merge = T.typed "merge";
 
-  docs.content._indent.type = "{ _nSpaces :: Natural, _next :: a } -> ContentF a";
+  docs._indent.type = "{ _nSpaces :: Natural, _next :: a } -> ContentF a";
   _indent = T.typed "indent";
+
+  docs._ref.type = "a -> ContentF a";
+  _ref = T.typed "ref";
 
   fmapMatch = f:
     { 
@@ -156,6 +161,7 @@ rec
         _indent { inherit _nSpaces; _next = f _next; };
       "merge" = xs: _merge (builtins.map f xs);
       "using" = g: _using (x: f (g x));
+      "ref" = x: _ref (f x);
     };
 
   fmap = T.matchWith fmapMatch;

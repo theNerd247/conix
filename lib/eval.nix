@@ -31,12 +31,13 @@ rec
       mergeData = pkgs.lib.attrsets.recursiveUpdate; 
 
       # AttrSet -> ResF Derivation
-      addData = _data: f: r: 
+      noData = f: x:
         let
-          x = f r;
+          r = f x;
         in
-          { inherit (x) text drv; 
-            data = mergeData x.data _data; 
+          { text = r.text;
+            drv = r.drv;
+            data = {};
           };
 
       # a -> ResF a
@@ -61,6 +62,8 @@ rec
         else if a == {}            then b 
         else if b == {}            then a 
         else CJ.collect name [a b];
+
+      join = r: x: r x x;
 
       # (Monoid m) => instance Monoid (ResF m)
       monoid =
@@ -94,7 +97,8 @@ rec
         "merge" = xs: (M (res.monoid)).mconcat xs;
         "dir" = {_dirName, _next}: 
           res.fmap (drv: CJ.dir _dirName [drv]) _next;
-        "using" = r: x: r x x;
+        "using" = r: res.join r;
+        "ref" = x: res.noData x;
       }; 
 
   _eval = lib: expr: 

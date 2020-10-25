@@ -78,6 +78,42 @@ rec
 
   t = text;
 
+  ref = expr 
+    "Content -> Content"
+    ''Prevent infinite recursion when using a value from the data store as content.
+
+    For example: 
+
+    ```nix
+    [ { x = 3; }
+      data.x
+    ]
+    ```
+
+    Will break with an `infinite recursion` error. To resolve this do:
+
+    ```nix
+    [ { x = 3; }
+      (ref data.x)
+    ]
+    ```
+    or (if you don't like typing "ref"):
+
+    ```nix
+    [ { x = 3; }
+      (r data.x)
+    ]
+    ```
+    ''
+    x.ref
+  ;
+
+    ''
+    x.ref
+  ;
+
+  r = ref;
+
   using = expr
       "(AttrSet -> Content) -> Content"
       [
@@ -136,7 +172,7 @@ rec
   tell = expr
       "AttrSet -> Content -> Content"
       "Add data to the given content. Attribute paths are absolute and not relative. _TODO: add an example_"
-      (_data: _next: _tell { inherit _data _next; })
+      x._tell
     ;
 
   set = expr
@@ -258,6 +294,13 @@ rec
             "![](./${name}.svg)"
           ]
       )
+    ;
+
+  
+  digraph = expr
+    "ImageName -> DOTCode -> Content"
+    "Shorthand for: `dotgraph imgName \"digraph { ... }\"`"
+    (imgName: code: data.dotgraph imgName "digraph { ${code} }")
     ;
   })
 
