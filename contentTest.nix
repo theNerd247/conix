@@ -1,46 +1,23 @@
 rec
 {
-  pkgs = import <nixpkgs> { overlays = import ./default.nix; };
+
+  extend = c: with c; htmlModule "customApi" (module "# Custom API\n\n"
+    { addBoo = expr 
+        "Content -> Content"
+        "Adds prefix boo!"
+        (x: [ "boo! " x]);
+    });
+
+  pkgs = import <nixpkgs> 
+    { overlays = import ./default.nix { inherit extend; }; };
 
   conix = pkgs.conix;
-
-  s = x: with x;  ["x = "{ x = "foo"; }];
-
-  # test/
-  u = x: with x; dir "test"
-    [ ''This is a document ''{ y = 7; }''
-
-      with ''(t data.x)" content"
-      (set { x = "foo"; })
-    ];
-
-  u_ = pkgs.conix.run u;
-
-  # foo.md
-  w = x: with x; markdown "foo" "bob"; 
-
-  # bar.md + test/
-  y = x: with x; markdown "bar" u;
-
-  y_ = pkgs.conix.run y;
-
-  # baz * (bar.md + test/ + foo.md)
-  z = x: with x; dir "baz" 
-    [ w y ]; 
-
-  # Expexcted
-  z_ = pkgs.conix.run z;
-
-  p = x: with x; pandoc "testPdf" "pdf" "" [ pkgs.texlive.combined.scheme-small ]
-    [ '' asdf ''{ x = "mate"; }
-      (set { y = 7; })
-    ];
-
-  p_ = pkgs.conix.run h;
 
   h = x: with x; dir "jack" (html "bar" [ 
 
       { x = 3; }
+
+      (addBoo "foo!")
 
       ''
       ...or here

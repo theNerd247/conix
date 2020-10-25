@@ -1,4 +1,4 @@
-pkgs: 
+pkgs: {extensions ? {}}:
 
 let
   internalLib = (import ./internal.nix pkgs)
@@ -7,7 +7,12 @@ let
 
   conix = internalLib._eval 
     internalLib
-    (internalLib.liftNixValue (import ./conix.nix));
+    (internalLib.liftNixValue 
+      [ 
+        (import ./conix.nix )
+        extensions
+      ]
+    );
 
   userApi = conix.data;
 in

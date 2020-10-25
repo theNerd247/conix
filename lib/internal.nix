@@ -42,6 +42,9 @@ rec
 
   ref = _ref;
 
+  htmlModule = name: x:
+    html name [ (meta (css ../static/latex.css)) x ];
+
   module = docstr: r:
     [ docstr
       (F.foldAttrsIxCond

@@ -1,1 +1,2 @@
-[ (self: super: { conix = import ./lib self; })]
+args:
+[ (self: super: { conix = import ./lib super args; })]
