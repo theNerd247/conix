@@ -1,14 +1,9 @@
-x: with x; [ 
+internalLib: with internalLib; [ 
 
-(markdown "readme" (html "index" [
-
-(meta
-  (css ../static/latex.css)
-)
+(markdown "readme" (htmlModule "index" [
 
 ''
 # Conix ''(conix.version.text)''
-
 
 Conix is a Nix EDSL for technical writing. It brings the Nix
 programming language alongside markdown and implements an
@@ -48,16 +43,7 @@ Many thanks to:
 
 ]))
 
-(html "docs" [
-
-  (meta
-    (css ../static/latex.css)
-  )
-
-(module 
-''
-## Conix API
-''
+(htmlModule "docs" [(module "## Conix API\n\n"
 
 rec
 { 
@@ -86,7 +72,7 @@ rec
 
     For example: 
 
-    ''(x.ref (data.code "nix" ''
+    ''(internalLib.ref (data.code "nix" ''
     [ { x = 3; }
       data.x
     ]
@@ -107,13 +93,13 @@ rec
     ]
     ```
     '']
-    x.ref
+    internalLib.ref
   ;
 
   r = expr
-    (x.ref data._docs.ref.type)
+    (internalLib.ref data._docs.ref.type)
     "See `ref`"
-    x.ref;
+    internalLib.ref;
 
   using = expr
       "(AttrSet -> Content) -> Content"
@@ -158,22 +144,22 @@ rec
   pandoc = expr
     "OutputFileExtension -> PandocCmdArgs -> BuildInputs -> FileName -> Content -> Content"
     "Use pandoc to construct a file from the given content"
-    x.pandoc;
+    internalLib.pandoc;
 
   html = expr
     "FileName -> Content -> Content"
     "Create an HTML file from the given content"
-    x.html;
+    internalLib.html;
 
   pdf = expr
     "FileName -> Content -> Content"
     "Create a PDF file from the given content"
-    x.pdf;
+    internalLib.pdf;
 
   tell = expr
       "AttrSet -> Content -> Content"
       "Add data to the given content. Attribute paths are absolute and not relative. _TODO: add an example_"
-      x._tell
+      internalLib._tell
     ;
 
   set = expr
@@ -197,19 +183,19 @@ rec
   markdown = expr
       "FileName -> Content -> Content" 
       "Create a markdown file from the given text" 
-      x.markdown
+      internalLib.markdown
     ;
 
   meta = expr
       "[Content] -> Content" 
       "Construct the meta data portion of a Pandoc sytle markdown file"
-      x.meta
+      internalLib.meta
     ;
 
   css = expr
       "FilePath -> Content"
       "When used with `meta` add the local css file to this html file's includes"
-      x.css
+      internalLib.css
     ;
 
   img = expr
@@ -317,24 +303,24 @@ rec
         homepageUrl = expr
           "URLString"
           "The homepage URL of conix"
-          x.conix.homepageUrl;
+          internalLib.conix.homepageUrl;
 
         git = 
         {
           url = expr
             "URLString"
             "The HTTP URL of the conix GIT repo"
-            x.conix.git.url;
+            internalLib.conix.git.url;
 
           rev = expr
             "GitCommitHashString"
             "The GIT commit hash of conix repo currently used"
-            x.conix.git.rev;
+            internalLib.conix.git.rev;
 
           ref = expr
             "GitBranchString"
             "The GIT branch of the conix repo currently being used"
-            x.conix.git.ref;
+            internalLib.conix.git.ref;
         };
 
         version =
@@ -346,26 +332,101 @@ rec
 
             It is formatted as: `major.minor.patch`
             ''
-            x.conix.version.text;
+            internalLib.conix.version.text;
 
           major = expr
             "Natural"
             "The major version of the conix repo being used"
-            x.conix.version.major;
+            internalLib.conix.version.major;
 
           minor = expr
             "Natural"
             "The minor version of the conix repo being used"
-            x.conix.version.minor;
+            internalLib.conix.version.minor;
 
           patch = expr
             "Natural"
             "The patch version of the conix repo being used"
-            x.conix.version.patch;
+            internalLib.conix.version.patch;
         };
       };
     }
   )
+
+  (module ''
+    ### Conix Module API
+
+    The following functions are available for constructing modules:
+    conix expressions that extend the conix core library as well as
+    generate documentation.
+    ''
+    { 
+      module = expr
+        "Content -> { Path :: Expression } -> Content"
+        ''
+        Create a new module with the given module doc string and
+        attribute set containing expressions. 
+
+        The first argument is content (typically module level documentation) to
+        insert _before_ API documentation.
+
+        For example: 
+        
+        ```nix
+          module 
+            '''
+            # String API
+
+            This is an api for creating fancy strings.
+            '''
+            { 
+              appendPeriod = expr
+                "Content -> Content"
+                "Appends a period to the given content"
+                (x: [ x "."])
+                ;
+            }
+        ```
+        ''
+        internalLib.module;
+
+      expr = internalLib.expr
+        "HaskellTypeString -> Content -> a"
+        ''
+        Create a new API expression with a type, documentation, and a Nix value.
+
+        Traditionally Nix modules are just attribute sets with their values being
+        API expressions (e.g a function). Documentation is left as comments and
+        types don't exist. `expr` abstracts over documentation, types, and the
+        user defined function to make documentation first class in Nix.
+        ''
+        internalLib.expr
+        ;
+
+      htmlModule = expr
+        "FileName -> Content -> Content"
+        ''
+        Create an html file that is styled just like the conix core API.
+
+        This is provided as a convenience function. Feel free to use the normal
+        API to generate custom API formats. For example you may want a PDF
+        version of your API docs:
+
+        ```nix
+        pdf "myDocs" 
+          (module "# MY API Docs\n\n"
+          { 
+            addOne = expr
+              "Natural -> Natural"
+              "adds one..."
+              (x: x+1)
+              ;
+          }
+        ```
+        ''
+    }
+  )
+
 ])
 
 ]
