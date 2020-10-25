@@ -1,3 +1,1 @@
-[
-  (import ./eval.nix) 
-]
+[ (self: super: { conix = import ./lib self; })]

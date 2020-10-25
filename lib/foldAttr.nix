@@ -1,5 +1,5 @@
-conix: { lib = 
-let inherit (conix.pkgs.lib.attrsets) mapAttrs; in
+pkgs: 
+
 rec { 
 
   docs.foldAttrsIxCond.docstr = ''
@@ -7,12 +7,12 @@ rec {
     values into final values also takes in the path from the top of the
     attribute set for that leaf value.
     '';
-  docs.foldAttrsIxCond.type = "((AttrSet e ) -> Bool) -> (a -> Path -> b) -> (AttrSet b -> b) -> AttrSet a -> Path -> b";
+  docs.foldAttrsIxCond.type = "((AttrSet e ) -> Bool) -> (a -> Path -> b) -> (AttrSet b -> b) -> AttrSet a -> b";
   foldAttrsIxCond = pred: onLeaf: mergeLeafs: set:
     foldAttrsCond 
       pred 
       onLeaf 
-      (fs: path: mergeLeafs (mapAttrs (name: f: f (path ++ [name])) fs))
+      (fs: path: mergeLeafs (pkgs.lib.attrsets.mapAttrs (name: f: f (path ++ [name])) fs))
       set
       [];
 
@@ -48,7 +48,7 @@ rec {
       # (a -> b) -> (a | AttrSet a) -> b
       fmap = f: x:
         if (! builtins.isAttrs x) || (pred x)
-        then x else mapAttrs (name: f) x;
+        then x else pkgs.lib.attrsets.mapAttrs (name: f) x;
 
       # AttrSet a -> b
       cata = x: alg (fmap cata x);
@@ -62,4 +62,4 @@ rec {
       {ix = 0; inherit b; }
       as
     ).b;
-}; }
+}
