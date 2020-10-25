@@ -41,11 +41,11 @@ rec
     number of spaces.
   '';
   docs.indent.type = "Natural -> String -> String";
-  indent = n: 
+  indent = n: x:
     let 
       buffer = builtins.concatStringsSep "" (builtins.genList (_: " ") n);
     in
-     builtins.replaceStrings ["\n"] ["\n${buffer}"];
+     buffer + builtins.replaceStrings ["\n"] ["\n${buffer}"] x;
 
   docs.prefixLines.type = "String -> String -> String";
   prefixLines = prefix: str: prefix+(builtins.replaceStrings ["\n"] ["\n${prefix}"] str);
