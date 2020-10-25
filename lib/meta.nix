@@ -1,7 +1,7 @@
 let
-  refDir = ./.git/refs/heads;
-  refFile = ./.git/HEAD;
-  ref = builtins.replaceStrings ["ref: refs/heads/" "\n"] ["" ""]  (builtins.readFile refFile);
+  refDir = ./../.git/refs/heads;
+  refFile = ./../.git/HEAD;
+  ref = builtins.replaceStrings ["ref: refs/heads/" "\n"] ["" ""] (builtins.readFile refFile);
 
   # If the ref is 40 characters long then it's most likely a hash
   # in which case we're in a detached head state and are unable to point
@@ -18,7 +18,17 @@ let
         (builtins.readFile "${refDir}/${ref}");
 in
 rec
-{
-  url = "https://github.com/theNerd247/conix.git"; 
-  inherit rev ref;
+{ 
+  homepageUrl = "https://github.com/theNerd247/conix.git";
+  git =
+    {
+      url = "https://github.com/theNerd247/conix.git"; 
+      inherit rev ref;
+    };
+  version = rec  
+    { text = "${builtins.toString major}.${builtins.toString minor}.${builtins.toString patch}";
+      major = 0; 
+      minor = 2; 
+      patch = 0; 
+    };
 }

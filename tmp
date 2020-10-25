@@ -1,0 +1,179 @@
+Data ===> Render
+ ^----------|
+
+  * - Syntax separation. i.e. JSON + Mustache Template
+  * - No high order logic support between data and rendering languages. i.e:
+    the text to be rendered depends on the output format or page size.
+  * + swap out rendering format
+  * + logic support for data layer
+
+Data <===> Render
+
+  * + marry the data and render syntaxes
+  * i.e auto link generation
+  * + non-turring complete
+  * + types lots of 'em and inference.
+  * extensible "markup language" syntax
+  * keep all provanence information for output files / derivations (for any
+    build system)
+    - the most general information is the file system heirarchy of the final
+      produced derivation
+
+Nix 
+
+1. Write Text <--|-- Content
+1. Create data <-|
+1. Create outputs (derivations)
+
+  |-------------------------|
+  v--------------|          |
+datastructure ~ text ~ (derivation - fs. Hierarchy)
+
+Final Encoding
+
+Module = { text : Text; drvs = ???; a = { text = ???; drvs = ???; } }
+
+text :: Lens Module Text
+
+list :: [Module] -> Module
+
+Text is the language provided by the rendering system.
+
+Conix 
+
+Initial
+DhallAeson a -> Text
+
+Final 
+type Doc = (Text, Text)
+
+render :: (Text -> a) -> Content2 a -> Content2 a
+render r (Markup t) = Rendered (r t)
+render _ x = x
+
+data ListType = Enum | Bullet | Ordered
+data ListItem = 
+
+final encode
+mdList :: [Text] -> Text
+
+  mdList [ (f a) (g b) ... ]
+
+mdList' :: [[Text]] -> [Text]
+mdList = pure . mdList . fmap mconcat
+
+
+1. a derivation at the top of the tree 
+  (not needed because not fixing this gives the user more power)
+1. 
+
+
+````````
+conix: dir "bar" [(mdFile "foo") (htmlFile "baz")] ()
+
+`````
+
+type Pandoc a
+  = TextLit Text
+  | BulletList [a]
+  | EnumList [a]
+  | Table (Map Text [a])
+  | Heading Natural a
+  | HRule
+  | Paragraph [a]
+  deriving Functor
+
+type MarkupCodeF a = FreeF a PandocF
+
+type MarkupCode a = Fix (MarkupCodeF a)
+
+label :: Name -> MarkupCode -> MarkupCode
+label = Labeled
+
+labelHidden :: Name -> MarkupCode a -> MarkupCode a
+labelHidden name = Labeled name . pure
+
+        a             b      
+Dir -> (Name, Dir -> (Name, File -> Paragraph [a]
+"conix.a.b.c"
+
+data FileHierarchyF a b
+  = File RenderType (MarkupCode a)
+  | LocalPath FilePath
+  | Dir (Map Name b)
+  deriving Functor
+
+type FileHierarchy a = Fix (FileHierarchyF a)
+
+type RenderType
+  = Html HtmlPandocArgs
+  | PDF PDFPandocArgs
+  | Markdown
+
+type PureData = NixValue
+
+type LabelledDataF a = FreeF a (Map Name)
+
+type LabelledData = Fix (LabelledDataF a)
+
+type LabeledDataPath = [Name]
+
+-- Good API design: avoid parsing / patching things.
+
+--                   md
+-- linkTo "a.b.c.d" ======> "a/b/c.md"
+--                  ======> "a/b/c#d"
+--                   html
+
+renderCode :: MarkupCode -> FileHierarchy
+renderCode = File
+
+Markdown/RST/LaTeX Formatted Text
+          |
+          V
+code :: MarkupCode -> FileHierarchy
+code = drv . renderCode
+
+modifyCode :: (MarkupCode -> MarkupCode) -> FileHierarchy -> FileHierarchy
+modifyCode = over mds
+
+mds :: Traversal FileHierarchy MarkupCode
+
+toText :: PureData -> MarkupCode
+
+instance Monoid FileHierarchy
+
+instance Monoid Page
+
+-- LabeledDataPath -> Lens FileHierarchy a
+get :: LabeledDataPath -> FileHierarchy -> a
+set :: LabeledDataPath -> a -> FileHierarchy -> FileHierarchy
+
+(Monoid s) => StateF s a        (In Nix)
+  = Get (s -> a) ==========> s -> a (in Nix)
+  | Set s a      ==========> { x = a }
+
+evalMarkdown :: Alg MarkupCodeF a r -> MarkupCode a -> r
+
+evalFileHierarchy :: Alg FileHierarchyF a d -> FileHierarchy a -> d
+
+linkTo :: LabeledDataPath -> FileHierarchy -> MarkupCode
+linkTo = ???
+
+dir :: DirPath -> [ FileHierarchy ] -> FileHierarchy
+
+file :: Name -> Text -> FileHierarchy
+
+-- r ~ (Derivation, LabelledData)
+run :: Alg (FileHierarchyF a) (r -> r) -> (r -> FileHierarchy a) -> r
+run alg f = fix (cata alg . f)
+
+      |-------------------------------------|--> Derivation | NixValue
+      |                                     |
+Evaluated to Create                         |
+      |                                     |
+---------------------                       v
+File System Tree                       |------------|
+---------------------                  | Data Tree  |
+Content Tree   <--Consumed To Create---|------------|
+---------------------
