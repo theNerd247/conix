@@ -424,6 +424,8 @@ rec
           }
         ```
         ''
+        internalLib.htmlModule
+        ;
     }
   )
 
