@@ -48,7 +48,7 @@ Many thanks to:
 
 ]))
 
-(pdf "docs" (html "docs" [
+(html "docs" [
 
   (meta
     (css ../static/latex.css)
@@ -366,6 +366,6 @@ rec
       };
     }
   )
-]))
+])
 
 ]
