@@ -11,7 +11,7 @@ in
 
 rec
 {
-  # data ResF a = AttrSet -> ResF { text :: String, data :: AttrSet, drv :: a}
+  # data ResF a = Endo { text :: String, data :: AttrSet, drv :: a}
   res =
     rec
     {
@@ -30,15 +30,38 @@ rec
 
       mergeData = pkgs.lib.attrsets.recursiveUpdate; 
 
-      # AttrSet -> ResF Derivation
-      noData = f: x:
+      modifyData = g: f: x:
         let
           r = f x;
         in
           { text = r.text;
             drv = r.drv;
-            data = {};
+            data = g r;
           };
+
+      noData = modifyData (_: {});
+
+      # Make data defined in the given result locally scoped.
+      # That is defined data is brought to global scope when
+      # consumed and nested when produced.
+      locallyScopedData = pathString: f:
+        let
+          path = builtins.splitVersion pathString;
+        in
+          nestData path (unnestData path f);
+          
+      # Nest the generated data from the given ResF under
+      # the provided path.
+      nestData = path:
+        modifyData ({data,...}: 
+            pkgs.lib.attrsets.setAttrByPath path data
+        );
+
+      # Bring attributes at a given path to the toplevel before
+      # passing down to generation function. This is used to
+      # undo the effect of `nestPath`.
+      unnestData = path: f: x:
+        f (x // (pkgs.lib.attrsets.getAttrFromPath path x));
 
       # a -> ResF a
       pure = drv: _: { text = ""; inherit drv; data = {}; };
@@ -87,18 +110,16 @@ rec
     T.match
       { 
         # Evaluate anything that isn't { _type ... } ...
-        "tell"  = _data: res.onlyData _data;
-        "text"  = text: res.onlyText (builtins.toString text);
-        "indent" = {_nSpaces, _next}: 
-          res.overText (S.indent _nSpaces) _next;
-        "local" = _sourcePath: res.pure _sourcePath;
-        "file"  = {_mkFile, _next}:
-          res.fmapWith (x: res.mergeDrv x.drv (_mkFile x.text)) _next;
-        "merge" = xs: (M (res.monoid)).mconcat xs;
-        "dir" = {_dirName, _next}: 
-          res.fmap (drv: CJ.dir _dirName [drv]) _next;
-        "using" = r: res.join r;
-        "ref" = x: res.noData x;
+        tell   = _data: res.onlyData _data;
+        text   = text: res.onlyText (builtins.toString text);
+        indent = {_nSpaces, _next}: res.overText (S.indent _nSpaces) _next;
+        local  = _sourcePath: res.pure _sourcePath;
+        file   = {_mkFile, _next}: res.fmapWith (x: res.mergeDrv x.drv (_mkFile x.text)) _next;
+        merge  = xs: (M (res.monoid)).mconcat xs;
+        dir    = {_dirName, _next}: res.fmap (drv: CJ.dir _dirName [drv]) _next;
+        using  = r: res.join r;
+        ref    = x: res.noData x;
+        nest   = {_path, _next}: res.locallyScopedData _path _next;
       }; 
 
   _eval = lib: expr: 
