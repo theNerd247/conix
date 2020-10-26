@@ -1,6 +1,6 @@
 ---
-
-css: ./latex.css
+css: 
+./latex.css
 ---
 # Conix 0.2.0
 Conix is a Nix EDSL for technical writing. It brings the Nix
