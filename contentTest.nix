@@ -67,11 +67,17 @@ rec
       '')''
 
 
-      ''(nest "y" (n: with n; [{ x = 4; } " = " (r data.x)]))''
+      ''(nest "y" g)''
 
 
       ''(r data.y.x)" = 4 != "(r data.x)
     ]);
+
+  g = n: with n; [
+    { x = 4; } " = " (r data.x)
+
+    (list ["a" "b" "c"])
+  ];
 
   h_ = pkgs.conix.run h;
     
