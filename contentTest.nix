@@ -26,6 +26,7 @@ rec
 
       ''
       ...or here
+
       ''
 
       (markdown "mdListSample" [ "  " (indent 2 
@@ -63,7 +64,13 @@ rec
       ''
       (runNixSnippet "foo" ''
         1 + 2
-      '')
+      '')''
+
+
+      ''(nest "y" (n: with n; [{ x = 4; } " = " (r data.x)]))''
+
+
+      ''(r data.y.x)" = 4 != "(r data.x)
     ]);
 
   h_ = pkgs.conix.run h;

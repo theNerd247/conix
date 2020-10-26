@@ -164,20 +164,21 @@ rec
   docs._ref.type = "a -> ContentF a";
   _ref = T.typed "ref";
 
+  docs._nest.type = "PathString -> a -> ContentF a";
+  _nest = T.typed "nest";
+
   fmapMatch = f:
     { 
-      "tell"  = _data: _tell _data;
-      "text"  = x: _text x;
-      "local" = x: _local x;
-      "file"  = {_mkFile, _next}: 
-        _file { inherit _mkFile; _next = f _next; };
-      "dir" = {_dirName, _next}:
-        _dir { inherit _dirName; _next = f _next; };
-      "indent" = {_nSpaces, _next}:
-        _indent { inherit _nSpaces; _next = f _next; };
-      "merge" = xs: _merge (builtins.map f xs);
-      "using" = g: _using (x: f (g x));
-      "ref" = x: _ref (f x);
+      tell   = _data: _tell _data;
+      text   = x: _text x;
+      local  = x: _local x;
+      file   = {_mkFile, _next}: _file { inherit _mkFile; _next = f _next; };
+      dir    = {_dirName, _next}: _dir { inherit _dirName; _next = f _next; };
+      indent = {_nSpaces, _next}: _indent { inherit _nSpaces; _next = f _next; };
+      merge  = xs: _merge (builtins.map f xs);
+      using  = g: _using (x: f (g x));
+      ref    = x: _ref (f x);
+      nest   = {_path, _next}: _nest { inherit _path; _next = f _next; };
     };
 
   fmap = T.matchWith fmapMatch;
