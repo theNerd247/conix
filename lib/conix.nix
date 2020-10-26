@@ -459,6 +459,31 @@ rec
     }
   )
 
+  (module ''
+    ### Utility API
+
+    ''
+    { 
+      foldAttrsIxCond = expr
+        F.docs.foldAttrsIxCond.type 
+        F.docs.foldAttrsIxCond.docstr
+        internalLib.foldAttrsIxCond
+        ;
+
+      foldAttrsCond = expr
+        F.docs.foldAttrsCond.type
+        F.docs.foldAttrsCond.docstr
+        internalLib.foldAttrsCond
+        ;
+
+      foldlIx = expr
+        F.docs.foldlIx.type
+        "Left fold with index"
+        internalLib.foldlIx
+        ;
+    }
+  )
+
 ])
 
 ]
