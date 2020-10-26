@@ -254,15 +254,7 @@ rec
   intersperse = expr
       "a -> [a] -> [a]"
       "Insert the given element inbetween elements of the given list"
-      (s:
-       builtins.foldl' 
-         ({skip, as}: a:
-           { skip = false;
-             as = if skip then as ++ [a] else as ++ [s a];
-           }
-         )
-         {skip=true; as = [];}
-      )
+      internalLib.intersperse
     ;
 
   dotgraph = expr

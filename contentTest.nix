@@ -1,7 +1,7 @@
 rec
 {
 
-  extend = c: with c; htmlModule "customApi" (module "# Custom API\n\n"
+  extensions = c: with c; htmlModule "customApi" (module "# Custom API\n\n"
     { addBoo = expr 
         "Content -> Content"
         "Adds prefix boo!"
@@ -9,11 +9,16 @@ rec
     });
 
   pkgs = import <nixpkgs> 
-    { overlays = import ./default.nix { inherit extend; }; };
+    { overlays = import ./default.nix { inherit extensions; }; };
 
   conix = pkgs.conix;
 
   h = x: with x; dir "jack" (html "bar" [ 
+
+      (meta [
+        (css ./static/latex.css)
+        "pagetitle: FOO"
+      ])
 
       { x = 3; }
 

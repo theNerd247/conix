@@ -31,7 +31,17 @@ rec
       inherit _next;
     };
 
-  meta = _data: [ "---\n" ] ++ _data ++ [ "\n---\n" ];
+  meta = _data: [ "---\n" (intersperse "\n" _data) "\n---\n" ];
+
+  intersperse = s:
+    builtins.foldl' 
+      ({skip, as}: a:
+        { skip = false;
+          as = if skip then as ++ [a] else as ++ [s a];
+        }
+      )
+      {skip=true; as = [];}
+  ;
 
   css = localPath: 
     [ (_local localPath) 
