@@ -61,7 +61,11 @@ rec
       # passing down to generation function. This is used to
       # undo the effect of `nestPath`.
       unnestData = path: f: x:
-        f (x // (pkgs.lib.attrsets.getAttrFromPath path x));
+        f { 
+          drv = x.drv;
+          text = x.text;
+          data = x.data // (pkgs.lib.attrsets.getAttrFromPath path x.data);
+        };
 
       # a -> ResF a
       pure = drv: _: { text = ""; inherit drv; data = {}; };

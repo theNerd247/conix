@@ -62,6 +62,32 @@ rec
       _text
     ;
 
+  nest = expr
+    "PathString -> Content -> Content"
+    ''
+    Nest the data for the given content under a given path
+
+    For example:
+
+    ```nix
+      m: with m;
+      [
+        (nest "foo.bar" (n: with n; [{ x = 3; } (r data.x)]))
+        {x = 4;}
+
+        (r data.x)
+      ]
+    will produce:
+
+    ```nix
+    "3344"
+    ```
+    notice how we've defined `x` in two places.
+    ```
+    ''
+    (_path: _next: internalLib._nest { inherit _path _next; })
+    ;
+
   t = text;
 
   ref = expr 
