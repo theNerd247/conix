@@ -207,7 +207,7 @@ rec
     Writes the given file path as text and includes the referenced file in the
     output
     ''
-    x.pathOf
+    internalLib.pathOf
     ;
 
   img = expr
