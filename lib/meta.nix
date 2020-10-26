@@ -1,5 +1,5 @@
 let
-  refDir = ./../.git/refs/heads;
+  refDir = "../.git/refs/heads";
   refFile = ./../.git/HEAD;
   ref = builtins.replaceStrings ["ref: refs/heads/" "\n"] ["" ""] (builtins.readFile refFile);
 
@@ -15,7 +15,7 @@ let
       building has been pushed to github.  ''
     else
       builtins.replaceStrings ["\n"] [""] 
-        (builtins.readFile "${refDir}/${ref}");
+        (builtins.readFile (./. + "/${refDir}/${ref}"));
 in
 rec
 { 
