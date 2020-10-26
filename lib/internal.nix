@@ -43,9 +43,11 @@ rec
       {skip=true; as = [];}
   ;
 
-  css = localPath: 
-    [ (_local localPath) 
-      "css: ./${builtins.baseNameOf localPath}" 
+  css = localPath: [ "css: " (pathOf localPath) ];
+
+  pathOf = localPath:
+    [ (_local localPath)
+      "./${builtins.baseNameOf localPath}"
     ];
 
   conix = import ./meta.nix;

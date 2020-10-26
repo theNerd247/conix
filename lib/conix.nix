@@ -194,8 +194,20 @@ rec
 
   css = expr
       "FilePath -> Content"
-      "When used with `meta` add the local css file to this html file's includes"
+      ''
+      When used with `meta` add the local css file to this html file's
+      includes
+      ''
       internalLib.css
+    ;
+
+  pathOf = expr
+    "LocalFilePath -> Content"
+    ''
+    Writes the given file path as text and includes the referenced file in the
+    output
+    ''
+    x.pathOf
     ;
 
   img = expr
