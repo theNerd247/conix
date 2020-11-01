@@ -144,7 +144,7 @@ rec
           res.fmap (drv: CJ.dir _dirName [drv]) _next;
         using  = r: 
           res.join r;
-        ref    = x: 
+        ask    = x: 
           res.noData x;
         nest   = {_path, _next}: 
           res.locallyScopedData _path _next;

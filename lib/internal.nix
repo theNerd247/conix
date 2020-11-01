@@ -52,7 +52,7 @@ rec
 
   conix = import ./meta.nix;
 
-  ref = _ref;
+  ask = _ask;
 
   htmlModule = name: x:
     html name [ (meta (css ../static/latex.css)) x ];
@@ -161,8 +161,8 @@ rec
   docs._indent.type = "{ _nSpaces :: Natural, _next :: a } -> ContentF a";
   _indent = T.typed "indent";
 
-  docs._ref.type = "a -> ContentF a";
-  _ref = T.typed "ref";
+  docs._ask.type = "a -> ContentF a";
+  _ask = T.typed "ask";
 
   docs._nest.type = "PathString -> a -> ContentF a";
   _nest = T.typed "nest";
@@ -177,7 +177,7 @@ rec
       indent = {_nSpaces, _next}: _indent { inherit _nSpaces; _next = f _next; };
       merge  = xs: _merge (builtins.map f xs);
       using  = g: _using (x: f (g x));
-      ref    = x: _ref (f x);
+      ask    = x: _ask (f x);
       nest   = {_path, _next}: _nest { inherit _path; _next = f _next; };
     };
 
