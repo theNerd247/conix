@@ -133,7 +133,7 @@ rec
   # Internals
 
   # Markup Constructors
-  docs._tell.type = "{ _data :: AttrSet }  -> ContentF a";
+  docs._tell.type = "AttrSet -> ContentF a";
   _tell = T.typed "tell";
 
   docs._using.type = "(AttrSet -> a) -> ContentF a";
@@ -142,7 +142,7 @@ rec
   # NOTE: for now we'll use the final encoding of documents. However,
   # In the future it might be useful to use the inital encoding
   # (like a copy of the Pandoc AST).
-  docs.text.type = "String -> ContentF a";
+  docs._text.type = "String -> ContentF a";
   _text = T.typed "text";
 
   # File System Constructors
@@ -167,6 +167,9 @@ rec
   docs._nest.type = "PathString -> a -> ContentF a";
   _nest = T.typed "nest";
 
+  docs._anchor.type = "{ _path :: AttrSetPathString, _next :: a } -> ContentF a";
+  _anchor = T.typed "anchor";
+
   fmapMatch = f:
     { 
       tell   = _data: _tell _data;
@@ -179,6 +182,7 @@ rec
       using  = g: _using (x: f (g x));
       ask    = x: _ask (f x);
       nest   = {_path, _next}: _nest { inherit _path; _next = f _next; };
+      anchor = {_path, _next}: _anchor { inherit _path; _next = f _next; };
     };
 
   fmap = T.matchWith fmapMatch;

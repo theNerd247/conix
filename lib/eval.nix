@@ -13,7 +13,7 @@ rec
 {
   # type ParentData = { topRefPath :: String -> data :: AttrSet }
   # 
-  # type Result a = { text :: String, data :: AttrSet, drv :: a}
+  # type Result a = { text :: String, data :: AttrSet, drv :: a, currentPath :: FilePathString }
   #
   # data ResF a = ParentData -> Result a
   res =
@@ -57,9 +57,11 @@ rec
       # PathString -> ResF a -> ResF a
       locallyScopedData = pathString: f:
         let
-          path = builtins.splitVersion pathString;
+          path = toPathList pathString;
         in
           nestData path (unnestData path f);
+
+      toPathList = builtins.splitVersion;
           
       # Nest the generated data from the given ResF under
       # the provided path.
@@ -77,6 +79,18 @@ rec
         f (x // {
           data = x.data // (pkgs.lib.attrsets.getAttrFromPath path x.data);
         });
+
+      # Set the currentPath
+      addFileUrl = refPathStr: 
+        modifyData ({currentPath, data, ...}:
+          mergeData 
+            data
+            (
+              pkgs.lib.attrsets.setAttrByPath 
+              (toPathList "${refs}.${refPathStr}") 
+              currentPath
+            )
+        );
 
       # a -> ResF a
       pure = drv: _: { text = ""; inherit drv; data = {}; };
@@ -148,6 +162,8 @@ rec
           res.noData x;
         nest   = {_path, _next}: 
           res.locallyScopedData _path _next;
+        anchor = {_path, _next}:
+          res.addFileUrl _path _next;
       }; 
 
   _eval = lib: expr: 
