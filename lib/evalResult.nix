@@ -4,7 +4,12 @@ let
   CJ = import ./copyJoin.nix pkgs;
 in
 
-# ResM a = StateT { data :: AttrSet, currentPath :: FilePathString } (Writer String a)
+# let
+#  S = { data :: AttrSet, currentPath :: FilePathString, drv :: Derivation }
+#
+# ResM a 
+#  = ReaderT ConixLib (StateT S (Writer String)) a
+#  = ConixLib // S -> S // { text :: String, val :: a }
 rec
 {
   # String -> ResF Derivation
@@ -81,18 +86,40 @@ rec
     );
 
   # a -> ResF a
-  pure = drv: _: { text = ""; inherit drv; data = {}; };
+  pure = val: _: 
+  { 
+    data = {}; 
+    drv = {};
+    currentPath = "";
+    text = ""; 
+    inherit val;
+  };
 
-  # (a -> b) -> ResF a -> ResF b
-  fmap = f: fmapWith (x: f x.drv);
-
-  # (Result a -> b) -> ResF a -> ResF b
-  fmapWith = f: g: x: 
+  # (a -> b) -> ResM a -> ResM b
+  fmap = f: g: x:
     let
       r = g x;
     in
-      { inherit (r) text data;
-        drv = f r;
+      { 
+        data = r.data;
+        drv = r.drv;
+        currentPath = r.currentPath;
+        text = r.text; 
+        val = f r.val;
+      };
+
+  # ResM (a -> b) -> ResM a -> ResM b
+  ap = ff: g: x:
+    let
+      f = ff x;
+      r = g (x // { data = f.data; currentPath = f.currentPath; drv = f.drv; });
+    in
+      { 
+        data = r.data;
+        currentPath = r.currentPath;
+        drv = r.drv;
+        text = f.text + r.text;
+        val = f.val r.val;
       };
 
   # Derivation -> Derivation -> Derivation
@@ -111,7 +138,14 @@ rec
   # (Monoid m) => instance Monoid (ResF m)
   monoid =
     {
-      mempty = _: { text = ""; drv = {}; data = {}; };
+      mempty = _: 
+      { 
+        text = "";
+        drv = {}; 
+        data = {}; 
+        currentPath = "";
+      };
+
       mappend = f: g: x:
         let
           a = f x;
