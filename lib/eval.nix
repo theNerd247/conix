@@ -11,7 +11,11 @@ in
 
 rec
 {
-  # data ResF a = Endo { text :: String, data :: AttrSet, drv :: a}
+  # type ParentData = { topRefPath :: String -> data :: AttrSet }
+  # 
+  # type Result a = { text :: String, data :: AttrSet, drv :: a}
+  #
+  # data ResF a = ParentData -> Result a
   res =
     rec
     {
@@ -19,17 +23,21 @@ rec
       onlyText = text: _:
         { inherit text; drv = {}; data = {}; };
 
+      # AttrSet -> ResF Derivation
       onlyData = data: _:
         { inherit data; drv = {}; text = ""; };
 
+      # (String -> String) -> ResF a -> ResF a
       overText = f: g: x:
         let
           r = g x;
         in
           { inherit (r) drv data; text = f r.text; };
 
+      # AttrSet -> AttrSet -> AttrSet
       mergeData = pkgs.lib.attrsets.recursiveUpdate; 
 
+      # (Result a -> AttrSet) -> ResF a -> ResF a
       modifyData = g: f: x:
         let
           r = f x;
@@ -39,11 +47,14 @@ rec
             data = g r;
           };
 
+      # ResF a -> ResF a
       noData = modifyData (_: {});
 
       # Make data defined in the given result locally scoped.
       # That is defined data is brought to global scope when
       # consumed and nested when produced.
+      #
+      # PathString -> ResF a -> ResF a
       locallyScopedData = pathString: f:
         let
           path = builtins.splitVersion pathString;
@@ -60,6 +71,8 @@ rec
       # Bring attributes at a given path to the toplevel before
       # passing down to generation function. This is used to
       # undo the effect of `nestPath`.
+      #
+      # PathString -> ResF a -> ResF a
       unnestData = path: f: x:
         f (x // {
           data = x.data // (pkgs.lib.attrsets.getAttrFromPath path x.data);
@@ -68,8 +81,10 @@ rec
       # a -> ResF a
       pure = drv: _: { text = ""; inherit drv; data = {}; };
 
+      # (a -> b) -> ResF a -> ResF b
       fmap = f: fmapWith (x: f x.drv);
 
+      # (Result a -> b) -> ResF a -> ResF b
       fmapWith = f: g: x: 
         let
           r = g x;
@@ -78,7 +93,7 @@ rec
             drv = f r;
           };
 
-
+      # Derivation -> Derivation -> Derivation
       mergeDrv = a: b:
         let
           name = a.name or b.name or (builtins.baseNameOf a);
@@ -88,6 +103,7 @@ rec
         else if b == {}            then a 
         else CJ.collect name [a b];
 
+      # (ParentData -> ResF a) -> ResF a
       join = r: x: r x x;
 
       # (Monoid m) => instance Monoid (ResF m)
@@ -112,16 +128,26 @@ rec
     T.match
       { 
         # Evaluate anything that isn't { _type ... } ...
-        tell   = _data: res.onlyData _data;
-        text   = text: res.onlyText (builtins.toString text);
-        indent = {_nSpaces, _next}: res.overText (S.indent _nSpaces) _next;
-        local  = _sourcePath: res.pure _sourcePath;
-        file   = {_mkFile, _next}: res.fmapWith (x: res.mergeDrv x.drv (_mkFile x.text)) _next;
-        merge  = xs: (M (res.monoid)).mconcat xs;
-        dir    = {_dirName, _next}: res.fmap (drv: CJ.dir _dirName [drv]) _next;
-        using  = r: res.join r;
-        ref    = x: res.noData x;
-        nest   = {_path, _next}: res.locallyScopedData _path _next;
+        tell   = _data: 
+          res.onlyData _data;
+        text   = text: 
+          res.onlyText (builtins.toString text);
+        indent = {_nSpaces, _next}: 
+          res.overText (S.indent _nSpaces) _next;
+        local  = _sourcePath: 
+          res.pure _sourcePath;
+        file   = {_mkFile, _next}: 
+          res.fmapWith ({drv, text, ...}: res.mergeDrv drv (_mkFile text)) _next;
+        merge  = xs: 
+          (M (res.monoid)).mconcat xs;
+        dir    = {_dirName, _next}: 
+          res.fmap (drv: CJ.dir _dirName [drv]) _next;
+        using  = r: 
+          res.join r;
+        ref    = x: 
+          res.noData x;
+        nest   = {_path, _next}: 
+          res.locallyScopedData _path _next;
       }; 
 
   _eval = lib: expr: 
