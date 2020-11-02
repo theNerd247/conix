@@ -11,6 +11,51 @@ in
 
 rec
 {
+
+  # Make data defined in the given result locally scoped.
+  # That is defined data is brought to global scope when
+  # consumed and nested when produced.
+  #
+  # PathString -> ResF a -> ResF a
+  locallyScopedData = pathString: x:
+    let
+      path = builtins.splitVersion pathString;
+    in
+      sap 
+        (modify (unnestScope pathString))
+        x
+        (modify (nestScope pathString));
+
+  # Nest the data and refs under the given operator
+  # 
+  # AttrPathString -> S -> S
+  nestScope = path: {data, refs}: 
+    with pkgs.lib.attrsets;
+    { data = setAttrByPath path data;
+      refs = setAttrByPath path refs;
+    };
+
+  
+  # NOTE: for this to be an isomorphism of AttrPathString 
+  # `data` and `refs` must ONLY contain data at the given
+  # path. If this were not the case then accidental over-
+  # writing of attributes in the current scope could occur.
+  #
+  # E.g.
+  #   let 
+  #     x = { a = 3; };
+  #     y = (nestScope "b" x) // { a = 2; }; # == { a = 2; b = { a = 3; }; }
+  #   in
+  #     unnestScope "b" z == x != z 
+  #
+  # AttrPathString -> S -> S
+  unnestScope = path: {data, refs}:
+    with pkgs.lib.attrsets;
+    { 
+      data = data // (getAttrFromPath path data);
+      refs = data // (getAttrFromPath path refs);
+    };
+
   # type ParentData = { parentPath :: FilePathString, data :: AttrSet }
   # 
   # type Result a = { text :: String, data :: AttrSet, drv :: a, currentPath :: FilePathString }
