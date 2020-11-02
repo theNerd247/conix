@@ -1,6 +1,24 @@
+# NOTE:
+# 
+#  DO THIS:
+# 
+#  let 
+#    r = f x;
+#  in
+#    g (x // { a = r.a; });
+#
+#  NOT THIS:
+# 
+#   g (x // (f x));
+#
+# The prior form prevents accidental evaluation of values that could bottom out
+# and cause the program to error due to infinite recursion. While sematically
+# the same, operationally { a = r.a } creates nested thunks that prevents 
+# the (possibly) strict result of `f x` from evaluating.
+
 # Given a monoid M create an API for the ReaderWriter Applicative stack 
 # I'm forgoing monads for now to prevent infinite recursion issues.
-pkgs: M:
+M:
 
 # type RW r w  a = r -> { val :: a, w :: w }
 rec
