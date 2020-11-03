@@ -1,5 +1,19 @@
-# NOTE: SEE NOTE in ./lib/rw.nix
+# NOTE: 
 #
+# Treat all values of attribute `data` for type R and Res as if they
+# were possibly bottom values to avoid infinite recursion problems.
+# 
+# Conceptually every expression could produce a `data` value
+# which will be included in the final `data` value (when passed through
+# `fix`). Because of this any function that manipulates any `data`
+# value should have its return value stored in an attribute set.
+#
+# As a result I've followed a rule for writing this portion of the 
+# library: avoid any {...} syntax, and explicitely access attribute
+# values through dot notation.  This increases boilerplate code, however
+# doing so prevents infite recursion issues.
+ 
+
 # Res = { data :: AttrSet, drv :: Derivation, text :: String }
 # R = { data :: AttrSet }
 pkgs:
