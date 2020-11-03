@@ -18,6 +18,7 @@ rec
   #
   # data ResF a = ParentData -> Result a
   #
+  #
   docs.fs.evalAlg.type = "ContentF (ResF Derivation) -> ResF Derivation";
   evalAlg = 
     T.match
@@ -28,25 +29,37 @@ rec
         text   = text: 
           R.tell (R.onlyText (builtins.toString text));
         indent = {_nSpaces, _next}: 
-          R.censor (R.overText (S.indent _nSpaces)) _next;
+          R.censor (R.overText (S.indent _nSpaces)) (T.onRes _next);
         local  = _sourcePath: 
           R.tell (R.onlyDrv _sourcePath);
-        file   = {_mkFile, _next}: 
-          R.censor (R.addDrvFromText _mkFile) _next;
-        merge = xs: 
-          R.sequence_ xs;
+        file   = {_fileName, _mkFile, _next}: 
+          R.censor (R.addDrvFromText _mkFile)
+          (R.local (R.extendCurrentPath _fileName) (T.onRes _next));
+        merge = _nexts:
+          R.traverse_ T.onRes _nexts;
         dir    = {_dirName, _next}: 
-          R.censor (R.overDrv (drv: CJ.dir _dirName [drv])) _next;
-        using  = r: 
-          R.readerJoin r;
-        ask    = x:
-          R.censor R.noData x;
+          R.censor 
+          (R.overDrv (drv: CJ.dir _dirName [drv]))
+          (R.local (R.extendCurrentPath _dirName) (T.onRes _next));
+        using  = f: r: # ContentF (r -> (RW r w a, Content))
+          T.onRes (f r) r;
+        ask    = _next:
+          R.censor R.noData (T.onRes _next);
         nest   = {_path, _next}: 
           let
             path = builtins.splitVersion _path;
           in
             R.censor (R.nestScope path) 
-              (R.local (R.unnestScope path) _next);
+              (R.local (R.unnestScope path) (T.onRes _next));
+        ref    = {_path, _next}:
+          throw "ref not yet implemented";
+          # do
+          # (a, tn) <- listens onTargetName _next
+          # cp <- gets currentPath
+          #
+          # tell $ onlyRefs { _path = cp + tn; }
+          #
+          # return a
       }; 
 
   _eval = lib: expr: 
@@ -54,9 +67,9 @@ rec
       #     R -> R * X     F R
       #
       # R * X -> R * X     F (R * X)
-      f = R.exe (T.cata C.fmap evalAlg expr);
+      f = R.exe (T.para C.fmap evalAlg expr);
     in
-      pkgs.lib.fix (R.local (x: lib // (R.toReadOnly x)) f);
+      pkgs.lib.fix (R.local (x: lib // (R.toReadOnly "./." x)) f);
 
   _run = lib: expr: (_eval lib expr).drv;
 }

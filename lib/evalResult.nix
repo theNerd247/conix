@@ -13,7 +13,7 @@
 # values through dot notation.  This increases boilerplate code, however
 # doing so prevents infite recursion issues.
 
-# Res = { data :: AttrSet, drv :: Derivation, text :: String, targetName :: FilePathString }
+# Res = { data :: AttrSet, drv :: Derivation, text :: String, targetName :: FilePathString, refs :: AttrSet }
 # R = { data :: AttrSet, currentPath :: FilePathString }
 pkgs:
 
@@ -42,6 +42,7 @@ let
       mempty = 
         { 
           data = {};
+          refs = {};
           drv = {};
           targetName = "";
           text = "";
@@ -51,6 +52,7 @@ let
       mappend = a: b:
         { 
           data = mergeData a.data b.data;
+          refs = mergeData a.refs b.refs;
           drv = mergeDrv a.drv b.drv;
           text = a.text + b.text;
           targetName = a.targetName;
@@ -66,12 +68,14 @@ in
     { 
       inherit currentPath;
       data = x.data; 
+      refs = x.refs;
     };
 
     onlyData = data: 
     { 
       text = "";
       drv = {};
+      refs = {};
       targetName = "";
       inherit data; 
     };
@@ -80,6 +84,7 @@ in
     { 
       drv = {};
       data = {};
+      refs = {};
       targetName = "";
       inherit text; 
     };
@@ -88,31 +93,44 @@ in
     { 
       text = "";
       data = {};
+      refs = {};
       targetName = "";
       inherit drv; 
     };
 
     overData = f: x:
     { 
-      inherit (x) text drv targetName;
+      inherit (x) text drv targetName refs;
       data = f x.data; 
     };
 
     overText = f: x:
     { 
-      inherit (x) drv data targetName;
+      inherit (x) drv data targetName refs;
       text = f x.text; 
     };
 
     overDrv = f: x: 
     { 
-      inherit (x) text data targetName;
+      inherit (x) text data targetName refs;
       drv = f x.drv; 
+    };
+
+    overTargetName = f: x:
+    {
+      inherit (x) text data drv refs;
+      targetName = f x.targetName;
+    };
+
+    overRefs = f: x:
+    { 
+      inherit (x) text data drv targetName;
+      refs = f x.refs;
     };
 
     addDrvFromText = f: x: 
     { 
-      inherit (x) text data targetName;
+      inherit (x) text data targetName refs;
       drv = mergeDrv x.drv (f x.text); 
     };
 

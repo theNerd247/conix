@@ -19,8 +19,18 @@ rec
   docs.matchWith.type = "(a -> Map String (b -> c)) -> a -> { _type :: String _val :: b} -> c";
   matchWith = mkMatch: x: match (mkMatch x);
 
-  docs.cata.type = "Functor f => ((a -> b) -> f a -> f b) -> (f a -> a) -> Fix f -> a";
+  docs.cata.type = "Functor f => (f a -> a) -> Fix f -> a";
   cata = fmap: alg: let c = x: alg (fmap c x); in c;
+
+  docs.para.type = "Functor f => (f { child :: a, res :: Fix f} -> a) -> Fix f -> a";
+  para = fmap: alg: 
+    let 
+      c = x: alg (fmap (fixF: { child = fixF; res = c fixF; }) x); 
+    in 
+      c;
+
+  onRes = {res,...}: res;
+  onChild = {child, ...}: child;
 
   isTyped = x: x ? _type;
 }

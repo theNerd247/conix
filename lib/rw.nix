@@ -74,6 +74,9 @@ rec
     in
       { inherit (r) val; w = f r.w; };
 
+  # (r -> w) -> RW r w ()
+  tellWith = f: x: { val = null; w = f x; };
+
   # RW r w a -> r -> w
   exe = f: x: (f x).w;
 }
