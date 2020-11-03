@@ -167,9 +167,6 @@ rec
   docs._nest.type = "PathString -> a -> ContentF a";
   _nest = T.typed "nest";
 
-  docs._anchor.type = "{ _path :: AttrSetPathString, _next :: a } -> ContentF a";
-  _anchor = T.typed "anchor";
-
   fmapMatch = f:
     { 
       tell   = _data: _tell _data;
@@ -182,7 +179,6 @@ rec
       using  = g: _using (x: f (g x));
       ask    = x: _ask (f x);
       nest   = {_path, _next}: _nest { inherit _path; _next = f _next; };
-      anchor = {_path, _next}: _anchor { inherit _path; _next = f _next; };
     };
 
   fmap = T.matchWith fmapMatch;
