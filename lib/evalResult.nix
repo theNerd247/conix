@@ -9,10 +9,9 @@
 # value should have its return value stored in an attribute set.
 #
 # As a result I've followed a rule for writing this portion of the 
-# library: avoid any {...} syntax, and explicitely access attribute
+# library: avoid any {...} or (//) syntax, and explicitely access attribute
 # values through dot notation.  This increases boilerplate code, however
 # doing so prevents infite recursion issues.
- 
 
 # Res = { data :: AttrSet, drv :: Derivation, text :: String }
 # R = { data :: AttrSet }
@@ -92,6 +91,12 @@ in
       data = f x.data; 
     };
 
+    # unlike overData, this modifies the data
+    # value in reader environment so it is legal
+    # to use (//)
+    overLocalData = f: x:
+      x // { data = f x.data; };
+
     overText = f: x:
     { 
       inherit (x) drv data;
@@ -134,9 +139,9 @@ in
     #     unnestScope "b" z == x != z 
     #
     # AttrPathString -> S -> S
-    unnestScope = path: x:
+    unnestScope = path:
       let
           f = d: d // pkgs.lib.attrsets.getAttrFromPath path d;
       in
-        x // { data = f x.data; };
+        overLocalData f;
 }
