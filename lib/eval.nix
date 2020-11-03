@@ -25,8 +25,6 @@ rec
         # Evaluate anything that isn't { _type ... } ...
         tell   = _data: 
           R.tell (R.onlyData _data);
-        anchor = _:
-          error "anchor is not yet implemented";
         text   = text: 
           R.tell (R.onlyText (builtins.toString text));
         indent = {_nSpaces, _next}: 
@@ -34,21 +32,21 @@ rec
         local  = _sourcePath: 
           R.tell (R.onlyDrv _sourcePath);
         file   = {_mkFile, _next}: 
-          R.censor (addDrvFromText _mkFile) _next;
+          R.censor (R.addDrvFromText _mkFile) _next;
         merge = xs: 
           R.sequence_ xs;
         dir    = {_dirName, _next}: 
           R.censor (R.overDrv (drv: CJ.dir _dirName [drv])) _next;
         using  = r: 
           R.readerJoin r;
-        ask    = x: 
+        ask    = x:
           R.censor R.noData x;
         nest   = {_path, _next}: 
           let
-            path = builtins.splitVersion pathString;
+            path = builtins.splitVersion _path;
           in
-            (R.censor (R.nestScope path) 
-              (R.local (unnestScope path) _next);
+            R.censor (R.nestScope path) 
+              (R.local (R.unnestScope path) _next);
       }; 
 
   _eval = lib: expr: 

@@ -90,19 +90,13 @@ rec
 
   t = text;
 
-  ref = expr 
+  ask = expr 
     "Content -> Content"
     [''
     Prevent infinite recursion when using a value from the data store as
     content.
 
     For example: 
-
-    ''(internalLib.ref (data.code "nix" ''
-    [ { x = 3; }
-      data.x
-    ]
-    ''))''
 
     Will break with an `infinite recursion` error. To resolve this do:
 
@@ -119,13 +113,13 @@ rec
     ]
     ```
     '']
-    internalLib.ref
+    internalLib.ask
   ;
 
   r = expr
-    (internalLib.ref data._docs.ref.type)
+    (internalLib.ask "Content -> Content")
     "See `ref`"
-    internalLib.ref;
+    internalLib.ask;
 
   using = expr
       "(AttrSet -> Content) -> Content"

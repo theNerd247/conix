@@ -1,21 +1,3 @@
-# NOTE:
-# 
-#  DO THIS:
-# 
-#  let 
-#    r = f x;
-#  in
-#    g (x // { a = r.a; });
-#
-#  NOT THIS:
-# 
-#   g (x // (f x));
-#
-# The prior form prevents accidental evaluation of values that could bottom out
-# and cause the program to error due to infinite recursion. While sematically
-# the same, operationally { a = r.a } creates nested thunks that prevents 
-# the (possibly) strict result of `f x` from evaluating.
-
 # Given a monoid M create an API for the ReaderWriter Applicative stack 
 # I'm forgoing monads for now to prevent infinite recursion issues.
 M:
@@ -59,11 +41,11 @@ rec
 
   # (a -> RW r w b) -> [a] -> RW r w [b]
   traverse = f:
-    builtins.foldl' (fbs: a: liftA2 (b: bs: [b] ++ [bs]) (f a) fbs) (pure []);
+    builtins.foldl' (fbs: a: liftA2 (b: bs: [b] ++ [bs]) fbs (f a)) (pure []);
 
   # (a -> RW r w b) -> [a] -> RW r w ()
   traverse_ = f:
-    builtins.foldl' (fb: a: rap (f a) fb) (pure null);
+    builtins.foldl' (fb: a: rap fb (f a)) (pure null);
 
   # [RW r w a] -> RW r w [b]
   sequence = traverse (x: x); 

@@ -56,4 +56,9 @@ with RW;
   {
     localComp = test (local f (local g get)) (local gf get);
   };
+
+  fix = 
+  {
+    onlyTell = test (_: pkgs.lib.fix (tell [2])) (tell [2]);
+  };
 }

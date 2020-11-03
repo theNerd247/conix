@@ -13,6 +13,12 @@ rec
 
   conix = pkgs.conix;
 
+  pkgs_ = import <nixpkgs> {};
+
+  I = import ./lib/internal.nix pkgs;
+
+  E = import ./lib/eval.nix pkgs;
+
   h = x: with x; dir "jack" [
 
     { p = markdown "foo" [
@@ -48,35 +54,35 @@ rec
       # ???
       # FileSystemF (ParentPath -> URLString) -> (ParentPath -> URLString)
 
-      (r data.refs.p # ./foo.md (target is external markdown file)
-      )
+      # (r data.refs.p # ./foo.md (target is external markdown file)
+      # )
 
-      (r data.refs.p.x # ./bo#x (target is external nested html file)
-      )
+      # (r data.refs.p.x # ./bo#x (target is external nested html file)
+      # )
 
-      (r data.refs.y.x # ./#yx (target is internal nested reference)
-      )
+      # (r data.refs.y.x # ./#yx (target is internal nested reference)
+      # )
 
-      (r data.refs.x # ./#x (target is internal reference)
-      )
+      # (r data.refs.x # ./#x (target is internal reference)
+      # )
 
-      (r data.refs.t # ./mdListSample.md (target is internal markdown file + internal reference)
-      )
+      # (r data.refs.t # ./mdListSample.md (target is internal markdown file + internal reference)
+      # )
 
-      (r data.refs.m # ./mdListSample.md (target is markdown file)
-      )
+      # (r data.refs.m # ./mdListSample.md (target is markdown file)
+      # )
 
-      (r data.refs.l  #/#
-      )
+      # (r data.refs.l  #/#
+      # )
 
-      { m = markdown "mdListSample" [ "  " (indent 2 
+      { m = markdown "mdListSample" (indent 2 
         { l = list 
           [ "foo"
             { t = "bar"; }
             "baz"
-          ]
-        ); }
-      ];}
+          ]; 
+        }
+      ); }
 
       (html "baz" "a nested file")''
 

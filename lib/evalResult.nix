@@ -1,4 +1,6 @@
-# Res = { data :: AttrSet, targetName :: String, drv :: Derivation, text :: String }
+# NOTE: SEE NOTE in ./lib/rw.nix
+#
+# Res = { data :: AttrSet, drv :: Derivation, text :: String }
 # R = { data :: AttrSet }
 pkgs:
 
@@ -34,7 +36,6 @@ let
 
       # Res -> Res -> Res
       mappend = a: b:
-        rec
         { 
           data = mergeData a.data b.data;
           drv = mergeDrv a.drv b.drv;
@@ -44,27 +45,58 @@ let
 
 in
   # type ResM a = RW R Res
-  RW = import ./rw.nix monoid // rec {
+  (import ./rw.nix monoid) // rec {
 
     # W -> R
-    toReadOnly = {data, ...}: 
-      { inherit data; };
+    toReadOnly = x: 
+      { data = x.data; };
 
-    onlyData = data: monoid.mempty // { inherit data; };
+    onlyData = data: 
+    { 
+      text = "";
+      drv = {};
+      inherit data; 
+    };
 
-    onlyText = text: monoid.mempty // { inherit text; };
+    onlyText = text: 
+    { 
+      drv = {};
+      data = {};
+      inherit text; 
+    };
 
-    onlyDrv = drv: monoid.mempty // { inherit drv; };
+    onlyDrv = drv: 
+    { 
+      text = "";
+      data = {};
+      inherit drv; 
+    };
 
-    overData = f: x@{data, ...}: x // { data = f data; };
+    overData = f: x:
+    { 
+      inherit (x) text drv;
+      data = f x.data; 
+    };
 
-    overText = f: x@{text,...}: x // { text = f text; };
+    overText = f: x:
+    { 
+      inherit (x) drv data;
+      text = f x.text; 
+    };
 
-    overDrv = f: x@{drv, ...}: x // { drv = f drv; };
+    overDrv = f: x: 
+    { 
+      inherit (x) text data;
+      drv = f x.drv; 
+    };
 
-    addDrvFromText = f: x@{text, drv, ...}: x // { drv = mergeDrv drv (f text); };
+    addDrvFromText = f: x: 
+    { 
+      inherit (x) text data;
+      drv = mergeDrv x.drv (f x.text); 
+    };
 
-    noData = x: x // { data = {}; };
+    noData = overData (_: {});
 
     # Nest the data and refs under the given operator
     # 
@@ -74,7 +106,6 @@ in
         f = pkgs.lib.attrsets.setAttrByPath path;
       in
         overData f x;
-
     
     # NOTE: for this to be an isomorphism of AttrPathString 
     # `data` and `refs` must ONLY contain data at the given
