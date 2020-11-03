@@ -61,6 +61,9 @@ rec
 
   ask = _ask;
 
+  ref = _path: _next:
+    _ref { inherit _path _next; };
+
   htmlModule = name: x:
     html name [ (meta (css ../static/latex.css)) x ];
 
@@ -102,7 +105,7 @@ rec
     [ "Nix Expression"   "Conix Expression"]
     [ ["<string>"        "`text`"]
       ["<path>"          "`local`"]
-      ["<t:attrset>"     "`[(tell t) (liftNixVal x | forall x in leaves of t)]`"]
+      ["<t:attrset>"     "`[(tell t) (_ref path (liftNixVal x) | forall x in leaves of t)]`"]
       ["<func>"          "`using`"]
       ["<list>"          "`merge`"]
     ]
@@ -129,9 +132,9 @@ rec
 
   attrsetToContent = t: _merge 
     [ (_tell t)
-      (F.foldAttrsCond
+      (F.foldAttrsIxCond
         T.isTyped
-        liftNixValue
+        (t: path: ref path (liftNixValue t))
         (vals: _merge (builtins.attrValues vals)) 
         t
       )

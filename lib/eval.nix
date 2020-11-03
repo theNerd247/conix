@@ -53,7 +53,9 @@ rec
           R.rap 
             (R.tellWith ({currentPath,...}: 
               R.onlyRefs 
-              (R.setAtPathStr _path "${currentPath}/${R.targetNameOf _path (T.onChild _next)}")
+              (pkgs.lib.attrsets.setAttrByPath _path 
+                (R.extendPath currentPath (R.targetNameOf (builtins.concatStringsSep "." _path) (T.onChild _next)))
+              )
             ))
             (T.onRes _next);
       };

@@ -140,6 +140,9 @@ in
     overLocalData = f: x:
       x // { data = f x.data; };
 
+    overLocalRefs = f: x:
+      x // { refs = f x.refs; };
+
     overLocalCurrentPath = f: x:
       x // { currentPath = f x.currentPath; };
 
@@ -149,8 +152,11 @@ in
     # Nest the data and refs under the given operator
     # 
     # AttrPathString -> S -> S
-    nestScope = pathStr:
-      overData (setAtPathStr pathStr);
+    nestScope = pathStr: x:
+      let
+        f = setAtPathStr pathStr;
+      in
+        overData f (overRefs f x);
     
     # NOTE: for this to be an isomorphism of AttrPathString 
     # `data` and `refs` must ONLY contain data at the given
@@ -165,14 +171,24 @@ in
     #     unnestScope "b" z == x != z 
     #
     # AttrPathString -> S -> S
-    unnestScope = pathStr:
+    unnestScope = pathStr: x:
       let
           f = d: d // pkgs.lib.attrsets.getAttrFromPath (builtins.splitVersion pathStr) d;
       in
-        overLocalData f;
+        overLocalData f (overLocalRefs f x);
 
-    extendCurrentPath = path:
-      overLocalCurrentPath (p: p + "/" + path);
+    # Extend the current file with the given path removing
+    # the basename if it's a file.
+    extendCurrentPath = path: overLocalCurrentPath (c: extendPath c path);
+
+    extendPath = currentPath: path:
+      let
+        baseName = builtins.baseNameOf currentPath;
+        isFile = builtins.match ".*[.][[:alnum:]]+$" baseName == [];
+
+      in
+        if isFile then (builtins.dirOf currentPath) + "/" + path
+        else currentPath + "/" + path;
 
     # Contruct how a piece of content should be referenced
     # from other content. This should be the most
