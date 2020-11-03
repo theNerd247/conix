@@ -12,50 +12,6 @@ in
 rec
 {
 
-  # Make data defined in the given result locally scoped.
-  # That is defined data is brought to global scope when
-  # consumed and nested when produced.
-  #
-  # PathString -> ResF a -> ResF a
-  locallyScopedData = pathString: x:
-    let
-      path = builtins.splitVersion pathString;
-    in
-      sap 
-        (modify (unnestScope pathString))
-        x
-        (modify (nestScope pathString));
-
-  # Nest the data and refs under the given operator
-  # 
-  # AttrPathString -> S -> S
-  nestScope = path: {data, refs}: 
-    with pkgs.lib.attrsets;
-    { data = setAttrByPath path data;
-      refs = setAttrByPath path refs;
-    };
-
-  
-  # NOTE: for this to be an isomorphism of AttrPathString 
-  # `data` and `refs` must ONLY contain data at the given
-  # path. If this were not the case then accidental over-
-  # writing of attributes in the current scope could occur.
-  #
-  # E.g.
-  #   let 
-  #     x = { a = 3; };
-  #     y = (nestScope "b" x) // { a = 2; }; # == { a = 2; b = { a = 3; }; }
-  #   in
-  #     unnestScope "b" z == x != z 
-  #
-  # AttrPathString -> S -> S
-  unnestScope = path: {data, refs}:
-    with pkgs.lib.attrsets;
-    { 
-      data = data // (getAttrFromPath path data);
-      refs = data // (getAttrFromPath path refs);
-    };
-
   # type ParentData = { parentPath :: FilePathString, data :: AttrSet }
   # 
   # type Result a = { text :: String, data :: AttrSet, drv :: a, currentPath :: FilePathString }
@@ -68,32 +24,41 @@ rec
       { 
         # Evaluate anything that isn't { _type ... } ...
         tell   = _data: 
-          R.onlyData _data;
+          R.tell (R.onlyData _data);
+        anchor = _:
+          error "anchor is not yet implemented";
         text   = text: 
-          R.onlyText (builtins.toString text);
+          R.tell (R.onlyText (builtins.toString text));
         indent = {_nSpaces, _next}: 
-          R.overText (S.indent _nSpaces) _next;
+          R.censor (R.overText (S.indent _nSpaces)) _next;
         local  = _sourcePath: 
-          R.pure _sourcePath;
+          R.tell (R.onlyDrv _sourcePath);
         file   = {_mkFile, _next}: 
-          R.fmapWith ({drv, text, ...}: R.mergeDrv drv (_mkFile text)) _next;
-        merge  = xs: 
-          (M (R.monoid)).mconcat xs;
+          R.censor (addDrvFromText _mkFile) _next;
+        merge = xs: 
+          R.sequence_ xs;
         dir    = {_dirName, _next}: 
-          R.fmap (drv: CJ.dir _dirName [drv]) _next;
+          R.censor (R.overDrv (drv: CJ.dir _dirName [drv])) _next;
         using  = r: 
-          R.join r;
+          R.readerJoin r;
         ask    = x: 
-          R.noData x;
+          R.censor R.noData x;
         nest   = {_path, _next}: 
-          R.locallyScopedData _path _next;
-        anchor = {_path, _next}:
-          R.addFileUrl _path _next;
+          let
+            path = builtins.splitVersion pathString;
+          in
+            (R.censor (R.nestScope path) 
+              (R.local (unnestScope path) _next);
       }; 
 
   _eval = lib: expr: 
-    pkgs.lib.fix (a: T.cata C.fmap evalAlg expr (lib // { inherit (a) data; }));
-    #pkgs.lib.fix (a: T.cata C.fmap evalAlg (C.liftNixValue expr) (lib // { inherit (a) data; }));
+    let
+      #     R -> R * X     F R
+      #
+      # R * X -> R * X     F (R * X)
+      f = R.exe (T.cata C.fmap evalAlg expr);
+    in
+      pkgs.lib.fix (R.local (x: lib // (R.toReadOnly x)) f);
 
   _run = lib: expr: (_eval lib expr).drv;
 }

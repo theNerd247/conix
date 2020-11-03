@@ -81,13 +81,17 @@ rec
   # RW r w r
   get = x: { val = x; w = M.mempty; };
 
-  # (R -> R) -> RW r w a -> RW r w a
+  # (r' -> r) -> (r -> a) -> (r' -> a)
+  # (r -> r) -> RW r w a -> RW r w a
   local = f: g: x: g (f x);
 
-  # (W -> W) -> RW r w a -> RW r w a
+  # (r -> r) -> RW r w a -> RW r w a
   censor = f: g: x:
     let
       r = g x;
     in
       { inherit (r) val; w = f r.w; };
+
+  # RW r w a -> r -> w
+  exe = f: x: (f x).w;
 }
