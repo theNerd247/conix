@@ -13,8 +13,8 @@
 # values through dot notation.  This increases boilerplate code, however
 # doing so prevents infite recursion issues.
 
-# Res = { data :: AttrSet, drv :: Derivation, text :: String }
-# R = { data :: AttrSet }
+# Res = { data :: AttrSet, drv :: Derivation, text :: String, targetName :: FilePathString }
+# R = { data :: AttrSet, currentPath :: FilePathString }
 pkgs:
 
 let
@@ -53,6 +53,7 @@ let
           data = mergeData a.data b.data;
           drv = mergeDrv a.drv b.drv;
           text = a.text + b.text;
+          targetName = a.targetName;
         };
     };
 
@@ -61,13 +62,17 @@ in
   (import ./rw.nix monoid) // rec {
 
     # W -> R
-    toReadOnly = x: 
-      { data = x.data; };
+    toReadOnly = currentPath: x: 
+    { 
+      inherit currentPath;
+      data = x.data; 
+    };
 
     onlyData = data: 
     { 
       text = "";
       drv = {};
+      targetName = "";
       inherit data; 
     };
 
@@ -75,6 +80,7 @@ in
     { 
       drv = {};
       data = {};
+      targetName = "";
       inherit text; 
     };
 
@@ -82,14 +88,35 @@ in
     { 
       text = "";
       data = {};
+      targetName = "";
       inherit drv; 
     };
 
     overData = f: x:
     { 
-      inherit (x) text drv;
+      inherit (x) text drv targetName;
       data = f x.data; 
     };
+
+    overText = f: x:
+    { 
+      inherit (x) drv data targetName;
+      text = f x.text; 
+    };
+
+    overDrv = f: x: 
+    { 
+      inherit (x) text data targetName;
+      drv = f x.drv; 
+    };
+
+    addDrvFromText = f: x: 
+    { 
+      inherit (x) text data targetName;
+      drv = mergeDrv x.drv (f x.text); 
+    };
+
+    noData = overData (_: {});
 
     # unlike overData, this modifies the data
     # value in reader environment so it is legal
@@ -97,25 +124,8 @@ in
     overLocalData = f: x:
       x // { data = f x.data; };
 
-    overText = f: x:
-    { 
-      inherit (x) drv data;
-      text = f x.text; 
-    };
-
-    overDrv = f: x: 
-    { 
-      inherit (x) text data;
-      drv = f x.drv; 
-    };
-
-    addDrvFromText = f: x: 
-    { 
-      inherit (x) text data;
-      drv = mergeDrv x.drv (f x.text); 
-    };
-
-    noData = overData (_: {});
+    overLocalCurrentPath = f: x:
+      x // { currentPath = f x.currentPath; };
 
     # Nest the data and refs under the given operator
     # 
@@ -144,4 +154,7 @@ in
           f = d: d // pkgs.lib.attrsets.getAttrFromPath path d;
       in
         overLocalData f;
+
+    extendCurrentPath = path:
+      overLocalCurrentPath (p: p + "/" + path);
 }
