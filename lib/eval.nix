@@ -46,21 +46,17 @@ rec
         ask    = _next:
           R.censor R.noData (T.onRes _next);
         nest   = {_path, _next}: 
-          let
-            path = builtins.splitVersion _path;
-          in
-            R.censor (R.nestScope path) 
-              (R.local (R.unnestScope path) (T.onRes _next));
+          R.censor 
+            (R.nestScope _path) 
+            (R.local (R.unnestScope _path) (T.onRes _next));
         ref    = {_path, _next}:
-          throw "ref not yet implemented";
-          # do
-          # (a, tn) <- listens onTargetName _next
-          # cp <- gets currentPath
-          #
-          # tell $ onlyRefs { _path = cp + tn; }
-          #
-          # return a
-      }; 
+          R.rap 
+            (R.tellWith ({currentPath,...}: 
+              R.onlyRefs 
+              (R.setAtPathStr _path "${currentPath}/${R.targetNameOf _path (T.onChild _next)}")
+            ))
+            (T.onRes _next);
+      };
 
   _eval = lib: expr: 
     let

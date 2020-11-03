@@ -11,7 +11,7 @@ rec
       noType = throw "Value must have _type and _val attribute. _type can be one of these strings: \n  ${types}\n recieved: ${builtins.typeOf x}";
 
       k = x._type or noType;
-      f = fs.${k} or badType;
+      f = if fs ? _ then fs.${k} or fs._ else fs.${k} or badType;
       v = x._val or noType;
     in
       f v;

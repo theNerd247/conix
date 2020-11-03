@@ -19,6 +19,7 @@ pkgs:
 
 let
   CJ = import ./copyJoin.nix pkgs;
+  T = import ./types.nix;
 
   # AttrSet -> AttrSet -> AttrSet
   mergeData = pkgs.lib.attrsets.recursiveUpdate; 
@@ -93,6 +94,14 @@ in
       inherit drv; 
     };
 
+    onlyRefs = refs:
+    {
+      text = "";
+      data = {};
+      drv = {};
+      inherit refs;
+    };
+
     overData = f: x:
     { 
       inherit (x) text drv refs;
@@ -134,14 +143,14 @@ in
     overLocalCurrentPath = f: x:
       x // { currentPath = f x.currentPath; };
 
+    setAtPathStr = pathString:
+      pkgs.lib.attrsets.setAttrByPath (builtins.splitVersion pathString);
+
     # Nest the data and refs under the given operator
     # 
     # AttrPathString -> S -> S
-    nestScope = path: x:
-      let
-        f = pkgs.lib.attrsets.setAttrByPath path;
-      in
-        overData f x;
+    nestScope = pathStr:
+      overData (setAtPathStr pathStr);
     
     # NOTE: for this to be an isomorphism of AttrPathString 
     # `data` and `refs` must ONLY contain data at the given
@@ -156,12 +165,21 @@ in
     #     unnestScope "b" z == x != z 
     #
     # AttrPathString -> S -> S
-    unnestScope = path:
+    unnestScope = pathStr:
       let
-          f = d: d // pkgs.lib.attrsets.getAttrFromPath path d;
+          f = d: d // pkgs.lib.attrsets.getAttrFromPath (builtins.splitVersion pathStr) d;
       in
         overLocalData f;
 
     extendCurrentPath = path:
       overLocalCurrentPath (p: p + "/" + path);
-}
+
+    # Contruct how a piece of content should be referenced
+    # from other content. This should be the most
+    targetNameOf = refPathStr: T.match
+    { 
+      file = {_fileName,...}: _fileName;
+      dir = {_dirName, ...}: _dirName;
+      _ = x: "#" + refPathStr;
+    };
+  }

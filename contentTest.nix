@@ -19,6 +19,8 @@ rec
 
   E = import ./lib/eval.nix pkgs;
 
+  T = import ./lib/types.nix;
+
   h = x: with x; dir "jack" [
 
     { p = markdown "foo" [
