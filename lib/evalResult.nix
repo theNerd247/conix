@@ -13,7 +13,7 @@
 # values through dot notation.  This increases boilerplate code, however
 # doing so prevents infite recursion issues.
 
-# Res = { data :: AttrSet, drv :: Derivation, text :: String, targetName :: FilePathString, refs :: AttrSet }
+# Res = { data :: AttrSet, drv :: Derivation, text :: String, refs :: AttrSet }
 # R = { data :: AttrSet, currentPath :: FilePathString }
 pkgs:
 
@@ -44,7 +44,6 @@ let
           data = {};
           refs = {};
           drv = {};
-          targetName = "";
           text = "";
         };
 
@@ -55,7 +54,6 @@ let
           refs = mergeData a.refs b.refs;
           drv = mergeDrv a.drv b.drv;
           text = a.text + b.text;
-          targetName = a.targetName;
         };
     };
 
@@ -76,7 +74,6 @@ in
       text = "";
       drv = {};
       refs = {};
-      targetName = "";
       inherit data; 
     };
 
@@ -85,7 +82,6 @@ in
       drv = {};
       data = {};
       refs = {};
-      targetName = "";
       inherit text; 
     };
 
@@ -94,43 +90,36 @@ in
       text = "";
       data = {};
       refs = {};
-      targetName = "";
       inherit drv; 
     };
 
     overData = f: x:
     { 
-      inherit (x) text drv targetName refs;
+      inherit (x) text drv refs;
       data = f x.data; 
     };
 
     overText = f: x:
     { 
-      inherit (x) drv data targetName refs;
+      inherit (x) drv data refs;
       text = f x.text; 
     };
 
     overDrv = f: x: 
     { 
-      inherit (x) text data targetName refs;
+      inherit (x) text data refs;
       drv = f x.drv; 
-    };
-
-    overTargetName = f: x:
-    {
-      inherit (x) text data drv refs;
-      targetName = f x.targetName;
     };
 
     overRefs = f: x:
     { 
-      inherit (x) text data drv targetName;
+      inherit (x) text data drv;
       refs = f x.refs;
     };
 
     addDrvFromText = f: x: 
     { 
-      inherit (x) text data targetName refs;
+      inherit (x) text data refs;
       drv = mergeDrv x.drv (f x.text); 
     };
 
