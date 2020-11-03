@@ -132,7 +132,10 @@ in
       drv = mergeDrv x.drv (f x.text); 
     };
 
-    noData = overData (_: {});
+    # Modify Res so that no values unsafe side-effects occur that could
+    # create infinite recursion. In this case, we're setting data, refs, and
+    # drv (to prevent duplicate drvs from being created).
+    noProduce = x: onlyText x.text;
 
     # unlike overData, this modifies the data
     # value in reader environment so it is legal
@@ -198,4 +201,21 @@ in
       dir = {_dirName, ...}: _dirName;
       _ = x: "#" + refPathStr;
     };
+
+    pathStrToList = p: builtins.filter (x: x != "") (pkgs.lib.splitString "/" p);
+
+    makeRelativePath = currentPath: targetPath:
+      let
+        coalg = cPath: tPath: with builtins;
+          let
+            cHead = head cPath;
+            tHead = head tPath;
+            cTail = tail cPath;
+            tTail = tail tPath;
+          in
+                 if length cPath == 0 then builtins.concatStringsSep "/" tPath
+            else if cHead == tHead    then coalg cTail tTail
+            else                           builtins.concatStringsSep "/" ((builtins.map (_: "..") cPath) ++ tPath);
+      in
+        coalg (pathStrToList currentPath) (pathStrToList targetPath);
   }

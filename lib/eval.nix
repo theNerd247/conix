@@ -44,7 +44,7 @@ rec
         using  = f: r: # ContentF (r -> (RW r w a, Content))
           T.onRes (f r) r;
         ask    = _next:
-          R.censor R.noData (T.onRes _next);
+          R.censor R.noProduce (T.onRes _next);
         nest   = {_path, _next}: 
           R.censor 
             (R.nestScope _path) 
@@ -58,6 +58,11 @@ rec
               )
             ))
             (T.onRes _next);
+        link   = _next:
+          R.censorWith ({currentPath, ...}: x:
+            R.noProduce
+            (R.overText (R.makeRelativePath currentPath) x)
+          ) (T.onRes _next);
       };
 
   _eval = lib: expr: 

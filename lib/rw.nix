@@ -67,7 +67,7 @@ rec
   # (r -> r) -> RW r w a -> RW r w a
   local = f: g: x: g (f x);
 
-  # (r -> r) -> RW r w a -> RW r w a
+  # (w -> w) -> RW r w a -> RW r w a
   censor = f: g: x:
     let
       r = g x;
@@ -75,7 +75,10 @@ rec
       { inherit (r) val; w = f r.w; };
 
   # (r -> w) -> RW r w ()
-  tellWith = f: x: { val = null; w = f x; };
+  tellWith = f: x: tell (f x) x;
+
+  # (r -> w -> w) -> RW r w a -> RW r w a
+  censorWith = f: g: x: censor (f x) g x;
 
   # RW r w a -> r -> w
   exe = f: x: (f x).w;

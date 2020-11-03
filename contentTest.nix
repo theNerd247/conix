@@ -21,11 +21,13 @@ rec
 
   T = import ./lib/types.nix;
 
+  R = import ./lib/evalResult.nix pkgs;
+
   h = x: with x; dir "jack" [
 
     { p = markdown "foo" [
       "bar"
-      (html "bo" { x = 7; })
+      (html "bo" { bo = 7; })
     ]; }
 
     (html "bar" [ 
@@ -46,6 +48,8 @@ rec
 
       (r data.x)''
 
+
+      [Go to bo](''(r refs.bo)'')
 
       ''
 

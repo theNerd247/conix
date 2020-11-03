@@ -180,6 +180,9 @@ rec
   docs._ref.type = "{ _path :: AttrPathString, _next :: a} -> ContentF a";
   _ref = T.typed "ref";
 
+  docs._link.type = "a -> ContentF a";
+  _link = T.Typed "link";
+
   fmapMatch = f:
     { 
       tell   = x: _tell x;
@@ -193,6 +196,7 @@ rec
       ask    = x: _ask (f x);
       nest   = {_path, _next}: _nest { inherit _path; _next = f _next; };
       ref    = {_path, _next}: _ref { inherit _path; _next = f _next; };
+      link   = x: _link x;
     };
 
   fmap = T.matchWith fmapMatch;
