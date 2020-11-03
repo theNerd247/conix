@@ -138,5 +138,5 @@ in
       let
           f = d: d // pkgs.lib.attrsets.getAttrFromPath path d;
       in
-        overData f x;
+        x // { data = f x.data; };
 }
