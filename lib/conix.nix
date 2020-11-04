@@ -1,6 +1,8 @@
 internalLib: with internalLib; [
 
-(markdown "readme" (html "index" [
+(import ./readme.nix)
+
+(html "index" [
 
   (meta [
     (ask (css data.conixCss))
@@ -10,43 +12,26 @@ internalLib: with internalLib; [
 ''
 # ''{ title = ["Conix " conix.version.text]; }''
 
+
+''{intro = ''
 Conix is a Nix EDSL for technical writing. It brings the Nix
 programming language alongside markdown and implements an
 intuitive build system.
 
 ${if conix.version.major < 1
 then ''
-**Notice: This project is a work in progress and the API will have major
-updates pushed to the master branch until the first major release.**
+  **Notice: This project is a work in progress. The API will be unstable
+  until the first major release.**
 '' 
 else ""
 }
+'';}''
 
 # Documentation
 
 * [API Reference Docs](''(link refs.apiDocs)'')
 
-# Contributing
-
-Any ideas or help are welcome! Please submit a PR or open an issue as you see
-fit. I like to use the project board to organize my thoughts; check the todo
-column for tasks to work on. I will try and convert these to issues when I can.
-
-# Related Works
-
-* [Pollen](https://docs.racket-lang.org/pollen/) - _"Pollen is a publishing
-system that helps authors make functional and beautiful digital books."_
-
-# Acknowledgements
-
-Many thanks to:
-
-  * [Gabriel Gonzalez](https://github.com/Gabriel439) for his mentorship and guidance. 
-  * [Evan Relf](https://github.com/evanrelf) for his insightful feedback.
-  * [Paul Young](https://github.com/paulyoung) for great feedback and ideas.
-''
-
-]))
+''])
 
 ({ apiDocs = html "docs" [
 
@@ -94,8 +79,9 @@ rec
     ```nix
     "3344"
     ```
-    notice how we've defined `x` in two places.
-    ```
+    notice how we've defined `x` in two places. Nesting allows
+    one to keep the first `x` from overriding the value of
+    the second.
     ''
     (_path: _next: internalLib._nest { inherit _path _next; })
     ;
@@ -250,9 +236,7 @@ rec
 
   pagetitle = expr
       "String -> Content"
-      ''
-      The title of the rendered document
-      ''
+      "The title of the rendered document"
       internalLib.pagetitle;
 
   pathOf = expr

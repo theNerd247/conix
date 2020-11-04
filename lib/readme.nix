@@ -1,16 +1,13 @@
-# Conix 0.2.0
+x: with x; markdown "readme" [
 
-Conix is a Nix EDSL for technical writing. It brings the Nix
-programming language alongside markdown and implements an
-intuitive build system.
+"# "(ask data.title)''
 
-**Notice: This project is a work in progress. The API will be unstable
-until the first major release.**
 
+''(ask data.intro)''
 
 # Documentation
 
-  * [API Reference Docs](https://theNerd247.github.io/conix)
+  * [API Reference Docs](''(conix.homepageUrl)'')
 
 # Contributing
 
@@ -30,3 +27,4 @@ Many thanks to:
   * [Gabriel Gonzalez](https://github.com/Gabriel439)
   * [Evan Relf](https://github.com/evanrelf)
   * [Paul Young](https://github.com/paulyoung)
+'']

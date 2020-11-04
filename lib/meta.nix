@@ -19,7 +19,7 @@ let
 in
 rec
 { 
-  homepageUrl = "https://github.com/theNerd247/conix.git";
+  homepageUrl = "https://theNerd247.github.io/conix";
   git =
     {
       url = "https://github.com/theNerd247/conix.git"; 
