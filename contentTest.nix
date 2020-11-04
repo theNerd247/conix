@@ -13,30 +13,55 @@ rec
 
   conix = pkgs.conix;
 
-  h = x: with x; dir "jack" (html "bar" [ 
+  pkgs_ = import <nixpkgs> {};
+
+  I = import ./lib/internal.nix pkgs;
+
+  E = import ./lib/eval.nix pkgs;
+
+  T = import ./lib/types.nix;
+
+  R = import ./lib/evalResult.nix pkgs;
+
+  h = x: with x; dir "jack" [
+
+    { p = markdown "foo" [
+      "bar"
+      (html "bo" { bo = 7; })
+    ]; }
+
+    (pdf "bar" (html "bar" [ 
 
       (meta [
         (css ./static/latex.css)
         "pagetitle: FOO"
       ])
 
-      { x = 3; }
+      { x = 3; }''
 
-      (addBoo "foo!")
+
+      ''(addBoo "foo!")
 
       ''
       ...or here
 
       ''
 
-      (markdown "mdListSample" [ "  " (indent 2 
-        (list 
+      (r data.x)''
+
+
+      [Go to bo](''(link refs.bo)'')
+
+      ''
+
+      { m = markdown "mdListSample"
+        { l = indent 2 (list 
           [ "foo"
-            "bar"
+            { t = "bar"; }
             "baz"
-          ]
-        ))
-      ])
+          ]); 
+        };
+      }
 
       (html "baz" "a nested file")''
 
@@ -71,22 +96,16 @@ rec
 
 
       ''(r data.y.x)" = 4 != "(r data.x)
-    ]);
+    ])) ];
 
   g = n: with n; [
     { x = 4; } " = " (r data.x)
 
-    (list ["a" "b" "c"])
+    (list ["a" "b" "c"])''
+
+
+    [MDLiST](''(link refs.m)'')''
   ];
 
   h_ = pkgs.conix.run h;
-    
-  j = with pkgs.conix;
-    _merge
-    [ (exp (_merge [ (_text "a -> ") (data.code "jack") ]) 2)
-      (exp (_text "a -> b -> a") _text)
-    ];
-
-  exp = type: exp: with pkgs.conix;
-    _tell { _data = { run = exp; }; _next = type; };
 }

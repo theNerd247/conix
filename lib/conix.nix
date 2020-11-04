@@ -90,19 +90,13 @@ rec
 
   t = text;
 
-  ref = expr 
+  ask = expr 
     "Content -> Content"
     [''
     Prevent infinite recursion when using a value from the data store as
     content.
 
     For example: 
-
-    ''(internalLib.ref (data.code "nix" ''
-    [ { x = 3; }
-      data.x
-    ]
-    ''))''
 
     Will break with an `infinite recursion` error. To resolve this do:
 
@@ -119,13 +113,28 @@ rec
     ]
     ```
     '']
-    internalLib.ref
+    internalLib.ask
   ;
 
   r = expr
-    (internalLib.ref data._docs.ref.type)
+    (internalLib.ask "Content -> Content")
     "See `ref`"
-    internalLib.ref;
+    internalLib.ask;
+
+  link = expr
+    "Content -> Content"
+    ''
+    Generate a relative path to the given content
+
+    For example:
+
+    ```
+    conix: with conix; [ (html "bob" { x = 3; }) (dir "larry" (html "joe" (link refs.x))) ]
+    ```
+
+    will produce a relative path in the html file "joe" `../bob.html`
+    ''
+    internalLib.link;
 
   using = expr
       "(AttrSet -> Content) -> Content"
@@ -247,13 +256,13 @@ rec
   list = expr
       "[Content] -> Content" 
       "Create a bullet list"
-      (builtins.map (content: [ "* " content "\n" ]))
+      (builtins.map (content: [ "\n* " content ]))
     ; 
 
   code = expr
       "Language -> Code -> Content"
       "Create a markdown code block"
-      (lang: content: [ "```" lang "\n" content "\n```" ])
+      (lang: content: [ "\n\n```" lang "\n" content "\n```" ])
     ;
 
   runCode = expr
@@ -281,11 +290,13 @@ rec
       "[Content] -> [[Content]] -> Content" 
       "Create a markdown table with the given headers and rows"
       (headers: rows:
-       [ (data.intersperse " | " headers) 
-         "\n"
-         (builtins.concatStringsSep " | " (builtins.map (_: "---") headers))
-         "\n"
-         (data.intersperse "\n" (builtins.map (data.intersperse " | ") rows))
+      [ 
+        "\n"
+        (data.intersperse " | " headers) 
+        "\n"
+        (builtins.concatStringsSep " | " (builtins.map (_: "---") headers))
+        "\n"
+        (data.intersperse "\n" (builtins.map (data.intersperse " | ") rows))
       ])
     ;
 

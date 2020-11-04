@@ -11,7 +11,7 @@ rec
       noType = throw "Value must have _type and _val attribute. _type can be one of these strings: \n  ${types}\n recieved: ${builtins.typeOf x}";
 
       k = x._type or noType;
-      f = fs.${k} or badType;
+      f = if fs ? _ then fs.${k} or fs._ else fs.${k} or badType;
       v = x._val or noType;
     in
       f v;
@@ -19,8 +19,18 @@ rec
   docs.matchWith.type = "(a -> Map String (b -> c)) -> a -> { _type :: String _val :: b} -> c";
   matchWith = mkMatch: x: match (mkMatch x);
 
-  docs.cata.type = "Functor f => ((a -> b) -> f a -> f b) -> (f a -> a) -> Fix f -> a";
+  docs.cata.type = "Functor f => (f a -> a) -> Fix f -> a";
   cata = fmap: alg: let c = x: alg (fmap c x); in c;
+
+  docs.para.type = "Functor f => (f { child :: a, res :: Fix f} -> a) -> Fix f -> a";
+  para = fmap: alg: 
+    let 
+      c = x: alg (fmap (fixF: { child = fixF; res = c fixF; }) x); 
+    in 
+      c;
+
+  onRes = {res,...}: res;
+  onChild = {child, ...}: child;
 
   isTyped = x: x ? _type;
 }
