@@ -30,7 +30,7 @@ rec
       (html "bo" { bo = 7; })
     ]; }
 
-    (html "bar" [ 
+    (pdf "bar" (html "bar" [ 
 
       (meta [
         (css ./static/latex.css)
@@ -95,7 +95,7 @@ rec
 
 
       ''(r data.y.x)" = 4 != "(r data.x)
-    ]) ];
+    ])) ];
 
   g = n: with n; [
     { x = 4; } " = " (r data.x)
