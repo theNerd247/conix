@@ -108,4 +108,9 @@ rec
   ];
 
   h_ = pkgs.conix.run h;
+
+  a = c: with c; [
+    { x = html "a" "boo"; }
+    (html "b" "aoo")
+  ];
 }

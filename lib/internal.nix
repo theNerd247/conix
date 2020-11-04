@@ -37,7 +37,7 @@ rec
       _fileName = _fName + ".md";
     };
 
-  meta = _data: [ "---\n" (intersperse "\n" _data) "\n---\n" ];
+  meta = x: [ "\n\n---\n" (intersperse "\n" x) "\n---\n\n" ];
 
   intersperse = s: xs:
     (builtins.foldl' 
@@ -52,7 +52,7 @@ rec
 
   css = localPath: [ "css: " (pathOf localPath) ];
 
-  pagetitle = title: [ "pagetitle: " pagetitle ];
+  pagetitle = title: [ "pagetitle: " title ];
 
   pathOf = localPath:
     [ (_local localPath)
@@ -68,8 +68,7 @@ rec
 
   link = _link;
 
-  htmlModule = name: x:
-    html name [ (meta (css ../static/latex.css)) x ];
+  conixCss = ../static/latex.css;
 
   module = docstr: r:
     [ docstr

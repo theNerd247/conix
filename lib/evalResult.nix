@@ -133,9 +133,8 @@ in
     };
 
     # Modify Res so that no values unsafe side-effects occur that could
-    # create infinite recursion. In this case, we're setting data, refs, and
-    # drv (to prevent duplicate drvs from being created).
-    noProduce = x: onlyText x.text;
+    # create infinite recursion.
+    noProduce = x: overData (_: {}) (overRefs (_: {}) x);
 
     # unlike overData, this modifies the data
     # value in reader environment so it is legal
