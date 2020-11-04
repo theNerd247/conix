@@ -1,9 +1,14 @@
-internalLib: with internalLib; [ 
+internalLib: with internalLib; [
 
-(markdown "readme" (htmlModule "index" [
+(markdown "readme" (html "index" [
+
+  (meta [
+    (ask (css data.conixCss))
+    (ask (pagetitle data.title))
+  ])
 
 ''
-# Conix ''(conix.version.text)''
+# ''{ title = ["Conix " conix.version.text]; }''
 
 Conix is a Nix EDSL for technical writing. It brings the Nix
 programming language alongside markdown and implements an
@@ -19,7 +24,7 @@ else ""
 
 # Documentation
 
-* [API Reference Docs](./docs.html)
+* [API Reference Docs](''(link refs.apiDocs)'')
 
 # Contributing
 
@@ -43,7 +48,14 @@ Many thanks to:
 
 ]))
 
-(htmlModule "docs" [(module "## Conix API\n\n"
+({ apiDocs = html "docs" [
+
+  (meta [
+    (ask (css data.conixCss))
+    (pagetitle "Conix API Docs")
+  ])
+
+(module "# Conix API\n\n"
 
 rec
 { 
@@ -235,6 +247,13 @@ rec
       ''
       internalLib.css
     ;
+
+  pagetitle = expr
+      "String -> Content"
+      ''
+      The title of the rendered document
+      ''
+      internalLib.pagetitle;
 
   pathOf = expr
     "LocalFilePath -> Content"
@@ -444,28 +463,12 @@ rec
         internalLib.expr
         ;
 
-      htmlModule = expr
+      conixCss = expr
         "FileName -> Content -> Content"
         ''
-        Create an html file that is styled just like the conix core API.
-
-        This is provided as a convenience function. Feel free to use the normal
-        API to generate custom API formats. For example you may want a PDF
-        version of your API docs:
-
-        ```nix
-        pdf "myDocs" 
-          (module "# MY API Docs\n\n"
-          { 
-            addOne = expr
-              "Natural -> Natural"
-              "adds one..."
-              (x: x+1)
-              ;
-          }
-        ```
+        The css file conix uses for generating its documentation
         ''
-        internalLib.htmlModule
+        internalLib.conixCss
         ;
     }
   )
@@ -495,6 +498,6 @@ rec
     }
   )
 
-])
+]; })
 
 ]
