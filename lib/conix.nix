@@ -29,6 +29,7 @@ else ""
 
 # Documentation
 
+* [Github Repository](''(conix.git.url)'')
 * [API Reference Docs](''(link refs.apiDocs)'')
 
 ''])
