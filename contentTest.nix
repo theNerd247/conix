@@ -37,9 +37,10 @@ rec
         "pagetitle: FOO"
       ])
 
-      { x = 3; }
+      { x = 3; }''
 
-      (addBoo "foo!")
+
+      ''(addBoo "foo!")
 
       ''
       ...or here
@@ -49,7 +50,7 @@ rec
       (r data.x)''
 
 
-      [Go to bo](''(r refs.bo)'')
+      [Go to bo](''(link refs.bo)'')
 
       ''
 

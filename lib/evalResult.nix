@@ -184,14 +184,13 @@ in
     # the basename if it's a file.
     extendCurrentPath = path: overLocalCurrentPath (c: extendPath c path);
 
-    extendPath = currentPath: path:
-      let
-        baseName = builtins.baseNameOf currentPath;
-        isFile = builtins.match ".*[.][[:alnum:]]+$" baseName == [];
 
-      in
-        if isFile then (builtins.dirOf currentPath) + "/" + path
-        else currentPath + "/" + path;
+    isFile = x: builtins.match ".*[.][[:alnum:]]+$" (builtins.baseNameOf x) == [];
+
+    extendPath = currentPath: path:
+      if isFile currentPath && isFile path then (builtins.dirOf currentPath) + "/" + path
+      else if isFile currentPath then currentPath + path
+      else currentPath + "/" + path;
 
     # Contruct how a piece of content should be referenced
     # from other content. This should be the most
@@ -210,12 +209,12 @@ in
           let
             cHead = head cPath;
             tHead = head tPath;
-            cTail = tail cPath;
+            cTail = if builtins.length cPath == 0 then [] else tail cPath;
             tTail = tail tPath;
           in
                  if length cPath == 0 then builtins.concatStringsSep "/" tPath
             else if cHead == tHead    then coalg cTail tTail
-            else                           builtins.concatStringsSep "/" ((builtins.map (_: "..") cPath) ++ tPath);
+            else                           builtins.concatStringsSep "/" ((builtins.map (_: "..") cTail) ++ tPath);
       in
-        coalg (pathStrToList currentPath) (pathStrToList targetPath);
+        "./" + coalg (pathStrToList currentPath) (pathStrToList targetPath);
   }

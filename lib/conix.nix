@@ -121,6 +121,21 @@ rec
     "See `ref`"
     internalLib.ask;
 
+  link = expr
+    "Content -> Content"
+    ''
+    Generate a relative path to the given content
+
+    For example:
+
+    ```
+    conix: with conix; [ (html "bob" { x = 3; }) (dir "larry" (html "joe" (link refs.x))) ]
+    ```
+
+    will produce a relative path in the html file "joe" `../bob.html`
+    ''
+    internalLib.link;
+
   using = expr
       "(AttrSet -> Content) -> Content"
       [

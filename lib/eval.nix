@@ -54,15 +54,17 @@ rec
             (R.tellWith ({currentPath,...}: 
               R.onlyRefs 
               (pkgs.lib.attrsets.setAttrByPath _path 
-                (R.extendPath currentPath (R.targetNameOf (builtins.concatStringsSep "." _path) (T.onChild _next)))
+                (R.extendPath currentPath 
+                  (R.targetNameOf (builtins.concatStringsSep "." _path) 
+                  (T.onChild _next))
+                )
               )
             ))
             (T.onRes _next);
-        link   = _next:
-          R.censorWith ({currentPath, ...}: x:
-            R.noProduce
-            (R.overText (R.makeRelativePath currentPath) x)
-          ) (T.onRes _next);
+        link   = _path:
+          R.tellWith ({currentPath, ...}:
+            R.onlyText (R.makeRelativePath currentPath _path)
+          ); 
       };
 
   _eval = lib: expr: 

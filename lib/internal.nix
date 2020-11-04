@@ -64,6 +64,8 @@ rec
   ref = _path: _next:
     _ref { inherit _path _next; };
 
+  link = _link;
+
   htmlModule = name: x:
     html name [ (meta (css ../static/latex.css)) x ];
 
@@ -181,7 +183,7 @@ rec
   _ref = T.typed "ref";
 
   docs._link.type = "a -> ContentF a";
-  _link = T.Typed "link";
+  _link = T.typed "link";
 
   fmapMatch = f:
     { 
