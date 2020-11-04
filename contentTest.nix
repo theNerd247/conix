@@ -65,6 +65,7 @@ rec
 
       (html "baz" "a nested file")''
 
+
       ''
       (table 
         [ "foo" "bar" "baz" ]
@@ -100,7 +101,10 @@ rec
   g = n: with n; [
     { x = 4; } " = " (r data.x)
 
-    (list ["a" "b" "c"])
+    (list ["a" "b" "c"])''
+
+
+    [MDLiST](''(link refs.m)'')''
   ];
 
   h_ = pkgs.conix.run h;

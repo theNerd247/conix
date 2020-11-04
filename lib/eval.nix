@@ -56,7 +56,8 @@ rec
               (pkgs.lib.attrsets.setAttrByPath _path 
                 (R.extendPath currentPath 
                   (R.targetNameOf (builtins.concatStringsSep "." _path) 
-                  (T.onChild _next))
+                    (T.onChild _next)
+                  )
                 )
               )
             ))

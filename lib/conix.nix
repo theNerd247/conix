@@ -256,13 +256,13 @@ rec
   list = expr
       "[Content] -> Content" 
       "Create a bullet list"
-      (builtins.map (content: [ "* " content "\n" ]))
+      (builtins.map (content: [ "\n* " content ]))
     ; 
 
   code = expr
       "Language -> Code -> Content"
       "Create a markdown code block"
-      (lang: content: [ "```" lang "\n" content "\n```" ])
+      (lang: content: [ "\n\n```" lang "\n" content "\n```" ])
     ;
 
   runCode = expr
@@ -290,11 +290,13 @@ rec
       "[Content] -> [[Content]] -> Content" 
       "Create a markdown table with the given headers and rows"
       (headers: rows:
-       [ (data.intersperse " | " headers) 
-         "\n"
-         (builtins.concatStringsSep " | " (builtins.map (_: "---") headers))
-         "\n"
-         (data.intersperse "\n" (builtins.map (data.intersperse " | ") rows))
+      [ 
+        "\n"
+        (data.intersperse " | " headers) 
+        "\n"
+        (builtins.concatStringsSep " | " (builtins.map (_: "---") headers))
+        "\n"
+        (data.intersperse "\n" (builtins.map (data.intersperse " | ") rows))
       ])
     ;
 
