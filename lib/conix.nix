@@ -1,4 +1,4 @@
-internalLib: with internalLib; [ 
+internalLib: with internalLib; [
 
 (markdown "readme" (htmlModule "index" [
 
@@ -19,7 +19,7 @@ else ""
 
 # Documentation
 
-* [API Reference Docs](./docs.html)
+* [API Reference Docs](''(link refs.apiDocs)'')
 
 # Contributing
 
@@ -43,7 +43,7 @@ Many thanks to:
 
 ]))
 
-(htmlModule "docs" [(module "## Conix API\n\n"
+({ apiDocs = htmlModule "docs" [(module "## Conix API\n\n"
 
 rec
 { 
@@ -235,6 +235,13 @@ rec
       ''
       internalLib.css
     ;
+
+  pagetitle = expr
+      "String -> Content"
+      ''
+      The title of the rendered document
+      ''
+      internalLib.pagetitle;
 
   pathOf = expr
     "LocalFilePath -> Content"
@@ -495,6 +502,6 @@ rec
     }
   )
 
-])
+]; })
 
 ]

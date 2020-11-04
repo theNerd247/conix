@@ -52,6 +52,8 @@ rec
 
   css = localPath: [ "css: " (pathOf localPath) ];
 
+  pagetitle = title: [ "pagetitle: " pagetitle ];
+
   pathOf = localPath:
     [ (_local localPath)
       "./${builtins.baseNameOf localPath}"
