@@ -1,7 +1,7 @@
 rec
 {
 
-  extensions = c: with c; htmlModule "customApi" (module "# Custom API\n\n"
+  extensions = c: with c; html "customApi" (module "# Custom API\n\n"
     { addBoo = expr 
         "Content -> Content"
         "Adds prefix boo!"

@@ -366,6 +366,11 @@ rec
             "GitBranchString"
             "The GIT branch of the conix repo currently being used"
             internalLib.conix.git.ref;
+
+          text = expr
+            "NixString"
+            "String containing a Nix Attribute expression representing `conix.git`"
+            (data.printNixVal internalLib.conix.git);
         };
 
         version =
