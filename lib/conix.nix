@@ -220,6 +220,12 @@ rec
       internalLib.markdown
     ;
 
+  textfile = expr
+      "FileName -> Content -> Content" 
+      "Write the content to the given text file" 
+      internalLib.textfile
+    ;
+
   meta = expr
       "[Content] -> Content" 
       "Construct the meta data portion of a Pandoc sytle markdown file"

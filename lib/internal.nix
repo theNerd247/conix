@@ -29,12 +29,14 @@ rec
 
   pdf = _fileName: pandoc "pdf" "" [pkgs.texlive.combined.scheme-small] _fileName;
 
-  markdown = _fName: _next: _file 
+  markdown = _fName: textfile "${_fName}.md";
+
+  textfile = _fName: _next: _file 
     rec
     { 
       inherit _next;
       _mkFile = pkgs.writeText _fileName; 
-      _fileName = _fName + ".md";
+      _fileName = _fName;
     };
 
   meta = x: [ "\n\n---\n" (intersperse "\n" x) "\n---\n\n" ];
@@ -69,6 +71,15 @@ rec
   link = _link;
 
   conixCss = ../static/latex.css;
+
+  tutorialSnippet = fileName: refName: content:
+    [ 
+      ''```nix
+      ''{ tutorials.${refName} = textfile fileName content; }''
+      
+      ```
+      ''
+    ];
 
   module = docstr: r:
     [ docstr

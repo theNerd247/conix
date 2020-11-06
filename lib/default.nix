@@ -10,6 +10,7 @@ let
     (internalLib.liftNixValue 
       [ 
         (import ./conix.nix )
+        (import ../tutorials)
         extensions
       ]
     );
