@@ -29,12 +29,13 @@ rec
           in
             "[ ${printElems} ]";
 
-        printVal  = e:
-          if builtins.isAttrs e then printAttrs e
-          else if builtins.isList e then printList e
-          else if builtins.isNull e then "null"
-          else if builtins.isFunction e then "<lambda>"
-          else builtins.toString e;
+        printVal  = e: with builtins;
+          if      isAttrs e then printAttrs e
+          else if isList e then printList e
+          else if isNull e then "null"
+          else if isFunction e then "<lambda>"
+          else if isString e then "\"${e}\""
+          else toString e;
       in
         printVal
     );
