@@ -1,4 +1,4 @@
-# Getting Started With Conix
+# Conix 0.2.0
 
 Conix is a Nix EDSL for technical writing. It brings the Nix
 programming language alongside markdown and implements an
@@ -10,7 +10,30 @@ until the first major release.**
 
 # Documentation
 
-  * [API Reference Docs](https://theNerd247.github.io/conix)
+  * [Conix Home Page](https://theNerd247.github.io/conix)
+
+## A Readme File In Conix
+
+Below is some conix code for creating a readme file^[Download
+[Getting Started Sample Code](./gettingStarted.nix)]
+as both an HTML file and a Markdown file.
+
+```nix
+
+(import <nixpkgs> { overlays = builtins.fetchGit 
+{ ref = conixSnippets; rev = 1815bfe14197e2b13f467d1ee1693ddf297eeee0; url = https://github.com/theNerd247/conix.git; }; 
+}).conix.run (conix: with conix;
+
+markdown "readme" (html "readme" ''
+
+# My Readme
+
+This is a readme file!
+
+''))
+
+
+```
 
 # Contributing
 

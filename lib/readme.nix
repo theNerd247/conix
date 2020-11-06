@@ -7,7 +7,9 @@ x: with x; markdown "readme" [
 
 # Documentation
 
-  * [API Reference Docs](''(conix.homepageUrl)'')
+  * [Conix Home Page](''(conix.homepageUrl)'')
+
+''(ask data.gettingStartedText)''
 
 # Contributing
 

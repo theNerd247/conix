@@ -31,6 +31,7 @@ else ""
 
 * [Github Repository](''(conix.git.url)'')
 * [API Reference Docs](''(link refs.apiDocs)'')
+* [Getting Started](''(link refs.gettingStarted)'')
 
 ''])
 
