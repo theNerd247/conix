@@ -115,15 +115,15 @@ rec
   Parses expressions written in the Nix host language
   into the Conix eDSL. The follow conversions are performed:
 
-  ''(table
-    [ "Nix Expression"   "Conix Expression"]
-    [ ["<string>"        "`text`"]
-      ["<path>"          "`local`"]
-      ["<t:attrset>"     "`[(tell t) (_ref path (liftNixVal x) | forall x in leaves of t)]`"]
-      ["<func>"          "`using`"]
-      ["<list>"          "`merge`"]
-    ]
-  )''
+  ''{ nixToConixRef = table [ "Nix Expression" "Notes"]
+      [ ["\"...\" or ''...''" "Write the text (or multiline text) to the current file"]
+        ["1,2..." "Numbers are converted to text"]
+        ["././foo/bar.png" "Include the given file in the current directory. No text is produced."]
+        ["{ name = <content>; }" "Add <content> to `data.\${name}` and create a reference in `refs.\${name}`. <content> is also evaluated as if the braces weren't there."]
+        ["[<content> <content> ...]" "Concatenate the text of the <content>s and merge the derivations produced by <content>s into a directory"]
+        ["conix: with conix; <content>"  "<content> with the conix library, `data` and `refs` in scope."]
+      ];
+  }''
 
 
   _Important_: This function is NOT lazy because it uses Nix's `typeOf` function
