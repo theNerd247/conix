@@ -19,6 +19,9 @@ let
 in
 rec
 { 
+  tagline = ''
+    A programming language for writing and building Markdown with Nix.
+    '';
   homepageUrl = "https://theNerd247.github.io/conix";
   git =
     {

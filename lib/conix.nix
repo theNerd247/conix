@@ -41,14 +41,14 @@ else ""
 
 Below are Nix expressions that are converted into core like data structures:
 
-''{ nixToConixRef = table [ "Nix Expression" "Notes"]
+''{ nixToConixRef = (ask (data.table [ "Nix Expression" "Notes"]
       [ ["\"...\" or ''...''" "Write the text (or multiline text) to the current file"]
         ["1,2..." "Numbers are converted to text"]
         ["././foo/bar.png" "Include the given file in the current directory. No text is produced."]
         ["{ name = <content>; }" "Add <content> to `data.\${name}` and create a reference in `refs.\${name}`. <content> is also evaluated as if the braces weren't there."]
         ["[<content> <content> ...]" "Concatenate the text of the <content>s and merge the derivations produced by <content>s into a directory"]
         ["conix: with conix; <content>"  "<content> with the conix library, `data` and `refs` in scope."]
-      ];
+      ]));
 }''
 
 `data`

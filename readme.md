@@ -21,9 +21,8 @@ as both an HTML file and a Markdown file.
 ```nix
 
 (import <nixpkgs> { overlays = builtins.fetchGit 
-{ ref = "conixSnippets"; rev = "2e3bb44724ffe68236aa6898e931280f3d5b46ef"; url = "https://github.com/theNerd247/conix.git"; }; 
+{ ref = "conixSnippets"; rev = "a2a65565b41f74ba0c38a2124c75eb80d1130f7b"; url = "https://github.com/theNerd247/conix.git"; }; 
 }).conix.run (conix: with conix;
-
 markdown "readme" (html "readme" ''
 
 # My Readme
