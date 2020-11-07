@@ -35,6 +35,39 @@ else ""
 
 ''])
 
+{ languageRef = html "language-reference" [
+
+''# Conix Language Reference
+
+Below are Nix expressions that are converted into core like data structures:
+
+''{ nixToConixRef = table [ "Nix Expression" "Notes"]
+      [ ["\"...\" or ''...''" "Write the text (or multiline text) to the current file"]
+        ["1,2..." "Numbers are converted to text"]
+        ["././foo/bar.png" "Include the given file in the current directory. No text is produced."]
+        ["{ name = <content>; }" "Add <content> to `data.\${name}` and create a reference in `refs.\${name}`. <content> is also evaluated as if the braces weren't there."]
+        ["[<content> <content> ...]" "Concatenate the text of the <content>s and merge the derivations produced by <content>s into a directory"]
+        ["conix: with conix; <content>"  "<content> with the conix library, `data` and `refs` in scope."]
+      ];
+}''
+
+`data`
+: The attribute set containing all user defined content.
+
+`refs`
+: The attribute set containing all user defined content referenes.
+
+content references
+: Like an anchor tag in html but more abstract. Creating a content reference
+tells Conix to remember how to get to that particular piece of content from the
+very top of the output derivation's file structure. If the target content
+points to a file then a file path will be generated. If it points to content
+within a file (say a paragraph) then the file path up to that file is created
+and then the file path is extended with an anchor tag syntax. For example: `dir
+"bar" (html "foo"  { someRef = "jazz"; })` creates a ref: `refs.somRefs = "./bar/foo.html#someRef"`
+
+''];}
+
 ({ apiDocs = html "docs" [
 
   (meta [
