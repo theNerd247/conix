@@ -52,14 +52,11 @@ rec
         ref    = {_path, _next}:
           R.rap 
             (R.tellWith ({currentPath,...}: 
-              R.onlyRefs 
-              (pkgs.lib.attrsets.setAttrByPath _path 
-                (R.extendPath currentPath 
-                  (R.targetNameOf (builtins.concatStringsSep "." _path) 
-                    (T.onChild _next)
-                  )
-                )
-              )
+              let
+                t = R.targetNameOf (builtins.concatStringsSep "." _path) (T.onChild _next); 
+              in
+                R.overText (_: t.anchor)
+                (R.onlyRefs (pkgs.lib.attrsets.setAttrByPath _path (R.extendPath currentPath t.path)))
             ))
             (T.onRes _next);
         link   = _path:

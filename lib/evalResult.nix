@@ -195,9 +195,9 @@ in
     # from other content. This should be the most
     targetNameOf = refPathStr: T.match
     { 
-      file = {_fileName,...}: _fileName;
-      dir = {_dirName, ...}: _dirName;
-      _ = x: "#" + refPathStr;
+      file = {_fileName,...}: {path = _fileName; anchor = "";};
+      dir  = {_dirName, ...}: {path = _dirName; anchor = "";};
+      _    = x: let p = "#" + refPathStr; in { path = p; anchor = "\n\n<a name=\"${refPathStr}\"></a>\n\n";};
     };
 
     pathStrToList = p: builtins.filter (x: x != "") (pkgs.lib.splitString "/" p);

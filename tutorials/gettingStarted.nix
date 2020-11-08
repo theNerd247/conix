@@ -49,7 +49,7 @@ conix content.
 Conix content is normal Nix code that gets evaluated into text and Nix
 derivations. For example: `[ "Foo" (markdown "foo" 2) "bar" ]` evaluates into
 text: `"Foo2bar"` and a derivation containing a markdownfile called "foo.md".
-[See the Conix Language Reference](''(link refs.languageRef)'') for more
+[See the Conix Language Reference](''(link refs.nixToConixRef)'') for more
 details on the Conix language.
 
 ''
