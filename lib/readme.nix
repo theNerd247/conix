@@ -1,4 +1,4 @@
-x: with x; html "readme" [
+x: with x; markdown "readme" [
 
   ( meta [
     (css conixCss)
