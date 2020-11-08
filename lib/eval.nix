@@ -50,15 +50,14 @@ rec
             (R.nestScope _path) 
             (R.local (R.unnestScope _path) (T.onRes _next));
         ref    = {_path, _next}:
-          R.rap 
+          R.lap 
+            (T.onRes _next)
             (R.tellWith ({currentPath,...}: 
               let
-                t = R.targetNameOf (builtins.concatStringsSep "." _path) (T.onChild _next); 
+                t = R.targetNameOf (builtins.concatStringsSep "." _path) (T.onChild _next);
               in
-                R.overText (_: t.anchor)
-                (R.onlyRefs (pkgs.lib.attrsets.setAttrByPath _path (R.extendPath currentPath t.path)))
-            ))
-            (T.onRes _next);
+                R.onlyRefs (pkgs.lib.attrsets.setAttrByPath _path (R.extendPath currentPath t))
+            ));
         link   = _path:
           R.tellWith ({currentPath, ...}:
             R.onlyText (R.makeRelativePath currentPath _path)

@@ -9,10 +9,8 @@ internalLib: with internalLib; [
     (ask (pagetitle data.title))
   ])
 
-''
+''# ''{ title = ["Conix " conix.version.text]; }''
 
-
-# ''{ title = ["Conix " conix.version.text]; }''
 
 
 ''{intro = ''

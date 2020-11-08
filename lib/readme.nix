@@ -1,4 +1,9 @@
-x: with x; markdown "readme" [
+x: with x; html "readme" [
+
+  ( meta [
+    (css conixCss)
+    (pagetitle "Conix")
+  ])
 
 "# "(ask data.title)''
 

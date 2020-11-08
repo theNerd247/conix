@@ -11,10 +11,11 @@ conix: with conix; { gettingStarted = html "getting-started" [
 
   * Create a Markdown file using Conix
   * Extend the above conix code to produce an HTML file
+  
+
 ''
 
-{ gettingStartedText = [''
-## A Readme File In Conix
+{ gettingStartedText = [''## A Readme File In Conix
 
 Below is some conix code for creating a readme file^[Download
 [Getting Started Sample Code](''(link refs.tutorials.gettingStartedNix)'')]
