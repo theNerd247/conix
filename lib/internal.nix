@@ -70,6 +70,9 @@ rec
 
   link = _link;
 
+  modtxt = _modify: _next:
+    _modtxt { inherit _modify _next; };
+
   conixCss = ../static/latex.css;
 
   tutorialSnippet = fileName: refName: content:
@@ -171,8 +174,8 @@ rec
   docs._merge.type = "[a] -> ContentF a";
   _merge = T.typed "merge";
 
-  docs._indent.type = "{ _nSpaces :: Natural, _next :: a } -> ContentF a";
-  _indent = T.typed "indent";
+  docs._modtxt.type = "{ _modify :: Text -> Text, _next :: a } -> ContentF a";
+  _modtxt = T.typed "modtxt";
 
   docs._ask.type = "a -> ContentF a";
   _ask = T.typed "ask";
@@ -193,7 +196,7 @@ rec
       local  = x: _local x;
       file   = {_fileName, _mkFile, _next}: _file { inherit _mkFile _fileName; _next = f _next; };
       dir    = {_dirName, _next}: _dir { inherit _dirName; _next = f _next; };
-      indent = {_nSpaces, _next}: _indent { inherit _nSpaces; _next = f _next; };
+      modtxt = {_modify, _next}: _modtxt { inherit _modify; _next = f _next; };
       merge  = xs: _merge (builtins.map f xs);
       using  = g: _using (x: f (g x));
       ask    = x: _ask (f x);

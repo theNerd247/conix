@@ -48,9 +48,10 @@ The next bit: `''(ask data.conixRun)''` runs the conix evaluator on the given
 conix content.
 
 Conix content is normal Nix code that gets evaluated into text and Nix
-derivations. For example: `[ "Foo" (markdown "foo" 2) "bar" ]` evaluates into
-text: `"Foo2bar"` and a derivation containing a markdownfile called "foo.md".
-[See the Conix Language Reference](''(link refs.nixToConixRef)'') for more
+derivations. For example: `''{ sample1 = ''[ "Foo" (markdown "foo" 2) "bar" ] '';}''` evaluates into
+text: `''(ask (data.runConixSnippet "sample1" data.sample1))''` and a
+derivation containing a markdownfile called "foo.md".  [See the Conix
+Language Reference](''(link refs.nixToConixRef)'') for more
 details on the Conix language.
 
 ''

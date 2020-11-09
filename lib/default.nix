@@ -15,11 +15,14 @@ let
       ]
     );
 
-  userApi = conix.data;
+  userApi = conix.data; #// { inherit run eval; };
+
+  #run = x: (eval x).drv;
+
+  #eval = x: internalLib._eval userApi (internalLib.liftNixValue x);
+
 in
   rec
   { 
-    run = x: (eval x).drv;
-    eval = x: internalLib._eval userApi (internalLib.liftNixValue x);
     docs = conix.drv;
   } // userApi 

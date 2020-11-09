@@ -86,6 +86,17 @@ rec
 { 
   # TODO: add documentation about using Nix host language
   # to construct Content
+  eval = expr
+    "Content -> { text :: String, drv :: Derivation, data :: AttrSet, refs :: AttrSet }"
+    "Evaluate a Conix expression"
+    (x: _eval (data // { inherit pkgs; }) (liftNixValue x))
+    ;
+
+  run = expr
+    "Content -> Derivation"
+    "Evaluate a Conix expression and extract the derivation"
+    (x: (data.eval x).drv)
+    ;
 
   local = expr
       "FilePath -> Content"
@@ -244,7 +255,7 @@ rec
   indent = expr
       "Natural -> Content -> Content"
       "Indent the text of the content by the given number of spaces"
-      (_nSpaces: _next: _indent { inherit _nSpaces _next; })
+      (n: modtxt ((import ./textBlock.nix pkgs).indent n))
     ;
 
   dir = expr
@@ -334,6 +345,14 @@ rec
         ] 
       ))
       ;
+
+  runConixSnippet = expr
+    "SnippetName -> Content -> Content"
+    "Run the given Conix code and insert its resulting text"
+    (name: modtxt 
+      (t: "${(data.eval (import (pkgs.writeText name "conix: with conix; ${t}"))).text}")
+    )
+    ;
 
   table = expr
       "[Content] -> [[Content]] -> Content" 

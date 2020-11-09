@@ -5,7 +5,6 @@ let
   M = import ./monoid.nix;
   C = import ./internal.nix pkgs;
   CJ = import ./copyJoin.nix pkgs;
-  S = import ./textBlock.nix pkgs;
   R = import ./evalResult.nix pkgs;
 in
 
@@ -28,8 +27,8 @@ rec
           R.tell (R.onlyData _data);
         text   = text: 
           R.tell (R.onlyText (builtins.toString text));
-        indent = {_nSpaces, _next}: 
-          R.censor (R.overText (S.indent _nSpaces)) (T.onRes _next);
+        modtxt = {_modify, _next}: 
+          R.censor (R.overText _modify) (T.onRes _next);
         local  = _sourcePath: 
           R.tell (R.onlyDrv _sourcePath);
         file   = {_fileName, _mkFile, _next}: 
