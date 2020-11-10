@@ -189,11 +189,15 @@ rec
   docs._link.type = "a -> ContentF a";
   _link = T.typed "link";
 
+  docs._expr.type = "AttrSet -> ContentF a";
+  _expr = T.typed "expr";
+
   fmapMatch = f:
     { 
       tell   = x: _tell x;
       text   = x: _text x;
       local  = x: _local x;
+      expr   = x: _expr x;
       file   = {_fileName, _mkFile, _next}: _file { inherit _mkFile _fileName; _next = f _next; };
       dir    = {_dirName, _next}: _dir { inherit _dirName; _next = f _next; };
       modtxt = {_modify, _next}: _modtxt { inherit _modify; _next = f _next; };

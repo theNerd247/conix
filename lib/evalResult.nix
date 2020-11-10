@@ -46,6 +46,7 @@ let
           refs = {};
           drv = {};
           text = "";
+          exprs = {};
         };
 
       # Res -> Res -> Res
@@ -53,6 +54,7 @@ let
         { 
           data = mergeData a.data b.data;
           refs = mergeData a.refs b.refs;
+          exprs = mergeData a.exprs b.exprs;
           drv = mergeDrv a.drv b.drv;
           text = a.text + b.text;
         };
@@ -68,6 +70,7 @@ in
       inherit currentPath;
       data = x.data; 
       refs = x.refs;
+      exprs = x.exprs;
     };
 
     onlyData = data: 
@@ -75,6 +78,7 @@ in
       text = "";
       drv = {};
       refs = {};
+      exprs = {};
       inherit data; 
     };
 
@@ -83,6 +87,7 @@ in
       drv = {};
       data = {};
       refs = {};
+      exprs = {};
       inherit text; 
     };
 
@@ -91,6 +96,7 @@ in
       text = "";
       data = {};
       refs = {};
+      exprs = {};
       inherit drv; 
     };
 
@@ -99,42 +105,58 @@ in
       text = "";
       data = {};
       drv = {};
+      exprs = {};
       inherit refs;
+    };
+
+    onlyExpr = exprs:
+    {
+      text = "";
+      data = {};
+      drv = {};
+      refs = {};
+      inherit exprs;
     };
 
     overData = f: x:
     { 
-      inherit (x) text drv refs;
+      inherit (x) text drv refs exprs;
       data = f x.data; 
     };
 
     overText = f: x:
     { 
-      inherit (x) drv data refs;
+      inherit (x) drv data refs exprs;
       text = f x.text; 
     };
 
     overDrv = f: x: 
     { 
-      inherit (x) text data refs;
+      inherit (x) text data refs exprs;
       drv = f x.drv; 
     };
 
     overRefs = f: x:
     { 
-      inherit (x) text data drv;
+      inherit (x) text data drv exprs;
+      refs = f x.refs;
+    };
+
+    overExpr = f: x:
+    { 
+      inherit (x) text data drv exprs;
       refs = f x.refs;
     };
 
     addDrvFromText = f: x: 
     { 
-      inherit (x) text data refs;
+      inherit (x) text data refs exprs;
       drv = mergeDrv x.drv (f x.text); 
     };
 
     # Modify Res so that no values unsafe side-effects occur that could
     # create infinite recursion.
-    noProduce = x: overData (_: {}) (overRefs (_: {}) x);
+    noProduce = x: overExpr (_: {}) (overData (_: {}) (overRefs (_: {}) x));
 
     # unlike overData, this modifies the data
     # value in reader environment so it is legal

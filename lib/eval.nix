@@ -25,6 +25,8 @@ rec
         # Evaluate anything that isn't { _type ... } ...
         tell   = _data: 
           R.tell (R.onlyData _data);
+        expr = _expr:
+          R.tell (R.onlyExpr _expr);
         text   = text: 
           R.tell (R.onlyText (builtins.toString text));
         modtxt = {_modify, _next}: 
