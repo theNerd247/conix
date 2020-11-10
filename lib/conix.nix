@@ -190,9 +190,9 @@ else ""
           Creates expressions from functions that depend on the final `data`.
           Use this as follows:
 
-          ```nix
+          ''(_use (exprs.code "nix" ''
           conix: with conix; <content expression here>
-          ```
+          ''))''
 
           Here `conix = { pkgs = ...; data = ...; ... }` where `data` is the
           final `data` and the rest of the `conix` attribute set is the conix
