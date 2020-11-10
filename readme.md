@@ -1,10 +1,3 @@
-
-
----
-css: ./latex.css
-pagetitle: Conix 0.2.0
----
-
 # Conix 0.2.0
 
 Conix is a Nix EDSL for technical writing. It brings the Nix
@@ -27,7 +20,7 @@ as HTML and Markdown files.
 
 ```nix
 (import <nixpkgs> { overlays = import (builtins.fetchGit 
-{ ref = "conixSnippets"; rev = "fafe5b22a6a7c3ab71b58e3fbf9922eb2666cd78"; url = "https://github.com/theNerd247/conix.git"; }); 
+{ ref = "conixSnippets"; rev = "fca4d1ee2115457fad89cad11894f60deab452aa"; url = "https://github.com/theNerd247/conix.git"; }); 
 }).conix.run(conix: with conix;
 
 
