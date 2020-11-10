@@ -26,4 +26,5 @@ in
   { 
     docs = conix.drv;
     evalRes = conix;
+    inherit (internalLib) I;
   } // userApi 

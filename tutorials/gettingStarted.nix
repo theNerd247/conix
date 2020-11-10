@@ -27,6 +27,8 @@ as both an HTML file and a Markdown file.
     ''(exprs.conix.git.text)''; 
 }).''{ conixRun = ''conix.run (conix: with conix;''; }''
 
+
+''{ readmeSample = ''
 markdown "readme" (html "readme" '''
 
 # My Readme
@@ -35,7 +37,7 @@ This is a readme file!
 
 '''))
 
-'']))
+''; }]))
 
 ];}''
 
@@ -45,13 +47,10 @@ The first bit is normal nix code. It brings in the conix library as an
 overlay.
 
 The next bit: `''(_ask data.conixRun)''` runs the conix evaluator on the given
-conix content.
+conix content. From [The Conix Language Reference](''(_link refs.conixFunctionSyntax)''), 
+the function syntax:
 
-Conix content is normal Nix code that gets evaluated into text and Nix
-derivations. For example: `''{ sample1 = ''[ "Foo" (markdown "foo" 2) "bar" ] '';}''` evaluates to
-"''(_ask (exprs.runConixSnippet "sample1" data.sample1))''" and a
-derivation containing a markdownfile called "foo.md".  [The Conix
-Language Reference](''(_link refs.nixToConixRef)'') shows a
+>''(_ask data.conixFunctionSyntax)''
 
 ''
 

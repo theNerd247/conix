@@ -44,9 +44,7 @@ else ""
 
   Below are Nix expressions that are converted into core like data structures:
 
-  ''{ nixToConixRef = _ask (
-        exprs.table [ "Nix Expression" "Notes"] I.docs.liftNixValue.docstr
-  );}''
+  ''{ nixToConixRef = exprs.table [ "Nix Expression" "Notes"] I.docs.liftNixValue.docstr ;}''
 
   `data`
   : The attribute set containing all user defined content.
@@ -154,13 +152,13 @@ else ""
       ]
       ```
       '']
-      internalLib.ask
+      internalLib._ask
     ;
 
     r = expr
       "Content -> Content"
       "See `ref`"
-      internalLib.ask;
+      internalLib._ask;
 
     link = expr
       "Content -> Content"
@@ -175,7 +173,7 @@ else ""
 
       will produce a relative path in the html file "joe" `../bob.html`
       ''
-      internalLib.link;
+      internalLib._link;
 
     using = expr
         "(AttrSet -> Content) -> Content"
