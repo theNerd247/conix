@@ -219,9 +219,9 @@ in
     # from other content. This should be the most
     targetNameOf = refPathStr: T.match
     { 
+      use  = x: targetNameOf refPathStr x;
       file = {_fileName,...}:  _fileName;
       dir  = {_dirName, ...}: _dirName;
-      use  = x: targetNameOf refPathStr x;
       _    = x: "#" + refPathStr;
     };
 

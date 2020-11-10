@@ -33,37 +33,9 @@ else ""
 
 '']))
 
-{ languageRef = _use (exprs.html "language-reference" [
+(import ./languageReference.nix)
 
-  (exprs.meta [
-    (exprs.css exprs.conixCss)
-    (exprs.pagetitle "Conix Language Reference")
-  ])
-
-  ''# Conix Language Reference
-
-  Below are Nix expressions that are converted into core like data structures:
-
-  ''{ nixToConixRef = exprs.table [ "Nix Expression" "Notes"] I.docs.liftNixValue.docstr ;}''
-
-  `data`
-  : The attribute set containing all user defined content.
-
-  `refs`
-  : The attribute set containing all user defined content referenes.
-
-  content references
-  : Like an anchor tag in html but more abstract. Creating a content reference
-  tells Conix to remember how to get to that particular piece of content from the
-  very top of the output derivation's file structure. If the target content
-  points to a file then a file path will be generated. If it points to content
-  within a file (say a paragraph) then the file path up to that file is created
-  and then the file path is extended with an anchor tag syntax. For example: `dir
-  "bar" (html "foo"  { someRef = "jazz"; })` creates a ref: `refs.somRefs = "./bar/foo.html#someRef"`
-
-'']);}
-
-{ apiDocs = _use (exprs.html "docs" (exprs.markdown "docs" [
+{ apiDocs = _use (exprs.html "docs" [
 
   (exprs.meta [
     (exprs.css exprs.conixCss)
@@ -75,7 +47,7 @@ else ""
 
 
   ''(_ask data._apiDocs) 
-]));}
+]);}
 
 { _apiDocs = module
 

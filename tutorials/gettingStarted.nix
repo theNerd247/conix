@@ -42,7 +42,7 @@ The first bit:
 ''(exprs.code "nix" (_ask data.conixImport))''
 
 
-is normal nix code. It fetches a commit of the library from the conix repo and
+is normal nix code. It fetches a commit of the conix library from a git repo and
 imports the library as an overlay.
 
 The next bit: 

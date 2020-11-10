@@ -18,10 +18,18 @@ rec
 
   expr = type: docstr: x: p:
     let
-      path = builtins.concatStringsSep "." p;
+      _path = builtins.concatStringsSep "." p;
+      exprSet = pkgs.lib.attrsets.setAttrByPath p x;
+      docsRefPath = ["docs"] ++ p;
     in
-      [ ''```haskell
-        ''path " :: " type ''
+    r: 
+      [ 
+        (_expr exprSet)
+        ''<a name="''(_ask (pkgs.lib.attrsets.getAttrFromPath docsRefPath r.refs))''"></a>
+        ''(_ref { _path = docsRefPath; _next = liftNixValue [
+          ''```haskell
+          ''_path " :: " type 
+        ];})''
 
 
         ```
@@ -31,8 +39,6 @@ rec
 
         
         ''
-
-        (_expr (pkgs.lib.attrsets.setAttrByPath p x))
       ];
 
   I.docs.liftNixValue.docstr =
@@ -45,12 +51,10 @@ rec
     ]
     ;
    
-  liftNixValue = mkHostLangParser attrsetToContent;
-
-  mkHostLangParser = parseAttrSets: t: fmap liftNixValue (
+  liftNixValue  = t: fmap liftNixValue (
            if T.isTyped t           then t 
       else if builtins.isPath t     then _local t
-      else if builtins.isAttrs t    then (parseAttrSets t)
+      else if builtins.isAttrs t    then (attrsetToContent t)
       else if builtins.isFunction t then _using t
       else if builtins.isList t     then _merge t
       else _text t
@@ -106,7 +110,7 @@ rec
   I.docs._nest.type = "{ _path :: AttrPathString, _next :: a} -> ContentF a";
   _nest = T.typed "nest";
 
-  I.docs._ref.type = "{ _path :: AttrPathString, _next :: a} -> ContentF a";
+  I.docs._ref.type = "{ _path :: AttrPathList, _next :: a} -> ContentF a";
   _ref = T.typed "ref";
 
   I.docs._link.type = "a -> ContentF a";

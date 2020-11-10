@@ -19,4 +19,5 @@ in
   rec
   { 
     docs = conix.drv;
+    eRes = conix;
   } // userApi 
