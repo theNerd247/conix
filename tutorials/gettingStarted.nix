@@ -23,7 +23,8 @@ as HTML and Markdown files.
 
 ''(_use (exprs.tutorialSnippet "gettingStarted.nix" "gettingStartedNix" [
 
-{ conixImport = [''(import <nixpkgs> { overlays = import (builtins.fetchGit 
+{ conixImport = [
+''(import <nixpkgs> { overlays = import (builtins.fetchGit 
     ''(exprs.conix.git.text)''); 
 })''];}{ conixRun = ''.conix.run''; }''(conix: with conix;
 
