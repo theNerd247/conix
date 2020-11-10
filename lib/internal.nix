@@ -35,16 +35,15 @@ rec
         (_expr (pkgs.lib.attrsets.setAttrByPath p x))
       ];
 
-  docs.liftNixValue.docstr = x: with x; [''
-  Parses expressions written in the Nix host language
-  into the Conix eDSL.
-
-  _Important_: This function is NOT lazy because it uses Nix's `typeOf` function
-  which forces WHNF evaluation. I'm still working on a workaround that doesn't
-  affect the users's syntax but with no current avail. I think the best long
-  term solution would to push an upstream change into Nix's evaluator to make
-  this function lazy.
-  ''];
+  I.docs.liftNixValue.docstr =
+    [ 
+      ["\\<strings\\>, \\<numbers\\>, \\<booleans\\>" "Write the text (or multiline text) to the current file"]
+      ["././foo/bar.png" "Include the given file in the current directory. No text is produced."]
+      ["{ name = \\<content\\>; }" "Add \\<content\\> to `data.\${name}` and create a reference in `refs.\${name}`. \\<content\\> is also evaluated as if the braces weren't there."]
+      ["[\\<content\\> \\<content\\> ...]" "Concatenate the text of the \\<content\\>s and merge the derivations produced by \\<content\\>s into a directory"]
+      ["conix: with conix; \\<content\\>"  "\\<content\\> with the conix library, `data` and `refs` in scope."]
+    ]
+    ;
    
   liftNixValue = mkHostLangParser attrsetToContent;
 
@@ -70,50 +69,50 @@ rec
   # Internals
 
   # Markup Constructors
-  docs._tell.type = "AttrSet -> ContentF a";
+  I.docs._tell.type = "AttrSet -> ContentF a";
   _tell = T.typed "tell";
 
-  docs._using.type = "(AttrSet -> a) -> ContentF a";
+  I.docs._using.type = "(AttrSet -> a) -> ContentF a";
   _using = T.typed "using";
 
   # NOTE: for now we'll use the final encoding of documents. However,
   # In the future it might be useful to use the inital encoding
   # (like a copy of the Pandoc AST).
-  docs._text.type = "String -> ContentF a";
+  I.docs._text.type = "String -> ContentF a";
   _text = T.typed "text";
 
   # File System Constructors
-  docs._file.type = "{_fileName :: FileNameString, _mkFile :: (Text -> Derivation), _next :: a} -> ContentF a";
+  I.docs._file.type = "{_fileName :: FileNameString, _mkFile :: (Text -> Derivation), _next :: a} -> ContentF a";
   _file = T.typed "file";
 
-  docs._dir.type = "{ _dirName :: DirName, _next :: a} -> ContentF a";
+  I.docs._dir.type = "{ _dirName :: DirName, _next :: a} -> ContentF a";
   _dir = T.typed "dir";
 
-  docs._local.type = "FilePath -> ContentF a";
+  I.docs._local.type = "FilePath -> ContentF a";
   _local = T.typed "local";
 
-  docs._merge.type = "[a] -> ContentF a";
+  I.docs._merge.type = "[a] -> ContentF a";
   _merge = T.typed "merge";
 
-  docs._modtxt.type = "{ _modify :: Text -> Text, _next :: a } -> ContentF a";
+  I.docs._modtxt.type = "{ _modify :: Text -> Text, _next :: a } -> ContentF a";
   _modtxt = T.typed "modtxt";
 
-  docs._ask.type = "a -> ContentF a";
+  I.docs._ask.type = "a -> ContentF a";
   _ask = T.typed "ask";
 
-  docs._use.type = "a -> ContentF a";
+  I.docs._use.type = "a -> ContentF a";
   _use = T.typed "use";
 
-  docs._nest.type = "{ _path :: AttrPathString, _next :: a} -> ContentF a";
+  I.docs._nest.type = "{ _path :: AttrPathString, _next :: a} -> ContentF a";
   _nest = T.typed "nest";
 
-  docs._ref.type = "{ _path :: AttrPathString, _next :: a} -> ContentF a";
+  I.docs._ref.type = "{ _path :: AttrPathString, _next :: a} -> ContentF a";
   _ref = T.typed "ref";
 
-  docs._link.type = "a -> ContentF a";
+  I.docs._link.type = "a -> ContentF a";
   _link = T.typed "link";
 
-  docs._expr.type = "AttrSet -> ContentF a";
+  I.docs._expr.type = "AttrSet -> ContentF a";
   _expr = T.typed "expr";
 
   fmapMatch = f:
