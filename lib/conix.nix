@@ -353,7 +353,7 @@ else ""
               (exprs.code "" 
                 (exprs.printNixVal (import (pkgs.writeText name t)))
               )
-            ] 
+            ]
           )
         )
         ;
@@ -372,7 +372,15 @@ else ""
       (fileName: refName: content:
         [ 
           ''```nix
-          ''{ tutorials.${refName} = exprs.textfile fileName content; }''
+          ''{ tutorials.${refName} = exprs.textfile fileName
+                (exprs.modtxt
+                  (t: builtins.seq
+                    (import (pkgs.writeText fileName t))
+                    t
+                  )
+                  content
+                );
+            }''
           
           ```
           ''

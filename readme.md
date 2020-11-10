@@ -28,10 +28,10 @@ as both an HTML file and a Markdown file.
 ```nix
 
 (import <nixpkgs> { overlays = builtins.fetchGit 
-{ ref = "conixSnippets"; rev = "6b95c2cb45f87307a68f0b2205f958b8e001e7e8"; url = "https://github.com/theNerd247/conix.git"; }; 
+{ ref = "conixSnippets"; rev = "10ec66aa07ef3fe94693f11b4442d971c79483ec"; url = "https://github.com/theNerd247/conix.git"; }; 
 }).conix.run (conix: with conix;
 
-markdown "readme" (html "readme" ''
+arkdown "readme" (html "readme" ''
 
 # My Readme
 
