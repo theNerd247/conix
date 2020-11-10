@@ -10,8 +10,6 @@ in
 
 rec
 { 
-  conix = import ./meta.nix;
-
   module =
     F.foldAttrsIxCond
     T.isTyped

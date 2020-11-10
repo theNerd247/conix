@@ -9,14 +9,14 @@ internalLib: with internalLib; [
     (exprs.pagetitle (_ask data.title))
   ])
 
-''# ''{ title = ["Conix " conix.version.text]; }''
+''# ''{ title = ["Conix " exprs.conix.version.text]; }''
 
 ''{intro = ''
 Conix is a Nix EDSL for technical writing. It brings the Nix
 programming language alongside markdown and implements an
 intuitive build system.
 
-${if conix.version.major < 1
+${if exprs.conix.version.major < 1
 then ''
   **Notice: This project is a work in progress. The API will be unstable
   until the first major release.**
@@ -27,7 +27,7 @@ else ""
 
 # Documentation
 
-* [Github Repository](''(conix.git.url)'')
+* [Github Repository](''(exprs.conix.git.url)'')
 * [API Reference Docs](''(_link refs.apiDocs)'')
 * [Getting Started](''(_link refs.gettingStarted)'')
 
@@ -446,33 +446,36 @@ else ""
 
 
     conix =
+      let
+        meta = import ./meta.nix;
+      in
       {
         homepageUrl = expr
           "URLString"
           "The homepage URL of conix"
-          internalLib.conix.homepageUrl;
+          meta.homepageUrl;
 
         git = 
         {
           url = expr
             "URLString"
             "The HTTP URL of the conix GIT repo"
-            internalLib.conix.git.url;
+            meta.git.url;
 
           rev = expr
             "GitCommitHashString"
             "The GIT commit hash of conix repo currently used"
-            internalLib.conix.git.rev;
+            meta.git.rev;
 
           ref = expr
             "GitBranchString"
             "The GIT branch of the conix repo currently being used"
-            internalLib.conix.git.ref;
+            meta.git.ref;
 
           text = expr
             "NixString"
             "String containing a Nix Attribute expression representing `conix.git`"
-            (exprs.printNixVal internalLib.conix.git);
+            (exprs.printNixVal meta.git);
         };
 
         version =
@@ -484,22 +487,22 @@ else ""
 
             It is formatted as: `major.minor.patch`
             ''
-            internalLib.conix.version.text;
+            meta.version.text;
 
           major = expr
             "Natural"
             "The major version of the conix repo being used"
-            internalLib.conix.version.major;
+            meta.version.major;
 
           minor = expr
             "Natural"
             "The minor version of the conix repo being used"
-            internalLib.conix.version.minor;
+            meta.version.minor;
 
           patch = expr
             "Natural"
             "The patch version of the conix repo being used"
-            internalLib.conix.version.patch;
+            meta.version.patch;
         };
       };
 

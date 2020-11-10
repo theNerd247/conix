@@ -12,7 +12,7 @@ x: with x; _use (exprs.markdown "readme" [
 
 # Documentation
 
-  * [Conix Home Page](''(conix.homepageUrl)'')
+  * [Conix Home Page](''(exprs.conix.homepageUrl)'')
 
 ''(_ask data.gettingStartedText)''
 
