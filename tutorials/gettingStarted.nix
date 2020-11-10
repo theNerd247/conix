@@ -7,12 +7,6 @@ conix: with conix; { gettingStarted = _use (exprs.html "getting-started" [
 ''
 # Getting Started With Conix
 
-## Goals
-
-  * Create a Markdown file using Conix
-  * Extend the above conix code to produce an HTML file
-  
-
 ''
 
 { gettingStartedText = [''## A Readme File In Conix
