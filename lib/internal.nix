@@ -12,9 +12,6 @@ rec
 { 
   conix = import ./meta.nix;
 
-  modtxt = _modify: _next:
-    _modtxt { inherit _modify _next; };
-
   module =
     F.foldAttrsIxCond
     T.isTyped

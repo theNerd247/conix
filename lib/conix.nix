@@ -259,10 +259,16 @@ else ""
         (_data: _tell { inherit _data; _next = _text ""; })
       ;
 
+    modtxt = expr
+      "(Text -> Text) -> Content -> Content"
+      "Modify the text produced by the content"
+      (_modify: _next: internalLib._modtxt { inherit _modify _next; })
+      ;
+
     indent = expr
         "Natural -> Content -> Content"
         "Indent the text of the content by the given number of spaces"
-        (n: modtxt ((import ./textBlock.nix pkgs).indent n))
+        (exprs.modtxt ((import ./textBlock.nix pkgs).indent))
       ;
 
     dir = expr
@@ -363,7 +369,7 @@ else ""
     runConixSnippet = expr
       "SnippetName -> Content -> Content"
       "Run the given Conix code and insert its resulting text"
-      (name: modtxt 
+      (name: exprs.modtxt 
         (t: "${(exprs.eval (import (pkgs.writeText name "conix: with conix; ${t}"))).text}")
       )
       ;
