@@ -29,8 +29,7 @@ as HTML and Markdown files.
 })''];}{ conixRun = ''.conix.run''; }''(conix: with conix;
 
 
-''{ readmeSample = ''
-markdown "readme" (html "readme" '''
+''{ readmeSample = ''markdown "readme" (html "readme" '''
 
 # My Readme
 
@@ -47,13 +46,40 @@ Here's the break down.
 The first bit:
 
 ''(exprs.code "nix" (_ask data.conixImport))''
-is normal nix code. It fetches a commit of the library from the conix repo, imports
-it, and then passes in a given function.
-overlay
 
-The next bit: `''(_ask data.conixRun)''` runs the conix content and returns
-a derivation containing the rendered files (in this case an html and markdown
-file).
+
+is normal nix code. It fetches a commit of the library from the conix repo and
+imports the library as an overlay.
+
+The next bit: 
+''(exprs.code "nix" (_ask data.conixRun))''
+
+runs the conix content and returns a derivation containing the rendered files
+(in this case an html and markdown file).
+
+Finally, the conix content:
+
+''(exprs.code "nix" (_ask data.readmeSample))''
+
+The first line is a function that creates a markdown file called "readme". The
+text in this readme file is produced by the argument content. In this 
+example, the argument content to `markdown` is an expression that creates
+an HTML file called "readme". The last argument to the readme file is a string
+of markdown code. Here's the build pipeline:
+
+
+''(exprs.digraph "conixEvaluation" ''
+
+  Content -> "html 'readme'"
+
+  "html 'readme'" -> HtmlDerivation
+  "html 'readme'" -> MarkdownText
+  "html 'readme'" -> "markdown 'readme'"
+
+  "markdown 'readme'" -> MarkdownDerivation
+  "markdown 'readme'" -> MarkdownText
+
+'')''
 
 From [The Conix Language Reference](''(_link refs.conixFunctionSyntax)''), the
 function syntax:
