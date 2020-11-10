@@ -25,4 +25,5 @@ in
   rec
   { 
     docs = conix.drv;
+    evalRes = conix;
   } // userApi 

@@ -1,12 +1,12 @@
 rec
 {
 
-  extensions = c: with c; html "customApi" (module "# Custom API\n\n"
+  extensions = c: with c; _use (exprs.html "customApi" (module
     { addBoo = expr 
         "Content -> Content"
         "Adds prefix boo!"
         (x: [ "boo! " x]);
-    });
+    }));
 
   pkgs = import <nixpkgs> 
     { overlays = import ./default.nix { inherit extensions; }; };

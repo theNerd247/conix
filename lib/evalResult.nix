@@ -221,6 +221,7 @@ in
     { 
       file = {_fileName,...}:  _fileName;
       dir  = {_dirName, ...}: _dirName;
+      use  = x: targetNameOf refPathStr x;
       _    = x: "#" + refPathStr;
     };
 
