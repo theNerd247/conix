@@ -60,7 +60,7 @@ rec
       (table 
         [ "foo" "bar" "baz" ]
         [[ 2 3 2] 
-         [ (t data.x) 2 3]
+         [ (r data.x) 2 3]
         ]
       )''
 

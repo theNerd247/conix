@@ -14,16 +14,9 @@ let
       ]
     );
 
-  userApi = conix.exprs; #// { inherit run eval; };
-
-  #run = x: (eval x).drv;
-
-  #eval = x: internalLib._eval userApi (internalLib.liftNixValue x);
-
+  userApi = conix.exprs;
 in
   rec
   { 
     docs = conix.drv;
-    evalRes = conix;
-    inherit (internalLib) I;
   } // userApi 

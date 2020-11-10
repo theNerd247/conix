@@ -264,7 +264,7 @@ else ""
     indent = expr
         "Natural -> Content -> Content"
         "Indent the text of the content by the given number of spaces"
-        (exprs.modtxt ((import ./textBlock.nix pkgs).indent))
+        (nSpaces: exprs.modtxt ((import ./textBlock.nix pkgs).indent nSpaces))
       ;
 
     dir = expr
