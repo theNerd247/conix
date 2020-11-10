@@ -354,6 +354,20 @@ rec
     )
     ;
 
+  tutorialSnippet = expr
+    "FileName -> AttrPathName -> Content -> Content"
+    "Create a nix snippet with its content under a reference"
+    (fileName: refName: content:
+      [ 
+        ''```nix
+        ''{ tutorials.${refName} = exprs.textfile fileName content; }''
+        
+        ```
+        ''
+      ]
+    )
+  ;
+
   table = expr
       "[Content] -> [[Content]] -> Content" 
       "Create a markdown table with the given headers and rows"

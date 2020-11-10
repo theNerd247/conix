@@ -21,10 +21,10 @@ Below is some conix code for creating a readme file^[Download
 [Getting Started Sample Code](''(link refs.tutorials.gettingStartedNix)'')]
 as both an HTML file and a Markdown file.
 
-''(tutorialSnippet "gettingStarted.nix" "gettingStartedNix" [''
+''(use (exprs.tutorialSnippet "gettingStarted.nix" "gettingStartedNix" [''
 
 (import <nixpkgs> { overlays = builtins.fetchGit 
-    ''(ask exprs.conix.git.text )''; 
+    ''(use exprs.conix.git.text )''; 
 }).''{ conixRun = ''conix.run (conix: with conix;''; }''
 
 markdown "readme" (html "readme" '''
@@ -35,7 +35,7 @@ This is a readme file!
 
 '''))
 
-''])
+'']))
 
 ];}''
 

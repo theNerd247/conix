@@ -158,6 +158,8 @@ in
     # create infinite recursion.
     noProduce = x: overExpr (_: {}) (overData (_: {}) (overRefs (_: {}) x));
 
+    noProduceOnlyExprs = overExpr (_: {});
+
     # unlike overData, this modifies the data
     # value in reader environment so it is legal
     # to use (//)

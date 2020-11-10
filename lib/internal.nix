@@ -65,6 +65,8 @@ rec
 
   ask = _ask;
 
+  use = _use;
+
   ref = _path: _next:
     _ref { inherit _path _next; };
 
@@ -74,15 +76,6 @@ rec
     _modtxt { inherit _modify _next; };
 
   conixCss = ../static/latex.css;
-
-  tutorialSnippet = fileName: refName: content:
-    [ 
-      ''```nix
-      ''{ tutorials.${refName} = textfile fileName content; }''
-      
-      ```
-      ''
-    ];
 
   module = docstr: r:
     [ docstr
@@ -179,6 +172,9 @@ rec
   docs._ask.type = "a -> ContentF a";
   _ask = T.typed "ask";
 
+  docs._use.type = "a -> ContentF a";
+  _use = T.typed "use";
+
   docs._nest.type = "{ _path :: AttrPathString, _next :: a} -> ContentF a";
   _nest = T.typed "nest";
 
@@ -203,6 +199,7 @@ rec
       merge  = xs: _merge (builtins.map f xs);
       using  = g: _using (x: f (g x));
       ask    = x: _ask (f x);
+      use    = x: _use (f x);
       nest   = {_path, _next}: _nest { inherit _path; _next = f _next; };
       ref    = {_path, _next}: _ref { inherit _path; _next = f _next; };
       link   = x: _link x;

@@ -46,6 +46,8 @@ rec
           T.onRes (f r) r;
         ask    = _next:
           R.censor R.noProduce (T.onRes _next);
+        use = _next:
+          R.censor R.noProduceOnlyExprs (T.onRes _next);
         nest   = {_path, _next}: 
           R.censor 
             (R.nestScope _path) 
