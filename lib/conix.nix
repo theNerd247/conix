@@ -5,7 +5,7 @@ internalLib: with internalLib; [
 (html "index" [
 
   (meta [
-    (ask (css data.conixCss))
+    (ask (css exprs.conixCss))
     (ask (pagetitle data.title))
   ])
 
@@ -46,7 +46,7 @@ else ""
 
 Below are Nix expressions that are converted into core like data structures:
 
-''{ nixToConixRef = (ask (data.table [ "Nix Expression" "Notes"]
+''{ nixToConixRef = (ask (exprs.table [ "Nix Expression" "Notes"]
       [ ["\"...\" or ''...''" "Write the text (or multiline text) to the current file"]
         ["1,2..." "Numbers are converted to text"]
         ["././foo/bar.png" "Include the given file in the current directory. No text is produced."]
@@ -76,7 +76,7 @@ and then the file path is extended with an anchor tag syntax. For example: `dir
 ({ apiDocs = html "docs" [
 
   (meta [
-    (ask (css data.conixCss))
+    (ask (css exprs.conixCss))
     (pagetitle "Conix API Docs")
   ])
 
@@ -89,13 +89,13 @@ rec
   eval = expr
     "Content -> { text :: String, drv :: Derivation, data :: AttrSet, refs :: AttrSet }"
     "Evaluate a Conix expression"
-    (x: _eval (data // { inherit pkgs; }) (liftNixValue x))
+    (x: _eval (exprs // { inherit pkgs; }) (liftNixValue x))
     ;
 
   run = expr
     "Content -> Derivation"
     "Evaluate a Conix expression and extract the derivation"
-    (x: (data.eval x).drv)
+    (x: (exprs.eval x).drv)
     ;
 
   local = expr
@@ -309,7 +309,7 @@ rec
       "FilePath -> Content"
       "Inserts an image in the given document and ensures that the imported image exits and is included in the final derivation"
       (caption: localPath:
-       [ (data.local localPath) "![${caption}](./${builtins.baseNameOf localPath})" ]
+       [ (exprs.local localPath) "![${caption}](./${builtins.baseNameOf localPath})" ]
       )
     ;
 
@@ -329,18 +329,18 @@ rec
       "(Content -> Content) -> Language -> Code -> Content"
       "Create a code block and append the results of executing the passed runner"
       (lang: runner: content:
-       [ (data.code lang content) (runner content) ]
+       [ (exprs.code lang content) (runner content) ]
       )
     ;
 
   runNixSnippet = expr
       "SnippetName -> NixCode -> Content" 
       "Create a Nix code block, execute the code, and append the results as a second code block"
-      (name: data.runCode "nix" 
+      (name: exprs.runCode "nix" 
       (t: 
         [ "\n" 
-          (data.code "" 
-            (data.printNixVal (import (pkgs.writeText name t)))
+          (exprs.code "" 
+            (exprs.printNixVal (import (pkgs.writeText name t)))
           )
         ] 
       ))
@@ -350,7 +350,7 @@ rec
     "SnippetName -> Content -> Content"
     "Run the given Conix code and insert its resulting text"
     (name: modtxt 
-      (t: "${(data.eval (import (pkgs.writeText name "conix: with conix; ${t}"))).text}")
+      (t: "${(exprs.eval (import (pkgs.writeText name "conix: with conix; ${t}"))).text}")
     )
     ;
 
@@ -360,11 +360,11 @@ rec
       (headers: rows:
       [ 
         "\n"
-        (data.intersperse " | " headers) 
+        (exprs.intersperse " | " headers) 
         "\n"
         (builtins.concatStringsSep " | " (builtins.map (_: "---") headers))
         "\n"
-        (data.intersperse "\n" (builtins.map (data.intersperse " | ") rows))
+        (exprs.intersperse "\n" (builtins.map (exprs.intersperse " | ") rows))
       ])
     ;
 
@@ -381,7 +381,7 @@ rec
         let
           graphvizCode = pkgs.writeText "${name}.dot" dotCode;
         in
-          [ (data.local (
+          [ (exprs.local (
               pkgs.runCommandLocal
                 "${name}.svg" 
                 { buildInputs = [ pkgs.graphviz ]; }
@@ -396,7 +396,7 @@ rec
   digraph = expr
     "ImageName -> DOTCode -> Content"
     "Shorthand for: `dotgraph imgName \"digraph { ... }\"`"
-    (imgName: code: data.dotgraph imgName "digraph { ${code} }")
+    (imgName: code: exprs.dotgraph imgName "digraph { ${code} }")
     ;
   })
 
@@ -434,7 +434,7 @@ rec
           text = expr
             "NixString"
             "String containing a Nix Attribute expression representing `conix.git`"
-            (data.printNixVal internalLib.conix.git);
+            (exprs.printNixVal internalLib.conix.git);
         };
 
         version =

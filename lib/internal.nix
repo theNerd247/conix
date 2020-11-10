@@ -94,7 +94,7 @@ rec
       )
     ];
 
-  expr = type: docstr: _expr: p:
+  expr = type: docstr: x: p:
     let
       path = builtins.concatStringsSep "." p;
     in
@@ -110,8 +110,7 @@ rec
         
         ''
 
-        (_tell (pkgs.lib.attrsets.setAttrByPath p _expr))
-        (_tell (pkgs.lib.attrsets.setAttrByPath (["_docs"] ++ p) { inherit type docstr; }))
+        (_expr (pkgs.lib.attrsets.setAttrByPath p x))
       ];
 
   docs.liftNixValue.docstr = x: with x; [''

@@ -144,8 +144,8 @@ in
 
     overExpr = f: x:
     { 
-      inherit (x) text data drv exprs;
-      refs = f x.refs;
+      inherit (x) text data drv refs;
+      exprs = f x.exprs;
     };
 
     addDrvFromText = f: x: 
