@@ -21,15 +21,15 @@ until the first major release.**
 
 ## A Readme File In Conix
 
-Below is some conix code for creating a readme file^[Download
+Below is some conix code for generating a readme file^[Download
 [Getting Started Sample Code](./gettingStarted.nix)]
-as both an HTML file and a Markdown file.
+as HTML and Markdown files.
 
 ```nix
-
 (import <nixpkgs> { overlays = import (builtins.fetchGit 
-{ ref = "conixSnippets"; rev = "3618101d0b268fb189cb81457d3d07492479adf7"; url = "https://github.com/theNerd247/conix.git"; }) {}; 
-}).conix.run (conix: with conix;
+{ ref = "conixSnippets"; rev = "ab69ca46433b62ca0e3e8eff8f90805b35870e68"; url = "https://github.com/theNerd247/conix.git"; }) {}; 
+}).conix.run(conix: with conix;
+
 
 markdown "readme" (html "readme" ''
 

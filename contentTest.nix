@@ -1,15 +1,8 @@
 rec
 {
 
-  extensions = c: with c; _use (exprs.html "customApi" (module
-    { addBoo = expr 
-        "Content -> Content"
-        "Adds prefix boo!"
-        (x: [ "boo! " x]);
-    }));
-
   pkgs = import <nixpkgs> 
-    { overlays = import ./default.nix { inherit extensions; }; };
+    { overlays = import ./default.nix; };
 
   conix = pkgs.conix;
 
@@ -40,9 +33,6 @@ rec
       { x = 3; }''
 
 
-      ''(addBoo "foo!")
-
-      ''
       ...or here
 
       ''

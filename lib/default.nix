@@ -1,4 +1,4 @@
-pkgs: {extensions ? {}}:
+pkgs:
 
 let
   internalLib = (import ./internal.nix pkgs)
@@ -11,7 +11,6 @@ let
       [ 
         (import ./conix.nix)
         (import ../tutorials)
-        extensions
       ]
     );
 

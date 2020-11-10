@@ -17,15 +17,15 @@ conix: with conix; { gettingStarted = _use (exprs.html "getting-started" [
 
 { gettingStartedText = [''## A Readme File In Conix
 
-Below is some conix code for creating a readme file^[Download
+Below is some conix code for generating a readme file^[Download
 [Getting Started Sample Code](''(_link refs.tutorials.gettingStartedNix)'')]
-as both an HTML file and a Markdown file.
+as HTML and Markdown files.
 
-''(_use (exprs.tutorialSnippet "gettingStarted.nix" "gettingStartedNix" [''
+''(_use (exprs.tutorialSnippet "gettingStarted.nix" "gettingStartedNix" [
 
-(import <nixpkgs> { overlays = import (builtins.fetchGit 
-    ''(exprs.conix.git.text)'') {}; 
-}).''{ conixRun = ''conix.run (conix: with conix;''; }''
+{ conixImport = [''(import <nixpkgs> { overlays = import (builtins.fetchGit 
+    ''(exprs.conix.git.text)''); 
+})''];}{ conixRun = ''.conix.run''; }''(conix: with conix;
 
 
 ''{ readmeSample = ''
@@ -43,12 +43,19 @@ This is a readme file!
 
 Here's the break down. 
 
-The first bit is normal nix code. It brings in the conix library as an
-overlay.
+The first bit:
 
-The next bit: `''(_ask data.conixRun)''` runs the conix evaluator on the given
-conix content. From [The Conix Language Reference](''(_link refs.conixFunctionSyntax)''), 
-the function syntax:
+''(exprs.code "nix" (_ask data.conixImport))''
+is normal nix code. It fetches a commit of the library from the conix repo, imports
+it, and then passes in a given function.
+overlay
+
+The next bit: `''(_ask data.conixRun)''` runs the conix content and returns
+a derivation containing the rendered files (in this case an html and markdown
+file).
+
+From [The Conix Language Reference](''(_link refs.conixFunctionSyntax)''), the
+function syntax:
 
 >''(_ask data.conixFunctionSyntax)''
 
