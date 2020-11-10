@@ -2,10 +2,10 @@ x: with x; _use (exprs.markdown "readme" [
 
   (exprs.meta [
     (exprs.css exprs.conixCss)
-    (exprs.pagetitle "Conix")
+    (exprs.pagetitle (_ask data.index.title))
   ])
 
-"# "(_ask data.title)''
+"# "(_ask data.index.title)''
 
 
 ''(_ask data.intro)''

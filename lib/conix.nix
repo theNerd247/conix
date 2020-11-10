@@ -6,10 +6,10 @@ internalLib: with internalLib; [
 
   (exprs.meta [
     (exprs.css exprs.conixCss)
-    (exprs.pagetitle (_ask data.title))
+    (exprs.pagetitle (_ask data.index.title))
   ])
 
-''# ''{ title = ["Conix " exprs.conix.version.text]; }''
+''# ''{ index.title = ["Conix " exprs.conix.version.text]; }''
 
 ''{intro = ''
 Conix is a Nix EDSL for technical writing. It brings the Nix
@@ -63,15 +63,19 @@ else ""
 
 '']);}
 
-{ apiDocs = _use (exprs.html "docs" [
+{ apiDocs = _use (exprs.html "docs" (exprs.markdown "docs" [
 
   (exprs.meta [
     (exprs.css exprs.conixCss)
-    (exprs.pagetitle "Conix API Docs")
-  ])
+    (exprs.pagetitle (_ask data.apiDocs.title))
+  ])''
 
-  (_ask data._apiDocs) 
-]);}
+
+  # ''{ apiDocs.title = "Conix API Docs"; }''
+
+
+  ''(_ask data._apiDocs) 
+]));}
 
 { _apiDocs = module
 

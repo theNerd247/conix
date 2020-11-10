@@ -2,7 +2,7 @@
 
 ---
 css: ./latex.css
-pagetitle: Conix
+pagetitle: Conix 0.2.0
 ---
 
 # Conix 0.2.0
@@ -28,7 +28,7 @@ as both an HTML file and a Markdown file.
 ```nix
 
 (import <nixpkgs> { overlays = import (builtins.fetchGit 
-{ ref = "conixSnippets"; rev = "c6c46027906808206673a095fc547386920b97b9"; url = "https://github.com/theNerd247/conix.git"; }) {}; 
+{ ref = "conixSnippets"; rev = "3618101d0b268fb189cb81457d3d07492479adf7"; url = "https://github.com/theNerd247/conix.git"; }) {}; 
 }).conix.run (conix: with conix;
 
 markdown "readme" (html "readme" ''
