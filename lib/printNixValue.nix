@@ -1,4 +1,4 @@
-x: with x; module  ""
+internalLib: with internalLib; module
 
 rec
 {

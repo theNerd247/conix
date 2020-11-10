@@ -9,13 +9,13 @@ let
     internalLib
     (internalLib.liftNixValue 
       [ 
-        (import ./conix.nix )
+        (import ./conix.nix)
         (import ../tutorials)
         extensions
       ]
     );
 
-  userApi = conix.data; #// { inherit run eval; };
+  userApi = conix.exprs; #// { inherit run eval; };
 
   #run = x: (eval x).drv;
 

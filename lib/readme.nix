@@ -1,20 +1,20 @@
-x: with x; markdown "readme" [
+x: with x; _use (exprs.markdown "readme" [
 
-  ( meta [
-    (css conixCss)
-    (pagetitle "Conix")
+  (exprs.meta [
+    (exprs.css exprs.conixCss)
+    (exprs.pagetitle "Conix")
   ])
 
-"# "(ask data.title)''
+"# "(_ask data.title)''
 
 
-''(ask data.intro)''
+''(_ask data.intro)''
 
 # Documentation
 
   * [Conix Home Page](''(conix.homepageUrl)'')
 
-''(ask data.gettingStartedText)''
+''(_ask data.gettingStartedText)''
 
 # Contributing
 
@@ -34,4 +34,4 @@ Many thanks to:
   * [Gabriel Gonzalez](https://github.com/Gabriel439)
   * [Evan Relf](https://github.com/evanrelf)
   * [Paul Young](https://github.com/paulyoung)
-'']
+''])

@@ -1,7 +1,7 @@
-conix: with conix; { gettingStarted = html "getting-started" [
-  (meta [
-    (ask (css conixCss))
-    (ask (pagetitle "Conix Tutorials"))
+conix: with conix; { gettingStarted = _use (exprs.html "getting-started" [
+  (exprs.meta [
+    (_ask (exprs.css exprs.conixCss))
+    (_ask (exprs.pagetitle "Conix Tutorials"))
   ])
 
 ''
@@ -18,13 +18,13 @@ conix: with conix; { gettingStarted = html "getting-started" [
 { gettingStartedText = [''## A Readme File In Conix
 
 Below is some conix code for creating a readme file^[Download
-[Getting Started Sample Code](''(link refs.tutorials.gettingStartedNix)'')]
+[Getting Started Sample Code](''(_link refs.tutorials.gettingStartedNix)'')]
 as both an HTML file and a Markdown file.
 
-''(use (exprs.tutorialSnippet "gettingStarted.nix" "gettingStartedNix" [''
+''(_use (exprs.tutorialSnippet "gettingStarted.nix" "gettingStartedNix" [''
 
 (import <nixpkgs> { overlays = builtins.fetchGit 
-    ''(use exprs.conix.git.text )''; 
+    ''(exprs.conix.git.text)''; 
 }).''{ conixRun = ''conix.run (conix: with conix;''; }''
 
 markdown "readme" (html "readme" '''
@@ -44,16 +44,16 @@ Here's the break down.
 The first bit is normal nix code. It brings in the conix library as an
 overlay.
 
-The next bit: `''(ask data.conixRun)''` runs the conix evaluator on the given
+The next bit: `''(_ask data.conixRun)''` runs the conix evaluator on the given
 conix content.
 
 Conix content is normal Nix code that gets evaluated into text and Nix
 derivations. For example: `''{ sample1 = ''[ "Foo" (markdown "foo" 2) "bar" ] '';}''` evaluates into
-text: `''(ask (exprs.runConixSnippet "sample1" data.sample1))''` and a
+text: `''(_ask (exprs.runConixSnippet "sample1" (_ask data.sample1)))''` and a
 derivation containing a markdownfile called "foo.md".  [See the Conix
-Language Reference](''(link refs.nixToConixRef)'') for more
+Language Reference](''(_link refs.nixToConixRef)'') for more
 details on the Conix language.
 
 ''
 
-];}
+]);}

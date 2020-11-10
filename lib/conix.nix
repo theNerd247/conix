@@ -2,16 +2,14 @@ internalLib: with internalLib; [
 
 (import ./readme.nix)
 
-(html "index" [
+(_use (exprs.html "index" [
 
-  (meta [
-    (ask (css exprs.conixCss))
-    (ask (pagetitle data.title))
+  (exprs.meta [
+    (exprs.css exprs.conixCss)
+    (exprs.pagetitle (_ask data.title))
   ])
 
 ''# ''{ title = ["Conix " conix.version.text]; }''
-
-
 
 ''{intro = ''
 Conix is a Nix EDSL for technical writing. It brings the Nix
@@ -30,398 +28,418 @@ else ""
 # Documentation
 
 * [Github Repository](''(conix.git.url)'')
-* [API Reference Docs](''(link refs.apiDocs)'')
-* [Getting Started](''(link refs.gettingStarted)'')
+* [API Reference Docs](''(_link refs.apiDocs)'')
+* [Getting Started](''(_link refs.gettingStarted)'')
 
-''])
+'']))
 
-{ languageRef = html "language-reference" [
+{ languageRef = _use (exprs.html "language-reference" [
 
-  (meta [
-    (ask (css conixCss))
-    (ask (pagetitle "Conix Language Reference"))
+  (exprs.meta [
+    (exprs.css exprs.conixCss)
+    (exprs.pagetitle "Conix Language Reference")
   ])
 
-''# Conix Language Reference
+  ''# Conix Language Reference
 
-Below are Nix expressions that are converted into core like data structures:
+  Below are Nix expressions that are converted into core like data structures:
 
-''{ nixToConixRef = (ask (exprs.table [ "Nix Expression" "Notes"]
-      [ ["\"...\" or ''...''" "Write the text (or multiline text) to the current file"]
-        ["1,2..." "Numbers are converted to text"]
-        ["././foo/bar.png" "Include the given file in the current directory. No text is produced."]
-        ["{ name = \\<content\\>; }" "Add \\<content\\> to `data.\${name}` and create a reference in `refs.\${name}`. \\<content\\> is also evaluated as if the braces weren't there."]
-        ["[\\<content\\> \\<content\\> ...]" "Concatenate the text of the \\<content\\>s and merge the derivations produced by \\<content\\>s into a directory"]
-        ["conix: with conix; \\<content\\>"  "\\<content\\> with the conix library, `data` and `refs` in scope."]
-      ]));
-}''
+  ''{ nixToConixRef = _ask (exprs.table [ "Nix Expression" "Notes"]
+        [ ["\"...\" or ''...''" "Write the text (or multiline text) to the current file"]
+          ["1,2..." "Numbers are converted to text"]
+          ["././foo/bar.png" "Include the given file in the current directory. No text is produced."]
+          ["{ name = \\<content\\>; }" "Add \\<content\\> to `data.\${name}` and create a reference in `refs.\${name}`. \\<content\\> is also evaluated as if the braces weren't there."]
+          ["[\\<content\\> \\<content\\> ...]" "Concatenate the text of the \\<content\\>s and merge the derivations produced by \\<content\\>s into a directory"]
+          ["conix: with conix; \\<content\\>"  "\\<content\\> with the conix library, `data` and `refs` in scope."]
+        ]);
+  }''
 
-`data`
-: The attribute set containing all user defined content.
+  `data`
+  : The attribute set containing all user defined content.
 
-`refs`
-: The attribute set containing all user defined content referenes.
+  `refs`
+  : The attribute set containing all user defined content referenes.
 
-content references
-: Like an anchor tag in html but more abstract. Creating a content reference
-tells Conix to remember how to get to that particular piece of content from the
-very top of the output derivation's file structure. If the target content
-points to a file then a file path will be generated. If it points to content
-within a file (say a paragraph) then the file path up to that file is created
-and then the file path is extended with an anchor tag syntax. For example: `dir
-"bar" (html "foo"  { someRef = "jazz"; })` creates a ref: `refs.somRefs = "./bar/foo.html#someRef"`
+  content references
+  : Like an anchor tag in html but more abstract. Creating a content reference
+  tells Conix to remember how to get to that particular piece of content from the
+  very top of the output derivation's file structure. If the target content
+  points to a file then a file path will be generated. If it points to content
+  within a file (say a paragraph) then the file path up to that file is created
+  and then the file path is extended with an anchor tag syntax. For example: `dir
+  "bar" (html "foo"  { someRef = "jazz"; })` creates a ref: `refs.somRefs = "./bar/foo.html#someRef"`
 
-''];}
+'']);}
 
-({ apiDocs = html "docs" [
+{ apiDocs = _use (exprs.html "docs" [
 
-  (meta [
-    (ask (css exprs.conixCss))
-    (pagetitle "Conix API Docs")
+  (exprs.meta [
+    (exprs.css exprs.conixCss)
+    (exprs.pagetitle "Conix API Docs")
   ])
 
-(module "# Conix API\n\n"
+  (_ask data._apiDocs) 
+]);}
 
-rec
-{ 
-  # TODO: add documentation about using Nix host language
-  # to construct Content
-  eval = expr
-    "Content -> { text :: String, drv :: Derivation, data :: AttrSet, refs :: AttrSet }"
-    "Evaluate a Conix expression"
-    (x: _eval (exprs // { inherit pkgs; }) (liftNixValue x))
-    ;
+{ _apiDocs = module
 
-  run = expr
-    "Content -> Derivation"
-    "Evaluate a Conix expression and extract the derivation"
-    (x: (exprs.eval x).drv)
-    ;
+  { 
+    # TODO: add documentation about using Nix host language
+    # to construct Content
+    eval = expr
+      "Content -> { text :: String, drv :: Derivation, data :: AttrSet, refs :: AttrSet }"
+      "Evaluate a Conix expression"
+      (x: _eval (exprs // { inherit pkgs; }) (liftNixValue x))
+      ;
 
-  local = expr
-      "FilePath -> Content"
-      "Add a local file to the generated derivation"
-      _local
-    ;
+    run = expr
+      "Content -> Derivation"
+      "Evaluate a Conix expression and extract the derivation"
+      (x: (exprs.eval x).drv)
+      ;
 
-  text  = expr
-      "Text -> Content"
-      "Append text to the current file."
-      _text
-    ;
+    local = expr
+        "FilePath -> Content"
+        "Add a local file to the generated derivation"
+        _local
+      ;
 
-  nest = expr
-    "PathString -> Content -> Content"
-    ''
-    Nest the data for the given content under a given path
+    text  = expr
+        "Text -> Content"
+        "Append text to the current file."
+        _text
+      ;
 
-    For example:
+    nest = expr
+      "PathString -> Content -> Content"
+      ''
+      Nest the data for the given content under a given path
 
-    ```nix
-      m: with m;
-      [
-        (nest "foo.bar" (n: with n; [{ x = 3; } (r data.x)]))
-        {x = 4;}
+      For example:
 
+      ```nix
+        m: with m;
+        [
+          (nest "foo.bar" (n: with n; [{ x = 3; } (r data.x)]))
+          {x = 4;}
+
+          (r data.x)
+        ]
+      will produce:
+
+      ```nix
+      "3344"
+      ```
+      notice how we've defined `x` in two places. Nesting allows
+      one to keep the first `x` from overriding the value of
+      the second.
+      ''
+      (_path: _next: internalLib._nest { inherit _path _next; })
+      ;
+
+    ask = expr 
+      "Content -> Content"
+      [''
+      Prevent infinite recursion when using a value from the data store as
+      content.
+
+      For example: 
+
+      Will break with an `infinite recursion` error. To resolve this do:
+
+      ```nix
+      [ { x = 3; }
+        (ref data.x)
+      ]
+      ```
+      or (if you don't like typing "ref"):
+
+      ```nix
+      [ { x = 3; }
         (r data.x)
       ]
-    will produce:
-
-    ```nix
-    "3344"
-    ```
-    notice how we've defined `x` in two places. Nesting allows
-    one to keep the first `x` from overriding the value of
-    the second.
-    ''
-    (_path: _next: internalLib._nest { inherit _path _next; })
+      ```
+      '']
+      internalLib.ask
     ;
 
-  t = text;
+    r = expr
+      "Content -> Content"
+      "See `ref`"
+      internalLib.ask;
 
-  ask = expr 
-    "Content -> Content"
-    [''
-    Prevent infinite recursion when using a value from the data store as
-    content.
-
-    For example: 
-
-    Will break with an `infinite recursion` error. To resolve this do:
-
-    ```nix
-    [ { x = 3; }
-      (ref data.x)
-    ]
-    ```
-    or (if you don't like typing "ref"):
-
-    ```nix
-    [ { x = 3; }
-      (r data.x)
-    ]
-    ```
-    '']
-    internalLib.ask
-  ;
-
-  r = expr
-    (internalLib.ask "Content -> Content")
-    "See `ref`"
-    internalLib.ask;
-
-  link = expr
-    "Content -> Content"
-    ''
-    Generate a relative path to the given content
-
-    For example:
-
-    ```
-    conix: with conix; [ (html "bob" { x = 3; }) (dir "larry" (html "joe" (link refs.x))) ]
-    ```
-
-    will produce a relative path in the html file "joe" `../bob.html`
-    ''
-    internalLib.link;
-
-  using = expr
-      "(AttrSet -> Content) -> Content"
-      [
-        ''
-        Creates expressions from functions that depend on the final `data`.
-        Use this as follows:
-
-        ```nix
-        conix: with conix; <content expression here>
-        ```
-
-        Here `conix = { pkgs = ...; data = ...; ... }` where `data` is the
-        final `data` and the rest of the `conix` attribute set is the conix
-        library and a copy of <nixpkgs> (in `pkgs` of course).
-        ''
-      ]
-      _using
-    ;
-      
-  merge = expr
-     
-      "[Content] -> Content"
+    link = expr
+      "Content -> Content"
       ''
-        Merge Contents together. This concatenates text values, collects files into a single directory,
-        and recursively merges `data` values. 
+      Generate a relative path to the given content
 
-        Normally when constructing text values and you wish to concatenate them together one wishes to
-        use something like: `foo + "\n" + bar`. With `merge` one can simply write: `merge [ foo "\n" bar ]`
-        and achieve the same affect.
+      For example:
+
+      ```
+      conix: with conix; [ (html "bob" { x = 3; }) (dir "larry" (html "joe" (link refs.x))) ]
+      ```
+
+      will produce a relative path in the html file "joe" `../bob.html`
       ''
-      _merge
-    ;
+      internalLib.link;
 
-  
-  file = expr
-      "(Text -> Derivation) -> Content -> Content"
-      "Create a new file from the text produced by the given content"
-      (_mkFile: _next: _file { inherit _mkFile; inherit _next; })
-    ;
+    using = expr
+        "(AttrSet -> Content) -> Content"
+        [
+          ''
+          Creates expressions from functions that depend on the final `data`.
+          Use this as follows:
 
-  pandoc = expr
-    "OutputFileExtension -> PandocCmdArgs -> BuildInputs -> FileName -> Content -> Content"
-    "Use pandoc to construct a file from the given content"
-    internalLib.pandoc;
+          ```nix
+          conix: with conix; <content expression here>
+          ```
 
-  html = expr
-    "FileName -> Content -> Content"
-    "Create an HTML file from the given content"
-    internalLib.html;
+          Here `conix = { pkgs = ...; data = ...; ... }` where `data` is the
+          final `data` and the rest of the `conix` attribute set is the conix
+          library and a copy of <nixpkgs> (in `pkgs` of course).
+          ''
+        ]
+        internalLib._using
+      ;
+        
+    merge = expr
+        "[Content] -> Content"
+        ''
+          Merge Contents together. This concatenates text values, collects files into a single directory,
+          and recursively merges `data` values. 
 
-  pdf = expr
-    "FileName -> Content -> Content"
-    "Create a PDF file from the given content"
-    internalLib.pdf;
+          Normally when constructing text values and you wish to concatenate them together one wishes to
+          use something like: `foo + "\n" + bar`. With `merge` one can simply write: `merge [ foo "\n" bar ]`
+          and achieve the same affect.
+        ''
+        internalLib._merge
+      ;
 
-  tell = expr
-      "AttrSet -> Content -> Content"
-      "Add data to the given content. Attribute paths are absolute and not relative. _TODO: add an example_"
-      internalLib._tell
-    ;
+    
+    file = expr
+        "(Text -> Derivation) -> Content -> Content"
+        "Create a new file from the text produced by the given content"
+        (_mkFile: _fileName: _next: _file { inherit _mkFile _next _fileName; })
+      ;
 
-  set = expr
-      "AttrSet -> Content"
-      "Set a pure attribute set. This appends no new text to the content."
-      (_data: _tell { inherit _data; _next = _text ""; })
-    ;
+    pandoc = expr
+      "OutputFileExtension -> PandocCmdArgs -> BuildInputs -> FileName -> Content -> Content"
+      "Use pandoc to construct a file from the given content"
+      (_pandocType: _pandocArgs: _buildInputs: _fName:
+        let
+          _fileName = "${_fName}.${_pandocType}";
+          _mkFile = txt: 
+            pkgs.runCommand _fileName { buildInputs = [ pkgs.pandoc ] ++ _buildInputs; }
+            ''
+            ${pkgs.pandoc}/bin/pandoc -s -o $out ${_pandocArgs} ${pkgs.writeText "${_fName}.md" txt}
+            '';
+        in
+          exprs.file _mkFile _fileName
+      );
 
-  indent = expr
-      "Natural -> Content -> Content"
-      "Indent the text of the content by the given number of spaces"
-      (n: modtxt ((import ./textBlock.nix pkgs).indent n))
-    ;
+    html = expr
+      "FileName -> Content -> Content"
+      "Create an HTML file from the given content"
+      (exprs.pandoc "html" "" []);
 
-  dir = expr
-      "DirName -> Content -> Content" 
-      "Nest the file heirarchy of the given content into the given directory"
-      (_dirName: _next: _dir { inherit _dirName _next; })
-    ;
+    pdf = expr
+      "FileName -> Content -> Content"
+      "Create a PDF file from the given content"
+      (exprs.pandoc "pdf" "" [pkgs.texlive.combined.scheme-small]);
 
-  markdown = expr
-      "FileName -> Content -> Content" 
-      "Create a markdown file from the given text" 
-      internalLib.markdown
-    ;
+    tell = expr
+        "AttrSet -> Content -> Content"
+        "Add data to the given content. Attribute paths are absolute and not relative. _TODO: add an example_"
+        internalLib._tell
+      ;
 
-  textfile = expr
-      "FileName -> Content -> Content" 
-      "Write the content to the given text file" 
-      internalLib.textfile
-    ;
+    set = expr
+        "AttrSet -> Content"
+        "Set a pure attribute set. This appends no new text to the content."
+        (_data: _tell { inherit _data; _next = _text ""; })
+      ;
 
-  meta = expr
+    indent = expr
+        "Natural -> Content -> Content"
+        "Indent the text of the content by the given number of spaces"
+        (n: modtxt ((import ./textBlock.nix pkgs).indent n))
+      ;
+
+    dir = expr
+        "DirName -> Content -> Content" 
+        "Nest the file heirarchy of the given content into the given directory"
+        (_dirName: _next: _dir { inherit _dirName _next; })
+      ;
+
+    markdown = expr
+        "FileName -> Content -> Content" 
+        "Create a markdown file from the given text" 
+        (_fName: exprs.textfile "${_fName}.md")
+      ;
+
+    textfile = expr
+        "FileName -> Content -> Content" 
+        "Write the content to the given text file" 
+        (fName: exprs.file (pkgs.writeText fName) fName) 
+      ;
+
+    meta = expr
       "[Content] -> Content" 
       "Construct the meta data portion of a Pandoc sytle markdown file"
-      internalLib.meta
-    ;
+      (x: [ "\n\n---\n" (exprs.intersperse "\n" x) "\n---\n\n" ])
+      ;
 
-  css = expr
+    css = expr
       "FilePath -> Content"
       ''
       When used with `meta` add the local css file to this html file's
       includes
       ''
-      internalLib.css
-    ;
-
-  pagetitle = expr
-      "String -> Content"
-      "The title of the rendered document"
-      internalLib.pagetitle;
-
-  pathOf = expr
-    "LocalFilePath -> Content"
-    ''
-    Writes the given file path as text and includes the referenced file in the
-    output
-    ''
-    internalLib.pathOf
-    ;
-
-  img = expr
-      "FilePath -> Content"
-      "Inserts an image in the given document and ensures that the imported image exits and is included in the final derivation"
-      (caption: localPath:
-       [ (exprs.local localPath) "![${caption}](./${builtins.baseNameOf localPath})" ]
-      )
-    ;
-
-  list = expr
-      "[Content] -> Content" 
-      "Create a bullet list"
-      (builtins.map (content: [ "\n* " content ]))
-    ; 
-
-  code = expr
-      "Language -> Code -> Content"
-      "Create a markdown code block"
-      (lang: content: [ "\n\n```" lang "\n" content "\n```" ])
-    ;
-
-  runCode = expr
-      "(Content -> Content) -> Language -> Code -> Content"
-      "Create a code block and append the results of executing the passed runner"
-      (lang: runner: content:
-       [ (exprs.code lang content) (runner content) ]
-      )
-    ;
-
-  runNixSnippet = expr
-      "SnippetName -> NixCode -> Content" 
-      "Create a Nix code block, execute the code, and append the results as a second code block"
-      (name: exprs.runCode "nix" 
-      (t: 
-        [ "\n" 
-          (exprs.code "" 
-            (exprs.printNixVal (import (pkgs.writeText name t)))
-          )
-        ] 
-      ))
+      (localPath: [ "css: " (exprs.pathOf localPath) ])
       ;
 
-  runConixSnippet = expr
-    "SnippetName -> Content -> Content"
-    "Run the given Conix code and insert its resulting text"
-    (name: modtxt 
-      (t: "${(exprs.eval (import (pkgs.writeText name "conix: with conix; ${t}"))).text}")
-    )
-    ;
+    pagetitle = expr
+        "String -> Content"
+        "The title of the rendered document"
+        (title: [ "pagetitle: " title ])
+        ;
 
-  tutorialSnippet = expr
-    "FileName -> AttrPathName -> Content -> Content"
-    "Create a nix snippet with its content under a reference"
-    (fileName: refName: content:
-      [ 
-        ''```nix
-        ''{ tutorials.${refName} = exprs.textfile fileName content; }''
-        
-        ```
-        ''
-      ]
-    )
-  ;
+    pathOf = expr
+      "LocalFilePath -> Content"
+      ''
+      Writes the given file path as text and includes the referenced file in the
+      output
+      ''
+      (localPath:
+        [ 
+          (exprs.local localPath)
+          "./${builtins.baseNameOf localPath}"
+        ]
+      )
+      ;
 
-  table = expr
-      "[Content] -> [[Content]] -> Content" 
-      "Create a markdown table with the given headers and rows"
-      (headers: rows:
-      [ 
-        "\n"
-        (exprs.intersperse " | " headers) 
-        "\n"
-        (builtins.concatStringsSep " | " (builtins.map (_: "---") headers))
-        "\n"
-        (exprs.intersperse "\n" (builtins.map (exprs.intersperse " | ") rows))
-      ])
-    ;
+    img = expr
+        "FilePath -> Content"
+        "Inserts an image in the given document and ensures that the imported image exits and is included in the final derivation"
+        (caption: localPath:
+          [ (exprs.local localPath) "![${caption}](./${builtins.baseNameOf localPath})" ]
+        )
+      ;
 
-  intersperse = expr
-      "a -> [a] -> [a]"
-      "Insert the given element inbetween elements of the given list"
-      internalLib.intersperse
-    ;
+    list = expr
+        "[Content] -> Content" 
+        "Create a bullet list"
+        (builtins.map (content: [ "\n* " content ]))
+      ; 
 
-  dotgraph = expr
-      "ImageName -> DOTCode -> Content"
-      "Create an graph image from the given DOT code"
-      (name: dotCode:
-        let
-          graphvizCode = pkgs.writeText "${name}.dot" dotCode;
-        in
-          [ (exprs.local (
-              pkgs.runCommandLocal
-                "${name}.svg" 
-                { buildInputs = [ pkgs.graphviz ]; }
-                "dot -Tsvg -o $out ${graphvizCode}"
-            ))
-            "![](./${name}.svg)"
-          ]
+    code = expr
+        "Language -> Code -> Content"
+        "Create a markdown code block"
+        (lang: content: [ "\n\n```" lang "\n" content "\n```" ])
+      ;
+
+    runCode = expr
+        "(Content -> Content) -> Language -> Code -> Content"
+        "Create a code block and append the results of executing the passed runner"
+        (lang: runner: content:
+          [ (exprs.code lang content) (runner content) ]
+        )
+      ;
+
+    runNixSnippet = expr
+        "SnippetName -> NixCode -> Content" 
+        "Create a Nix code block, execute the code, and append the results as a second code block"
+        (name: exprs.runCode "nix" 
+          (t: 
+            [ "\n" 
+              (exprs.code "" 
+                (exprs.printNixVal (import (pkgs.writeText name t)))
+              )
+            ] 
+          )
+        )
+        ;
+
+    runConixSnippet = expr
+      "SnippetName -> Content -> Content"
+      "Run the given Conix code and insert its resulting text"
+      (name: modtxt 
+        (t: "${(exprs.eval (import (pkgs.writeText name "conix: with conix; ${t}"))).text}")
+      )
+      ;
+
+    tutorialSnippet = expr
+      "FileName -> AttrPathName -> Content -> Content"
+      "Create a nix snippet with its content under a reference"
+      (fileName: refName: content:
+        [ 
+          ''```nix
+          ''{ tutorials.${refName} = exprs.textfile fileName content; }''
+          
+          ```
+          ''
+        ]
       )
     ;
 
-  
-  digraph = expr
-    "ImageName -> DOTCode -> Content"
-    "Shorthand for: `dotgraph imgName \"digraph { ... }\"`"
-    (imgName: code: exprs.dotgraph imgName "digraph { ${code} }")
-    ;
-  })
+    table = expr
+        "[Content] -> [[Content]] -> Content" 
+        "Create a markdown table with the given headers and rows"
+        (headers: rows:
+        [ 
+          "\n"
+          (exprs.intersperse " | " headers) 
+          "\n"
+          (builtins.concatStringsSep " | " (builtins.map (_: "---") headers))
+          "\n"
+          (exprs.intersperse "\n" (builtins.map (exprs.intersperse " | ") rows))
+        ])
+      ;
 
-  (import ./printNixValue.nix)
+    intersperse = expr
+        "a -> [a] -> [a]"
+        "Insert the given element inbetween elements of the given list"
+        (s: xs:
+          (builtins.foldl' 
+            ({skip, as}: a:
+              { 
+                skip = false;
+                as = if skip then as ++ [a] else as ++ [s a];
+              }
+            )
+            {skip=true; as = [];}
+            xs
+          ).as
+        )
+      ;
 
-  (module ''
-    ### Conix Meta Data API
+    dotgraph = expr
+        "ImageName -> DOTCode -> Content"
+        "Create an graph image from the given DOT code"
+        (name: dotCode:
+          let
+            graphvizCode = pkgs.writeText "${name}.dot" dotCode;
+          in
+            [ (exprs.local (
+                pkgs.runCommandLocal
+                  "${name}.svg" 
+                  { buildInputs = [ pkgs.graphviz ]; }
+                  "dot -Tsvg -o $out ${graphvizCode}"
+              ))
+              "![](./${name}.svg)"
+            ]
+        )
+      ;
 
-    Use the following functions to use meta data on the conix repo in your content
-    ''
-    { conix =
+    
+    digraph = expr
+      "ImageName -> DOTCode -> Content"
+      "Shorthand for: `dotgraph imgName \"digraph { ... }\"`"
+      (imgName: code: exprs.dotgraph imgName "digraph { ${code} }")
+      ;
+
+
+    conix =
       {
         homepageUrl = expr
           "URLString"
@@ -478,94 +496,77 @@ rec
             internalLib.conix.version.patch;
         };
       };
-    }
-  )
 
-  (module ''
-    ### Conix Module API
+    module = expr
+      "Content -> { Path :: Expression } -> Content"
+      ''
+      Create a new module with the given module doc string and
+      attribute set containing expressions. 
 
-    The following functions are available for constructing modules:
-    conix expressions that extend the conix core library as well as
-    generate documentation.
-    ''
-    { 
-      module = expr
-        "Content -> { Path :: Expression } -> Content"
-        ''
-        Create a new module with the given module doc string and
-        attribute set containing expressions. 
+      The first argument is content (typically module level documentation) to
+      insert _before_ API documentation.
 
-        The first argument is content (typically module level documentation) to
-        insert _before_ API documentation.
+      For example: 
+      
+      ```nix
+        module 
+          '''
+          # String API
 
-        For example: 
-        
-        ```nix
-          module 
-            '''
-            # String API
+          This is an api for creating fancy strings.
+          '''
+          { 
+            appendPeriod = expr
+              "Content -> Content"
+              "Appends a period to the given content"
+              (x: [ x "."])
+              ;
+          }
+      ```
+      ''
+      internalLib.module;
 
-            This is an api for creating fancy strings.
-            '''
-            { 
-              appendPeriod = expr
-                "Content -> Content"
-                "Appends a period to the given content"
-                (x: [ x "."])
-                ;
-            }
-        ```
-        ''
-        internalLib.module;
+    expr = internalLib.expr
+      "HaskellTypeString -> Content -> a"
+      ''
+      Create a new API expression with a type, documentation, and a Nix value.
 
-      expr = internalLib.expr
-        "HaskellTypeString -> Content -> a"
-        ''
-        Create a new API expression with a type, documentation, and a Nix value.
+      Traditionally Nix modules are just attribute sets with their values being
+      API expressions (e.g a function). Documentation is left as comments and
+      types don't exist. `expr` abstracts over documentation, types, and the
+      user defined function to make documentation first class in Nix.
+      ''
+      internalLib.expr
+      ;
 
-        Traditionally Nix modules are just attribute sets with their values being
-        API expressions (e.g a function). Documentation is left as comments and
-        types don't exist. `expr` abstracts over documentation, types, and the
-        user defined function to make documentation first class in Nix.
-        ''
-        internalLib.expr
-        ;
+    conixCss = expr
+      "FileName -> Content -> Content"
+      ''
+      The css file conix uses for generating its documentation
+      ''
+      ../static/latex.css
+      ;
 
-      conixCss = expr
-        "FileName -> Content -> Content"
-        ''
-        The css file conix uses for generating its documentation
-        ''
-        internalLib.conixCss
-        ;
-    }
-  )
+    foldAttrsIxCond = expr
+      F.docs.foldAttrsIxCond.type 
+      F.docs.foldAttrsIxCond.docstr
+      internalLib.foldAttrsIxCond
+      ;
 
-  (module ''
-    ### Utility API
+    foldAttrsCond = expr
+      F.docs.foldAttrsCond.type
+      F.docs.foldAttrsCond.docstr
+      internalLib.foldAttrsCond
+      ;
 
-    ''
-    { 
-      foldAttrsIxCond = expr
-        F.docs.foldAttrsIxCond.type 
-        F.docs.foldAttrsIxCond.docstr
-        internalLib.foldAttrsIxCond
-        ;
+    foldlIx = expr
+      F.docs.foldlIx.type
+      "Left fold with index"
+      internalLib.foldlIx
+      ;
+  };
+}
 
-      foldAttrsCond = expr
-        F.docs.foldAttrsCond.type
-        F.docs.foldAttrsCond.docstr
-        internalLib.foldAttrsCond
-        ;
-
-      foldlIx = expr
-        F.docs.foldlIx.type
-        "Left fold with index"
-        internalLib.foldlIx
-        ;
-    }
-  )
-
-]; })
+  (import ./printNixValue.nix)
 
 ]

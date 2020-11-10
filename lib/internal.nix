@@ -10,82 +10,16 @@ in
 
 rec
 { 
-
-  # User API that ./conix.nix depends on
-  pandoc = _pandocType: _pandocArgs: _buildInputs: _fName: _next:
-    _file
-    (rec
-    { 
-      inherit _next ;
-      _fileName = "${_fName}.${_pandocType}";
-      _mkFile = txt: 
-        pkgs.runCommand _fileName { buildInputs = [ pkgs.pandoc ] ++ _buildInputs; }
-        ''
-        ${pkgs.pandoc}/bin/pandoc -s -o $out ${_pandocArgs} ${pkgs.writeText "${_fName}.md" txt}
-        '';
-    });
-
-  html = _fileName: pandoc "html" "" [] _fileName;
-
-  pdf = _fileName: pandoc "pdf" "" [pkgs.texlive.combined.scheme-small] _fileName;
-
-  markdown = _fName: textfile "${_fName}.md";
-
-  textfile = _fName: _next: _file 
-    rec
-    { 
-      inherit _next;
-      _mkFile = pkgs.writeText _fileName; 
-      _fileName = _fName;
-    };
-
-  meta = x: [ "\n\n---\n" (intersperse "\n" x) "\n---\n\n" ];
-
-  intersperse = s: xs:
-    (builtins.foldl' 
-      ({skip, as}: a:
-        { skip = false;
-          as = if skip then as ++ [a] else as ++ [s a];
-        }
-      )
-      {skip=true; as = [];}
-      xs
-    ).as;
-
-  css = localPath: [ "css: " (pathOf localPath) ];
-
-  pagetitle = title: [ "pagetitle: " title ];
-
-  pathOf = localPath:
-    [ (_local localPath)
-      "./${builtins.baseNameOf localPath}"
-    ];
-
   conix = import ./meta.nix;
-
-  ask = _ask;
-
-  use = _use;
-
-  ref = _path: _next:
-    _ref { inherit _path _next; };
-
-  link = _link;
 
   modtxt = _modify: _next:
     _modtxt { inherit _modify _next; };
 
-  conixCss = ../static/latex.css;
-
-  module = docstr: r:
-    [ docstr
-      (F.foldAttrsIxCond
-        T.isTyped
-        (x: x)
-        builtins.attrValues
-        r
-      )
-    ];
+  module =
+    F.foldAttrsIxCond
+    T.isTyped
+    (x: x)
+    builtins.attrValues;
 
   expr = type: docstr: x: p:
     let
@@ -132,7 +66,7 @@ rec
     [ (_tell t)
       (F.foldAttrsIxCond
         T.isTyped
-        (t: path: ref path (liftNixValue t))
+        (t: _path: _ref { inherit _path; _next = liftNixValue t; })
         (vals: _merge (builtins.attrValues vals)) 
         t
       )
