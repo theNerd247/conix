@@ -3,14 +3,13 @@ pkgs:
 let
   T = import ./types.nix;
   M = import ./monoid.nix;
-  C = import ./internal.nix pkgs;
+  I = import ./internal.nix pkgs;
   CJ = import ./copyJoin.nix pkgs;
   R = import ./evalResult.nix pkgs;
 in
 
 rec
 {
-
   # type ParentData = { parentPath :: FilePathString, data :: AttrSet }
   # 
   # type Result a = { text :: String, data :: AttrSet, drv :: a, currentPath :: FilePathString }
@@ -57,9 +56,9 @@ rec
             (T.onRes _next)
             (R.tellWith ({currentPath,...}: 
               let
-                t = R.targetNameOf (builtins.concatStringsSep "." _path) (T.onChild _next);
+                t = R.targetNameOf currentPath (builtins.concatStringsSep "." _path) (T.onChild _next);
               in
-                R.onlyRefs (pkgs.lib.attrsets.setAttrByPath _path (R.extendPath currentPath t))
+                R.onlyRefs (pkgs.lib.attrsets.setAttrByPath _path t)
             ));
         link   = _path:
           R.tellWith ({currentPath, ...}:
@@ -72,7 +71,7 @@ rec
       #     R -> R * X     F R
       #
       # R * X -> R * X     F (R * X)
-      f = R.exe (T.para C.fmap evalAlg expr);
+      f = R.exe (T.para I.fmap evalAlg expr);
     in
       pkgs.lib.fix (R.local (x: lib // (R.toReadOnly "./." x)) f);
 

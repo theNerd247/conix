@@ -207,7 +207,6 @@ in
     # the basename if it's a file.
     extendCurrentPath = path: overLocalCurrentPath (c: extendPath c path);
 
-
     isFile = x: builtins.match ".*[.][[:alnum:]]+$" (builtins.baseNameOf x) == [];
 
     extendPath = currentPath: path:
@@ -217,12 +216,12 @@ in
 
     # Contruct how a piece of content should be referenced
     # from other content. This should be the most
-    targetNameOf = refPathStr: T.match
+    targetNameOf = currentPath: refPathStr: T.match
     { 
       use  = x: targetNameOf refPathStr x;
-      file = {_fileName,...}:  _fileName;
-      dir  = {_dirName, ...}: _dirName;
-      _    = x: "#" + refPathStr;
+      file = {_fileName,...}: extendPath currentPath _fileName;
+      dir  = {_dirName, ...}: extendPath currentPath _dirName;
+      _    = x: "${currentPath}#${refPathStr}";
     };
 
     pathStrToList = p: builtins.filter (x: x != "") (pkgs.lib.splitString "/" p);
