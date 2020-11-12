@@ -1,4 +1,4 @@
-internalLib: with internalLib; module (_: [])
+internalLib: with internalLib;
 
 rec
 {

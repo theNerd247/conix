@@ -1,39 +1,36 @@
 internalLib: with internalLib; [
 
-(import ./readme.nix)
-
 (_use (exprs.html "index" [
 
   (exprs.meta [
     (exprs.css exprs.conixCss)
     (exprs.pagetitle (_ask data.index.title))
   ])
+ 
+ ''# ''{ index.title = ["Conix " exprs.conix.version.text]; }''
+ 
+ ''{ intro = ''
+ Conix is a Nix EDSL for technical writing. It brings the Nix
+ programming language alongside markdown and implements an
+ intuitive build system.
+ 
+ ${if exprs.conix.version.major < 1
+ then ''
+   **Notice: This project is a work in progress. The API will be unstable
+   until the first major release.**
+ '' 
+ else ""
+ }
+ '';}''
+ 
+ # Documentation
+ 
+ * [Github Repository](''(exprs.conix.git.url)'')
+ * [API Reference Docs](''(_link refs.apiDocs)'')
+ * [Getting Started](''(_link refs.gettingStarted)'')
+ 
+ '']))
 
-''# ''{ index.title = ["Conix " exprs.conix.version.text]; }''
-
-''{intro = ''
-Conix is a Nix EDSL for technical writing. It brings the Nix
-programming language alongside markdown and implements an
-intuitive build system.
-
-${if exprs.conix.version.major < 1
-then ''
-  **Notice: This project is a work in progress. The API will be unstable
-  until the first major release.**
-'' 
-else ""
-}
-'';}''
-
-# Documentation
-
-* [Github Repository](''(exprs.conix.git.url)'')
-* [API Reference Docs](''(_link refs.apiDocs)'')
-* [Getting Started](''(_link refs.gettingStarted)'')
-
-'']))
-
-(import ./languageReference.nix)
 
 (module (docs: { apiDocs = _use (exprs.html "docs" [
 
@@ -49,7 +46,7 @@ else ""
   docs
 ]);})
 
-  { 
+  ({ 
     # TODO: add documentation about using Nix host language
     # to construct Content
     eval = expr
@@ -88,7 +85,6 @@ else ""
         [
           (nest "foo.bar" (n: with n; [{ x = 3; } (r data.x)]))
           {x = 4;}
-
           (r data.x)
         ]
       will produce:
@@ -549,9 +545,8 @@ else ""
       "Left fold with index"
       internalLib.foldlIx
       ;
-  }
+  } // (import ./printNixValue.nix internalLib))
 )
 
-  (import ./printNixValue.nix)
 
 ]

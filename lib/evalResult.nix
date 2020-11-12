@@ -218,7 +218,7 @@ in
     # from other content. This should be the most
     targetNameOf = currentPath: refPathStr: T.match
     { 
-      use  = x: targetNameOf refPathStr x;
+      use  = x: targetNameOf currentPath refPathStr x;
       file = {_fileName,...}: extendPath currentPath _fileName;
       dir  = {_dirName, ...}: extendPath currentPath _dirName;
       _    = x: "${currentPath}#${refPathStr}";

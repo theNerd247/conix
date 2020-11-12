@@ -9,8 +9,10 @@ let
     internalLib
     (internalLib.liftNixValue 
       [ 
+        (import ./readme.nix)
         (import ./conix.nix)
         (import ../tutorials)
+        (import ./languageReference.nix)
       ]
     );
 
