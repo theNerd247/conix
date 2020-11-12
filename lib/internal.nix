@@ -10,11 +10,29 @@ in
 
 rec
 { 
-  module =
-    F.foldAttrsIxCond
-    T.isTyped
-    (x: x)
-    builtins.attrValues;
+  #     (Content -> Content)
+  #  -> { <path> :: { fst :: Content, snd :: Content } } 
+  #  -> Content
+  # Where 
+  #  * `fst` = expr
+  #  * `snd` = documentation
+  module = f: exprSet:
+    let
+      exprsAndDocs = 
+        F.foldAttrsIxCond
+        T.isTyped
+        (x: x)
+        (es: with builtins; 
+          foldl' 
+            ({fst, snd}: x: 
+              { fst = fst ++ [x.fst]; snd = snd ++ x.snd; }
+            )
+            { fst = []; snd = []; } 
+            (attrValues es)
+        )
+        exprSet;
+    in
+      exprsAndDocs.fst ++ [ (f exprsAndDocs.snd) ];
 
   expr = type: docstr: x: p:
     let
@@ -22,24 +40,24 @@ rec
       exprSet = pkgs.lib.attrsets.setAttrByPath p x;
       docsRefPath = ["docs"] ++ p;
     in
-    r: 
-      [ 
-        (_expr exprSet)
-        ''<a name="''(_ask (pkgs.lib.attrsets.getAttrFromPath docsRefPath r.refs))''"></a>
-        ''(_ref { _path = docsRefPath; _next = liftNixValue [
-          ''```haskell
-          ''_path " :: " type 
-        ];})''
+      { fst = _expr exprSet;
+        snd = [
+          ''<a name="docs.${_path}"></a>
+          ''(_ref { _path = docsRefPath; _next = [
+            ''```haskell
+            ''_path " :: " type 
+          ];})''
 
 
-        ```
+          ```
 
-        ''
-        docstr ''
+          ''
+          docstr ''
 
-        
-        ''
-      ];
+          
+          ''
+        ];
+      };
 
   I.docs.liftNixValue.docstr =
     [ 

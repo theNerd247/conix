@@ -35,21 +35,19 @@ else ""
 
 (import ./languageReference.nix)
 
-{ apiDocs = _use (exprs.html "docs" [
+(module (docs: { apiDocs = _use (exprs.html "docs" [
 
   (exprs.meta [
     (exprs.css exprs.conixCss)
     (exprs.pagetitle (_ask data.apiDocs.title))
   ])''
 
-
   # ''{ apiDocs.title = "Conix API Docs"; }''
 
 
-  ''(_ask data._apiDocs) 
-]);}
-
-{ _apiDocs = module
+  ''
+  docs
+]);})
 
   { 
     # TODO: add documentation about using Nix host language
@@ -185,9 +183,11 @@ else ""
 
     
     file = expr
-        "(Text -> Derivation) -> Content -> Content"
-        "Create a new file from the text produced by the given content"
-        (_mkFile: _fileName: _next: _file { inherit _mkFile _next _fileName; })
+      "(Text -> Derivation) -> Content -> Content"
+      "Create a new file from the text produced by the given content"
+      (_mkFile: _fileName: _next: 
+        _file { inherit _mkFile _next _fileName; }
+      )
       ;
 
     pandoc = expr
@@ -549,8 +549,8 @@ else ""
       "Left fold with index"
       internalLib.foldlIx
       ;
-  };
-}
+  }
+)
 
   (import ./printNixValue.nix)
 
