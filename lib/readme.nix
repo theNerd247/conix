@@ -1,13 +1,15 @@
-x: with x; markdown "readme" [
+x: with x; _use (exprs.markdown "readme" [
 
-"# "(ask data.title)''
+"# "(_ask data.index.title)''
 
 
-''(ask data.intro)''
+''(_ask data.intro)''
 
 # Documentation
 
-  * [API Reference Docs](''(conix.homepageUrl)'')
+  * [Conix Home Page](''(exprs.conix.homepageUrl)'')
+
+''(_ask data.gettingStartedText)''
 
 # Contributing
 
@@ -27,4 +29,4 @@ Many thanks to:
   * [Gabriel Gonzalez](https://github.com/Gabriel439)
   * [Evan Relf](https://github.com/evanrelf)
   * [Paul Young](https://github.com/paulyoung)
-'']
+''])

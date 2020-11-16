@@ -1,15 +1,8 @@
 rec
 {
 
-  extensions = c: with c; htmlModule "customApi" (module "# Custom API\n\n"
-    { addBoo = expr 
-        "Content -> Content"
-        "Adds prefix boo!"
-        (x: [ "boo! " x]);
-    });
-
   pkgs = import <nixpkgs> 
-    { overlays = import ./default.nix { inherit extensions; }; };
+    { overlays = import ./default.nix; };
 
   conix = pkgs.conix;
 
@@ -40,9 +33,6 @@ rec
       { x = 3; }''
 
 
-      ''(addBoo "foo!")
-
-      ''
       ...or here
 
       ''
@@ -70,7 +60,7 @@ rec
       (table 
         [ "foo" "bar" "baz" ]
         [[ 2 3 2] 
-         [ (t data.x) 2 3]
+         [ (r data.x) 2 3]
         ]
       )''
 

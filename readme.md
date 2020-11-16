@@ -10,7 +10,30 @@ until the first major release.**
 
 # Documentation
 
-  * [API Reference Docs](https://theNerd247.github.io/conix)
+  * [Conix Home Page](https://theNerd247.github.io/conix)
+
+## A Readme File In Conix
+
+Below is some conix code for generating a readme file^[Download
+[Getting Started Sample Code](./gettingStarted.nix)]
+as HTML and Markdown files.
+
+```nix
+(import <nixpkgs> { overlays = import (builtins.fetchGit 
+{ ref = "conixSnippets"; rev = "02f41ba7257c7d44b9e25170b21f330492c22389"; url = "https://github.com/theNerd247/conix.git"; }); 
+}).conix.run(conix: with conix;
+
+
+markdown "readme" (html "readme" ''
+
+# My Readme
+
+This is a readme file!
+
+''))
+
+
+```
 
 # Contributing
 

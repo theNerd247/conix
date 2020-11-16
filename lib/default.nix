@@ -1,4 +1,4 @@
-pkgs: {extensions ? {}}:
+pkgs:
 
 let
   internalLib = (import ./internal.nix pkgs)
@@ -9,16 +9,17 @@ let
     internalLib
     (internalLib.liftNixValue 
       [ 
-        (import ./conix.nix )
-        extensions
+        (import ./readme.nix)
+        (import ./conix.nix)
+        (import ../tutorials)
+        (import ./languageReference.nix)
       ]
     );
 
-  userApi = conix.data;
+  userApi = conix.exprs;
 in
   rec
   { 
-    run = x: (eval x).drv;
-    eval = x: internalLib._eval userApi (internalLib.liftNixValue x);
     docs = conix.drv;
+    eRes = conix;
   } // userApi 

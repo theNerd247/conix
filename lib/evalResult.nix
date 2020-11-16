@@ -46,6 +46,7 @@ let
           refs = {};
           drv = {};
           text = "";
+          exprs = {};
         };
 
       # Res -> Res -> Res
@@ -53,6 +54,7 @@ let
         { 
           data = mergeData a.data b.data;
           refs = mergeData a.refs b.refs;
+          exprs = mergeData a.exprs b.exprs;
           drv = mergeDrv a.drv b.drv;
           text = a.text + b.text;
         };
@@ -68,6 +70,7 @@ in
       inherit currentPath;
       data = x.data; 
       refs = x.refs;
+      exprs = x.exprs;
     };
 
     onlyData = data: 
@@ -75,6 +78,7 @@ in
       text = "";
       drv = {};
       refs = {};
+      exprs = {};
       inherit data; 
     };
 
@@ -83,6 +87,7 @@ in
       drv = {};
       data = {};
       refs = {};
+      exprs = {};
       inherit text; 
     };
 
@@ -91,6 +96,7 @@ in
       text = "";
       data = {};
       refs = {};
+      exprs = {};
       inherit drv; 
     };
 
@@ -99,42 +105,60 @@ in
       text = "";
       data = {};
       drv = {};
+      exprs = {};
       inherit refs;
+    };
+
+    onlyExpr = exprs:
+    {
+      text = "";
+      data = {};
+      drv = {};
+      refs = {};
+      inherit exprs;
     };
 
     overData = f: x:
     { 
-      inherit (x) text drv refs;
+      inherit (x) text drv refs exprs;
       data = f x.data; 
     };
 
     overText = f: x:
     { 
-      inherit (x) drv data refs;
+      inherit (x) drv data refs exprs;
       text = f x.text; 
     };
 
     overDrv = f: x: 
     { 
-      inherit (x) text data refs;
+      inherit (x) text data refs exprs;
       drv = f x.drv; 
     };
 
     overRefs = f: x:
     { 
-      inherit (x) text data drv;
+      inherit (x) text data drv exprs;
       refs = f x.refs;
+    };
+
+    overExpr = f: x:
+    { 
+      inherit (x) text data drv refs;
+      exprs = f x.exprs;
     };
 
     addDrvFromText = f: x: 
     { 
-      inherit (x) text data refs;
+      inherit (x) text data refs exprs;
       drv = mergeDrv x.drv (f x.text); 
     };
 
     # Modify Res so that no values unsafe side-effects occur that could
     # create infinite recursion.
-    noProduce = x: overData (_: {}) (overRefs (_: {}) x);
+    noProduce = x: overExpr (_: {}) (overData (_: {}) (overRefs (_: {}) x));
+
+    noProduceOnlyExprs = overExpr (_: {});
 
     # unlike overData, this modifies the data
     # value in reader environment so it is legal
@@ -183,7 +207,6 @@ in
     # the basename if it's a file.
     extendCurrentPath = path: overLocalCurrentPath (c: extendPath c path);
 
-
     isFile = x: builtins.match ".*[.][[:alnum:]]+$" (builtins.baseNameOf x) == [];
 
     extendPath = currentPath: path:
@@ -193,11 +216,12 @@ in
 
     # Contruct how a piece of content should be referenced
     # from other content. This should be the most
-    targetNameOf = refPathStr: T.match
+    targetNameOf = currentPath: refPathStr: T.match
     { 
-      file = {_fileName,...}: _fileName;
-      dir = {_dirName, ...}: _dirName;
-      _ = x: "#" + refPathStr;
+      use  = x: targetNameOf currentPath refPathStr x;
+      file = {_fileName,...}: extendPath currentPath _fileName;
+      dir  = {_dirName, ...}: extendPath currentPath _dirName;
+      _    = x: "${currentPath}#${refPathStr}";
     };
 
     pathStrToList = p: builtins.filter (x: x != "") (pkgs.lib.splitString "/" p);
