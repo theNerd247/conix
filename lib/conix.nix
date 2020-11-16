@@ -70,13 +70,13 @@ internalLib: with internalLib; [
     eval = expr
       "Content -> { text :: String, drv :: Derivation, data :: AttrSet, refs :: AttrSet, exprs :: AttrSet }"
       "Evaluate Content with just the conix library in scope"
-      (x: _eval (exprs // { inherit pkgs; }) x)
+      (exprs.evalExtended [])
       ;
 
     run = expr
       "Content -> Derivation"
       "Runs eval and extracts the derivation"
-      (x: (exprs.eval x).drv)
+      (exprs.runExtended [])
       ;
 
     local = expr
