@@ -49,15 +49,33 @@ internalLib: with internalLib; [
   ({ 
     # TODO: add documentation about using Nix host language
     # to construct Content
+    evalExtended = expr
+      "Content -> Content -> { text :: String, drv :: Derivation, data :: AttrSet, refs :: AttrSet, exprs :: AttrSet }"
+      "Evaluate a Content with the conix library extended with the exprs defined in the first Content"
+      (extensions: x: 
+        let
+          initApi = exprs // { inherit pkgs; };
+          extendedApi = _eval initApi (liftNixValue extensions);
+        in
+          _eval (pkgs.lib.attrsets.recursiveUpdate extendedApi.exprs initApi) (liftNixValue x)
+      )
+      ;
+
+    runExtended = expr
+      "Content -> Content -> Derivation"
+      "Runs evalExtended and extracts the derivation"
+      (extensions: x: (exprs.evalExtended extensions x).drv)
+      ;
+
     eval = expr
-      "Content -> { text :: String, drv :: Derivation, data :: AttrSet, refs :: AttrSet }"
-      "Evaluate a Conix expression"
-      (x: _eval (exprs // { inherit pkgs; }) (liftNixValue x))
+      "Content -> { text :: String, drv :: Derivation, data :: AttrSet, refs :: AttrSet, exprs :: AttrSet }"
+      "Evaluate Content with just the conix library in scope"
+      (x: _eval (exprs // { inherit pkgs; }) x)
       ;
 
     run = expr
       "Content -> Derivation"
-      "Evaluate a Conix expression and extract the derivation"
+      "Runs eval and extracts the derivation"
       (x: (exprs.eval x).drv)
       ;
 

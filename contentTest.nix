@@ -103,4 +103,12 @@ rec
     { x = html "a" "boo"; }
     (html "b" "aoo")
   ];
+
+  extendedA = conix.runExtended 
+    (x: with x; module (_: {})
+      {
+        addBoo = expr "" "" (x: [ x "-boo"]);
+      }
+    )
+    (x: with x; html "foo" (addBoo "boo"));
 }
