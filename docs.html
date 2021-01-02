@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Conix API Docs</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="./latex.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="conix-api-docs">Conix API Docs</h1>
+<p><a name="docs.ask"></a></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ot">ask ::</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Prevent infinite recursion when using a value from the data store as content.</p>
+<p>For example:</p>
+<p>Will break with an <code>infinite recursion</code> error. To resolve this do:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> { x = <span class="er">3;</span> }</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">(</span><span class="ex">ref</span> data.x<span class="kw">)</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">]</span></span></code></pre></div>
+<p>or (if you don’t like typing “ref”):</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">[</span> { x = <span class="er">3;</span> }</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">(</span><span class="ex">r</span> data.x<span class="kw">)</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">]</span></span></code></pre></div>
+<p><a name="docs.code"></a></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ot">code ::</span> <span class="dt">Language</span> <span class="ot">-&gt;</span> <span class="dt">Code</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Create a markdown code block</p>
+<p><a name="docs.conix.git.ref"></a></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>conix<span class="op">.</span>git<span class="op">.</span><span class="ot">ref ::</span> <span class="dt">GitBranchString</span></span></code></pre></div>
+<p>The GIT branch of the conix repo currently being used</p>
+<p><a name="docs.conix.git.rev"></a></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>conix<span class="op">.</span>git<span class="op">.</span><span class="ot">rev ::</span> <span class="dt">GitCommitHashString</span></span></code></pre></div>
+<p>The GIT commit hash of conix repo currently used</p>
+<p><a name="docs.conix.git.text"></a></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>conix<span class="op">.</span>git<span class="op">.</span><span class="ot">text ::</span> <span class="dt">NixString</span></span></code></pre></div>
+<p>String containing a Nix Attribute expression representing <code>conix.git</code></p>
+<p><a name="docs.conix.git.url"></a></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>conix<span class="op">.</span>git<span class="op">.</span><span class="ot">url ::</span> <span class="dt">URLString</span></span></code></pre></div>
+<p>The HTTP URL of the conix GIT repo</p>
+<p><a name="docs.conix.homepageUrl"></a></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>conix<span class="op">.</span><span class="ot">homepageUrl ::</span> <span class="dt">URLString</span></span></code></pre></div>
+<p>The homepage URL of conix</p>
+<p><a name="docs.conix.version.major"></a></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>conix<span class="op">.</span>version<span class="op">.</span><span class="ot">major ::</span> <span class="dt">Natural</span></span></code></pre></div>
+<p>The major version of the conix repo being used</p>
+<p><a name="docs.conix.version.minor"></a></p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>conix<span class="op">.</span>version<span class="op">.</span><span class="ot">minor ::</span> <span class="dt">Natural</span></span></code></pre></div>
+<p>The minor version of the conix repo being used</p>
+<p><a name="docs.conix.version.patch"></a></p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>conix<span class="op">.</span>version<span class="op">.</span><span class="ot">patch ::</span> <span class="dt">Natural</span></span></code></pre></div>
+<p>The patch version of the conix repo being used</p>
+<p><a name="docs.conix.version.text"></a></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>conix<span class="op">.</span>version<span class="op">.</span><span class="ot">text ::</span> <span class="dt">SemanticVersionString</span></span></code></pre></div>
+<p>The semantic version of the conix repo being used.</p>
+<p>It is formatted as: <code>major.minor.patch</code></p>
+<p><a name="docs.conixCss"></a></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ot">conixCss ::</span> <span class="dt">FileName</span> <span class="ot">-&gt;</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>The css file conix uses for generating its documentation</p>
+<p><a name="docs.css"></a></p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ot">css ::</span> <span class="dt">FilePath</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>When used with <code>meta</code> add the local css file to this html file’s includes</p>
+<p><a name="docs.digraph"></a></p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ot">digraph ::</span> <span class="dt">ImageName</span> <span class="ot">-&gt;</span> <span class="dt">DOTCode</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Shorthand for: <code>dotgraph imgName "digraph { ... }"</code></p>
+<p><a name="docs.dir"></a></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ot">dir ::</span> <span class="dt">DirName</span> <span class="ot">-&gt;</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Nest the file heirarchy of the given content into the given directory</p>
+<p><a name="docs.dotgraph"></a></p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ot">dotgraph ::</span> <span class="dt">ImageName</span> <span class="ot">-&gt;</span> <span class="dt">DOTCode</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Create an graph image from the given DOT code</p>
+<p><a name="docs.eval"></a></p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ot">eval ::</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> {<span class="ot"> text ::</span> <span class="dt">String</span>,<span class="ot"> drv ::</span> <span class="dt">Derivation</span>,<span class="ot"> data ::</span> <span class="dt">AttrSet</span>,<span class="ot"> refs ::</span> <span class="dt">AttrSet</span>,<span class="ot"> exprs ::</span> <span class="dt">AttrSet</span> }</span></code></pre></div>
+<p>Evaluate Content with just the conix library in scope</p>
+<p><a name="docs.evalExtended"></a></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ot">evalExtended ::</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> {<span class="ot"> text ::</span> <span class="dt">String</span>,<span class="ot"> drv ::</span> <span class="dt">Derivation</span>,<span class="ot"> data ::</span> <span class="dt">AttrSet</span>,<span class="ot"> refs ::</span> <span class="dt">AttrSet</span>,<span class="ot"> exprs ::</span> <span class="dt">AttrSet</span> }</span></code></pre></div>
+<p>Evaluate a Content with the conix library extended with the exprs defined in the first Content</p>
+<p><a name="docs.expr"></a></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ot">expr ::</span> <span class="dt">HaskellTypeString</span> <span class="ot">-&gt;</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> a</span></code></pre></div>
+<p>Create a new API expression with a type, documentation, and a Nix value.</p>
+<p>Traditionally Nix modules are just attribute sets with their values being API expressions (e.g a function). Documentation is left as comments and types don’t exist. <code>expr</code> abstracts over documentation, types, and the user defined function to make documentation first class in Nix.</p>
+<p><a name="docs.file"></a></p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ot">file ::</span> (<span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Derivation</span>) <span class="ot">-&gt;</span> <span class="dt">FileNameStr</span> <span class="ot">-&gt;</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Create a new file from the text produced by the given content</p>
+<p><a name="docs.foldAttrsCond"></a></p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ot">foldAttrsCond ::</span> (a <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (<span class="dt">AttrSet</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">AttrSet</span> a <span class="ot">-&gt;</span> b</span></code></pre></div>
+<p>Fold an attribute set down while allowing for attribute sets to be a leaf value.</p>
+<p>The first function returns true if the given attribute set is a leaf value. The second function maps leaf values to final values. The third function returns a combined final value from the final values of the lower branches.</p>
+<p>For example, to sum the leaf values in an attribute set where a leaf is either a nix value or attribute set containing “stop” as an attribute is:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="ex">countLeaves</span> = foldAttrsCond </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># An attribute set is a leaf if it contains &quot;stop&quot; as an attribute.</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">(</span><span class="ex">s:</span> s <span class="pp">?</span> stop<span class="kw">)</span> </span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># return the value 1 for each leaf. We don&#39;t need the actual value to compute the result.</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">(</span><span class="ex">_:</span> 1<span class="kw">)</span>        </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># countMap is a flat attribute set containing the previously counted branches.</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="kw">(</span><span class="ex">countMap:</span> builtins.foldl<span class="st">&#39; (sum: count: sum + count) 0 (builtins.attrValues countMap));</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="st"># This should return 5.</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="st">nleaves = countLeaves { a = { b = &quot;b&quot;; c = &quot;c&quot;; }; d.e.f = &quot;f&quot;; g = { h = { stop = 2; }; i = 7; }; };</span></span></code></pre></div>
+<p><a name="docs.foldAttrsIxCond"></a></p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ot">foldAttrsIxCond ::</span> ((<span class="dt">AttrSet</span> e ) <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">Path</span> <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (<span class="dt">AttrSet</span> b <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> <span class="dt">AttrSet</span> a <span class="ot">-&gt;</span> b</span></code></pre></div>
+<p>This is just like <code>foldAttrsCond</code> except the function to convert leaf values into final values also takes in the path from the top of the attribute set for that leaf value.</p>
+<p><a name="docs.foldlIx"></a></p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="ot">foldlIx ::</span> (<span class="dt">Natural</span> <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> b</span></code></pre></div>
+<p>Left fold with index</p>
+<p><a name="docs.html"></a></p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ot">html ::</span> <span class="dt">FileName</span> <span class="ot">-&gt;</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Create an HTML file from the given content</p>
+<p><a name="docs.img"></a></p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="ot">img ::</span> <span class="dt">FilePath</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Inserts an image in the given document and ensures that the imported image exits and is included in the final derivation</p>
+<p><a name="docs.indent"></a></p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="ot">indent ::</span> <span class="dt">Natural</span> <span class="ot">-&gt;</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Indent the text of the content by the given number of spaces</p>
+<p><a name="docs.intersperse"></a></p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ot">intersperse ::</span> a <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [a]</span></code></pre></div>
+<p>Insert the given element inbetween elements of the given list</p>
+<p><a name="docs.link"></a></p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="ot">link ::</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Generate a relative path to the given content</p>
+<p>For example:</p>
+<pre><code>conix: with conix; [ (html &quot;bob&quot; { x = 3; }) (dir &quot;larry&quot; (html &quot;joe&quot; (link refs.x))) ]</code></pre>
+<p>will produce a relative path in the html file “joe” <code>../bob.html</code></p>
+<p><a name="docs.list"></a></p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="ot">list ::</span> [<span class="dt">Content</span>] <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Create a bullet list</p>
+<p><a name="docs.local"></a></p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ot">local ::</span> <span class="dt">FilePath</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Add a local file to the generated derivation</p>
+<p><a name="docs.markdown"></a></p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="ot">markdown ::</span> <span class="dt">FileName</span> <span class="ot">-&gt;</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Create a markdown file from the given text</p>
+<p><a name="docs.merge"></a></p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="ot">merge ::</span> [<span class="dt">Content</span>] <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Merge Contents together. This concatenates text values, collects files into a single directory, and recursively merges <code>data</code> values.</p>
+<p>Normally when constructing text values and you wish to concatenate them together one wishes to use something like: <code>foo + "\n" + bar</code>. With <code>merge</code> one can simply write: <code>merge [ foo "\n" bar ]</code> and achieve the same affect.</p>
+<p><a name="docs.meta"></a></p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="ot">meta ::</span> [<span class="dt">Content</span>] <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Construct the meta data portion of a Pandoc sytle markdown file</p>
+<p><a name="docs.modtxt"></a></p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="ot">modtxt ::</span> (<span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Text</span>) <span class="ot">-&gt;</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Modify the text produced by the content</p>
+<p><a name="docs.module"></a></p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">module</span><span class="ot"> ::</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> { <span class="dt">Path</span><span class="ot"> ::</span> <span class="dt">Expression</span> } <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Create a new module with the given module doc string and attribute set containing expressions.</p>
+<p>The first argument is content (typically module level documentation) to insert <em>before</em> API documentation.</p>
+<p>For example:</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>  <span class="ex">module</span> </span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;&#39;</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># String API</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">This</span> is an api for creating fancy strings.</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;&#39;</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">{</span> </span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>      <span class="ex">appendPeriod</span> = expr</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Content -&gt; Content&quot;</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Appends a period to the given content&quot;</span></span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>        <span class="kw">(</span><span class="ex">x:</span> [ x <span class="st">&quot;.&quot;</span>]<span class="kw">)</span></span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>        <span class="kw">;</span></span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">}</span></span></code></pre></div>
+<p><a name="docs.nest"></a></p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="ot">nest ::</span> <span class="dt">PathString</span> <span class="ot">-&gt;</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Nest the data for the given content under a given path</p>
+<p>For example:</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>  <span class="ex">m:</span> with m<span class="kw">;</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">[</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    <span class="er">(</span>nest <span class="st">&quot;foo.bar&quot;</span> <span class="er">(</span>n: <span class="er">with</span> n<span class="kw">;</span> <span class="ex">[{</span> x = 3<span class="kw">;</span> <span class="er">}</span> <span class="kw">(</span><span class="ex">r</span> data.x<span class="kw">)</span><span class="ex">]</span><span class="er">))</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">{x</span> = 4<span class="kw">;</span><span class="er">}</span></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">(</span><span class="ex">r</span> data.x<span class="kw">)</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  <span class="ex">]</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a><span class="ex">will</span> produce:</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a><span class="kw">```</span><span class="ex">nix</span></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;3344&quot;</span></span></code></pre></div>
+<p>notice how we’ve defined <code>x</code> in two places. Nesting allows one to keep the first <code>x</code> from overriding the value of the second.</p>
+<p><a name="docs.pagetitle"></a></p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="ot">pagetitle ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>The title of the rendered document</p>
+<p><a name="docs.pandoc"></a></p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="ot">pandoc ::</span> <span class="dt">OutputFileExtension</span> <span class="ot">-&gt;</span> <span class="dt">PandocCmdArgs</span> <span class="ot">-&gt;</span> <span class="dt">BuildInputs</span> <span class="ot">-&gt;</span> <span class="dt">FileName</span> <span class="ot">-&gt;</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Use pandoc to construct a file from the given content</p>
+<p><a name="docs.pathOf"></a></p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="ot">pathOf ::</span> <span class="dt">LocalFilePath</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Writes the given file path as text and includes the referenced file in the output</p>
+<p><a name="docs.pdf"></a></p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="ot">pdf ::</span> <span class="dt">FileName</span> <span class="ot">-&gt;</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Create a PDF file from the given content</p>
+<p><a name="docs.printNixVal"></a></p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="ot">printNixVal ::</span> a <span class="ot">-&gt;</span> <span class="dt">String</span></span></code></pre></div>
+<p>Pretty print a pure nix-value.</p>
+<p><em>NOTE</em>: do not call this function on a derivation as it will segfault.</p>
+<p><a name="docs.r"></a></p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="ot">r ::</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>See <code>ref</code></p>
+<p><a name="docs.run"></a></p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="ot">run ::</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Derivation</span></span></code></pre></div>
+<p>Runs eval and extracts the derivation</p>
+<p><a name="docs.runCode"></a></p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="ot">runCode ::</span> (<span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span>) <span class="ot">-&gt;</span> <span class="dt">Language</span> <span class="ot">-&gt;</span> <span class="dt">Code</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Create a code block and append the results of executing the passed runner</p>
+<p><a name="docs.runConixSnippet"></a></p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="ot">runConixSnippet ::</span> <span class="dt">SnippetName</span> <span class="ot">-&gt;</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Run the given Conix code and insert its resulting text</p>
+<p><a name="docs.runExtended"></a></p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="ot">runExtended ::</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Derivation</span></span></code></pre></div>
+<p>Runs evalExtended and extracts the derivation</p>
+<p><a name="docs.runNixSnippet"></a></p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="ot">runNixSnippet ::</span> <span class="dt">SnippetName</span> <span class="ot">-&gt;</span> <span class="dt">NixCode</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Create a Nix code block, execute the code, and append the results as a second code block</p>
+<p><a name="docs.set"></a></p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="ot">set ::</span> <span class="dt">AttrSet</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Set a pure attribute set. This appends no new text to the content.</p>
+<p><a name="docs.table"></a></p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="ot">table ::</span> [<span class="dt">Content</span>] <span class="ot">-&gt;</span> [[<span class="dt">Content</span>]] <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Create a markdown table with the given headers and rows</p>
+<p><a name="docs.tell"></a></p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="ot">tell ::</span> <span class="dt">AttrSet</span> <span class="ot">-&gt;</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Add data to the given content. Attribute paths are absolute and not relative. <em>TODO: add an example</em></p>
+<p><a name="docs.text"></a></p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="ot">text ::</span> <span class="dt">Text</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Append text to the current file.</p>
+<p><a name="docs.textfile"></a></p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="ot">textfile ::</span> <span class="dt">FileName</span> <span class="ot">-&gt;</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Write the content to the given text file</p>
+<p><a name="docs.tutorialSnippet"></a></p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="ot">tutorialSnippet ::</span> <span class="dt">FileName</span> <span class="ot">-&gt;</span> <span class="dt">AttrPathName</span> <span class="ot">-&gt;</span> <span class="dt">Content</span> <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Create a nix snippet with its content under a reference</p>
+<p><a name="docs.using"></a></p>
+<div class="sourceCode" id="cb60"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="ot">using ::</span> (<span class="dt">AttrSet</span> <span class="ot">-&gt;</span> <span class="dt">Content</span>) <span class="ot">-&gt;</span> <span class="dt">Content</span></span></code></pre></div>
+<p>Creates expressions from functions that depend on the final <code>data</code>. Use this as follows:</p>
+<div class="sourceCode" id="cb61"><pre class="sourceCode nix"><code class="sourceCode bash"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conix:</span> with conix<span class="kw">;</span> <span class="op">&lt;</span>content <span class="ex">expression</span> here<span class="op">&gt;</span></span></code></pre></div>
+<p>Here <code>conix = { pkgs = ...; data = ...; ... }</code> where <code>data</code> is the final <code>data</code> and the rest of the <code>conix</code> attribute set is the conix library and a copy of <nixpkgs> (in <code>pkgs</code> of course).</p>
+</body>
+</html>
