@@ -20,7 +20,7 @@ as HTML and Markdown files.
 
 ```nix
 (import <nixpkgs> { overlays = import (builtins.fetchGit 
-{ ref = "master"; rev = "e2d8d920893366061482dfb38741d379e4e125fb"; url = "https://github.com/theNerd247/conix.git"; }); 
+{ ref = "master"; rev = "3d63e3087f69b379be0cd5efbf56c28c7bf79b69"; url = "https://github.com/theNerd247/conix.git"; }); 
 }).conix.run(conix: with conix;
 
 
