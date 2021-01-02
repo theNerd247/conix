@@ -197,7 +197,7 @@ internalLib: with internalLib; [
 
     
     file = expr
-      "(Text -> Derivation) -> Content -> Content"
+      "(Text -> Derivation) -> FileNameStr -> Content -> Content"
       "Create a new file from the text produced by the given content"
       (_mkFile: _fileName: _next: 
         _file { inherit _mkFile _next _fileName; }
