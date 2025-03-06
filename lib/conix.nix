@@ -362,15 +362,7 @@ internalLib: with internalLib; [
       (fileName: refName: content:
         [ 
           ''```nix
-          ''{ tutorials.${refName} = exprs.textfile fileName
-                (exprs.modtxt
-                  (t: builtins.seq
-                    (import (pkgs.writeText fileName t))
-                    t
-                  )
-                  content
-                );
-            }''
+          ''{ tutorials.${refName} = exprs.textfile fileName content; }''
           
           ```
           ''
