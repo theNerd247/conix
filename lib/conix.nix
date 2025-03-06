@@ -159,7 +159,7 @@ internalLib: with internalLib; [
       conix: with conix; [ (html "bob" { x = 3; }) (dir "larry" (html "joe" (link refs.x))) ]
       ```
 
-      will produce a relative path in the html file "joe" `../bob.html`
+      The content in `joe.html` will be a hyperlink pointing to `../bob.html`
       ''
       internalLib._link;
 
@@ -204,6 +204,40 @@ internalLib: with internalLib; [
       )
       ;
 
+    tikzSvg = expr
+        "FileName -> Content -> Content"
+        "Take Tikz Code And Create An SVG image out of it. The image will be referenced"
+        (_fileName: _content:
+        # build tikz as a standalone pdf
+        # take that pdf and call pdf2svg.
+        [ (file
+            (text: 
+                let
+                  _tex = pkgs.writeText "${_fileName}.tex" 
+                    ''
+                    \documentclass[tikz, border=1mm]{standalone}
+                    \usepackage{tikz-cd}
+                    \begin{document}
+                    ${text}
+                    \end{document}
+                    '';
+
+                  _pdf = pkgs.runCommandLocal
+                    "${_fileName}.pdf"
+                    {buildInputs = [texliveCustom pkgs.pandoc]; }
+                    "pdflatex ${_tex} &&  cp ./*.pdf $out";
+                in
+                  pkgs.runCommandLocal  
+                    "${_fileName}.svg"
+                    {buildInputs = [pkgs.pdf2svg]; }
+                    "pdf2svg ${_pdf} $out"
+            )
+            _fileName
+            _content
+          )
+          "![](./${_fileName}.svg){width=100%}"
+        ]);
+    
     pandoc = expr
       "OutputFileExtension -> PandocCmdArgs -> BuildInputs -> FileName -> Content -> Content"
       "Use pandoc to construct a file from the given content"
@@ -307,10 +341,10 @@ internalLib: with internalLib; [
       ;
 
     img = expr
-        "FilePath -> Content"
+        "CaptionText -> FilePath -> Content"
         "Inserts an image in the given document and ensures that the imported image exits and is included in the final derivation"
         (caption: localPath:
-          [ (exprs.local localPath) "![${caption}](./${builtins.baseNameOf localPath})" ]
+          [ "![${caption}](" (exprs.pathOf localPath) ]
         )
       ;
 
