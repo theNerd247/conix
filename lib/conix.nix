@@ -455,12 +455,12 @@ internalLib: with internalLib; [
           rev = expr
             "GitCommitHashString"
             "The GIT commit hash of conix repo currently used"
-            meta.git.rev;
+            "<rev>";
 
           ref = expr
             "GitBranchString"
             "The GIT branch of the conix repo currently being used"
-            meta.git.ref;
+            "<ref>";
 
           text = expr
             "NixString"
