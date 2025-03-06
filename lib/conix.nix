@@ -224,7 +224,7 @@ internalLib: with internalLib; [
 
                     _pdf = pkgs.runCommandLocal
                       "${_fileName}.pdf"
-                      {buildInputs = [ (pkgs.texlive.combine { inherit (pkgs.texlive) scheme-small tikz-cd standalone; }) ]; }
+                      {buildInputs = [ (pkgs.texlive.combine { inherit (pkgs.texlive) scheme-small amsfonts tikz-cd standalone; }) ]; }
                       "pdflatex ${_tex} &&  cp ./*.pdf $out";
                   in
                     pkgs.runCommandLocal  
