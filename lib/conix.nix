@@ -217,6 +217,7 @@ internalLib: with internalLib; [
                       ''
                       \documentclass[tikz, border=1mm]{standalone}
                       \usepackage{tikz-cd}
+                      \usepackage{amsfonts}
                       \begin{document}
                       ${text}
                       \end{document}
