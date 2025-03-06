@@ -324,7 +324,7 @@ internalLib: with internalLib; [
     pagetitle = expr
         "String -> Content"
         "The title of the rendered document"
-        (title: [ "pagetitle: " title ])
+        (title: [ ["pagetitle: " title]"\n" ["title: " title] ])
         ;
 
     pathOf = expr
