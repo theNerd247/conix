@@ -206,37 +206,38 @@ internalLib: with internalLib; [
 
     tikzSvg = expr
         "FileName -> Content -> Content"
-        "Take Tikz Code And Create An SVG image out of it. The image will be referenced"
+        "Take Tikz Code And Create An SVG image out of it. The image will be referenced. Tikz-cd is supported but there's no current way to extend the texlive environment."
         (_fileName: _content:
-        # build tikz as a standalone pdf
-        # take that pdf and call pdf2svg.
-        [ (file
-            (text: 
-                let
-                  _tex = pkgs.writeText "${_fileName}.tex" 
-                    ''
-                    \documentclass[tikz, border=1mm]{standalone}
-                    \usepackage{tikz-cd}
-                    \begin{document}
-                    ${text}
-                    \end{document}
-                    '';
+          # build tikz as a standalone pdf
+          # take that pdf and call pdf2svg.
+          [ (file
+              (text: 
+                  let
+                    _tex = pkgs.writeText "${_fileName}.tex" 
+                      ''
+                      \documentclass[tikz, border=1mm]{standalone}
+                      \usepackage{tikz-cd}
+                      \begin{document}
+                      ${text}
+                      \end{document}
+                      '';
 
-                  _pdf = pkgs.runCommandLocal
-                    "${_fileName}.pdf"
-                    {buildInputs = [texliveCustom pkgs.pandoc]; }
-                    "pdflatex ${_tex} &&  cp ./*.pdf $out";
-                in
-                  pkgs.runCommandLocal  
-                    "${_fileName}.svg"
-                    {buildInputs = [pkgs.pdf2svg]; }
-                    "pdf2svg ${_pdf} $out"
+                    _pdf = pkgs.runCommandLocal
+                      "${_fileName}.pdf"
+                      {buildInputs = [ (pkgs.texlive.combine { inherit (pkgs.texlive) texlive-small tikz-cd standalone; }) ]; }
+                      "pdflatex ${_tex} &&  cp ./*.pdf $out";
+                  in
+                    pkgs.runCommandLocal  
+                      "${_fileName}.svg"
+                      {buildInputs = [pkgs.pdf2svg];}
+                      "pdf2svg ${_pdf} $out"
+              )
+              _fileName
+              _content
             )
-            _fileName
-            _content
-          )
-          "![](./${_fileName}.svg){width=100%}"
-        ]);
+            "![](./${_fileName}.svg){width=100%}"
+          ]
+        );
     
     pandoc = expr
       "OutputFileExtension -> PandocCmdArgs -> BuildInputs -> FileName -> Content -> Content"
