@@ -7,8 +7,6 @@
     let
       pkgs = import inputs.nixpkgs { system = "aarch64-darwin"; };
     in
-      { packages.aarch64-darwin = 
-        { conix = (import ./lib/default.nix pkgs);
-        };
+      { conix = (import ./lib/default.nix pkgs);
       };
 }
