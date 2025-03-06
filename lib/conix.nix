@@ -210,7 +210,7 @@ internalLib: with internalLib; [
         (_fileName: _content:
           # build tikz as a standalone pdf
           # take that pdf and call pdf2svg.
-          [ (file
+          [ (exprs.file
               (text: 
                   let
                     _tex = pkgs.writeText "${_fileName}.tex" 
