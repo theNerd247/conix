@@ -440,7 +440,7 @@ internalLib: with internalLib; [
           evaluates to
 
           ```
-          ${builtins.readFile (pkgs.runCommand "${fileName}-out" {buildInputs = [pkgs.ghc]; } "runHaskell ${pkgs.writeText "${fileName}.js" t} > $out")}
+          ${builtins.readFile (pkgs.runCommand "${fileName}-out" {buildInputs = [pkgs.ghc]; } "runHaskell ${pkgs.writeText "${fileName}.hs" t} > $out")}
           ```
           ''
         )
