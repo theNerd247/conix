@@ -426,6 +426,26 @@ internalLib: with internalLib; [
         )
       );
 
+    hsSnippet  = expr
+      "FileName -> Content -> Content"
+      "Display javascript code, run its result - using node, and display the result"
+      (fileName:
+        exprs.modtxt (t:
+          ''
+          ```haskell
+
+          ${t}
+
+          ```
+          evaluates to
+
+          ```
+          ${builtins.readFile (pkgs.runCommand "${fileName}-out" {buildInputs = [pkgs.ghc]; } "runHaskell ${pkgs.writeText "${fileName}.js" t} > $out")}
+          ```
+          ''
+        )
+      );
+
     table = expr
         "[Content] -> [[Content]] -> Content" 
         "Create a markdown table with the given headers and rows"
