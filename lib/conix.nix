@@ -363,7 +363,7 @@ internalLib: with internalLib; [
       ;
 
     runCode = expr
-        "(Content -> Content) -> Language -> Code -> Content"
+        "Language -> (Content -> Content) -> Code -> Content"
         "Create a code block and append the results of executing the passed runner"
         (lang: runner: content:
           [ (exprs.code lang content) (runner content) ]
@@ -405,6 +405,25 @@ internalLib: with internalLib; [
         ]
       )
     ;
+
+    jsSnippet = expr
+      "FileName -> AttrPathName -> Content -> Content"
+      "Display javascript code, run its result - using node, and display the result"
+      (fileName: refName: content:
+        exprs.modtxt (t: [
+          ''```javascript
+          '' t ''
+          ```
+          evaluates to
+          ```
+          ''(
+          builtins.readFile "${pkgs.runCommandLocal "out" {buildInputs = [nodejs_23]; } "node ${pkgs.writeText "${fileName}.js" t} > out"}"
+          )
+          ''
+          ```
+          ''
+        ])
+      );
 
     table = expr
         "[Content] -> [[Content]] -> Content" 
