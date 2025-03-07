@@ -410,19 +410,16 @@ internalLib: with internalLib; [
       "FileName -> AttrPathName -> Content -> Content"
       "Display javascript code, run its result - using node, and display the result"
       (fileName: content:
-        exprs.modtxt (t: [
+        exprs.modtxt (t:
           ''```javascript
-          '' t ''
+          ${t}
           ```
           evaluates to
           ```
-          ''(
-          builtins.readFile "${pkgs.runCommandLocal "out" {buildInputs = [nodejs_23]; } "node ${pkgs.writeText "${fileName}.js" t} > out"}"
-          )
-          ''
+          ${builtins.readFile (pkgs.runCommandLocal "out" {buildInputs = [nodejs_23]; } "node ${pkgs.writeText "${fileName}.js" t} > out")}
           ```
           ''
-        ])
+        )
       );
 
     table = expr
