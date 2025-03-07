@@ -411,10 +411,14 @@ internalLib: with internalLib; [
       "Display javascript code, run its result - using node, and display the result"
       (fileName:
         exprs.modtxt (t:
-          ''```javascript
+          ''
+          ```javascript
+
           ${t}
+
           ```
           evaluates to
+
           ```
           ${builtins.readFile (pkgs.runCommand "${fileName}-out" {buildInputs = [pkgs.nodejs_23]; } "node ${pkgs.writeText "${fileName}.js" t} > $out")}
           ```
