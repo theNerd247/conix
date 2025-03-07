@@ -416,9 +416,9 @@ internalLib: with internalLib; [
           ```
           evaluates to
           ```
-          ${builtins.readFile (pkgs.runCommandLocal "out" {buildInputs = [nodejs_23]; } "node ${pkgs.writeText "${fileName}.js" t} > out")}
           ```
           ''
+           # ${builtins.readFile (pkgs.runCommandLocal "out" {buildInputs = [nodejs_23]; } "node ${pkgs.writeText "${fileName}.js" t} > out")}
         )
       );
 
