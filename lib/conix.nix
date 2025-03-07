@@ -428,7 +428,7 @@ internalLib: with internalLib; [
 
     hsSnippet  = expr
       "FileName -> Content -> Content"
-      "Display javascript code, run its result - using node, and display the result"
+      "Display haskell code, run its result - using node, and display the result"
       (fileName:
         exprs.modtxt (t:
           ''
