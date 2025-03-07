@@ -409,7 +409,7 @@ internalLib: with internalLib; [
     jsSnippet = expr
       "FileName -> AttrPathName -> Content -> Content"
       "Display javascript code, run its result - using node, and display the result"
-      (fileName: refName: content:
+      (fileName: content:
         exprs.modtxt (t: [
           ''```javascript
           '' t ''
